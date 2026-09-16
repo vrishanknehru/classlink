@@ -1,0 +1,8 @@
+- [Home](index.md)
+- [UML Diagrams](uml/README.md)
+- [Criteria for Project Selection](criteria-for-project-selection.md)
+- Journals
+  - [Vemula Manvi Smaran](journals/1024160111-vemula-manvi-smaran/index.md)
+  - [Vrishank Nehru](journals/1024160109-vrishank-nehru/index.md)
+  - [Mahi Singh](journals/1024160102-mahi-singh/index.md)
+  - [Khagendra Saini](journals/1024160123-khagendra-saini/index.md)

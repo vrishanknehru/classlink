@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "vrishanknehru.github.io/classlink"
+version = "0.1.0"
+description = "ClassLink: BLE-based classroom attendance system (UCS503P Software Engineering Project, TIET)"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+  { name = "Vemula Manvi Smaran", email = "manvi7902@gmail.com" },
+  { name = "Vrishank Nehru" },
+  { name = "Mahi Singh" },
+  { name = "Khagendra Saini" },
+]
+dependencies = ["click"]
+
+[tool.hatch.build.targets.wheel]
+bypass-selection = true
+
+[tool.pytest.ini_options]
+pythonpath = ["code"]

@@ -1,0 +1,101 @@
+' Shared visual style for all ClassLink UML report diagrams.
+' Palette: dark blue = headings/outlines, light blue = Flutter/mobile app,
+' light green = BLE / success flow, light gray = platform/external APIs,
+' red = error / rejection / not-yet-implemented.
+
+skinparam backgroundColor white
+skinparam defaultFontName Helvetica
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam roundcorner 8
+
+skinparam ArrowColor #1B3A63
+skinparam ArrowFontColor #14304F
+skinparam ArrowFontSize 12
+
+skinparam NoteBackgroundColor #FCF3CF
+skinparam NoteBorderColor #B7950B
+skinparam NoteFontColor #5B4700
+skinparam NoteFontSize 12
+
+skinparam TitleFontSize 18
+skinparam TitleFontColor #1B3A63
+skinparam TitleFontStyle bold
+
+skinparam CaptionFontSize 12
+skinparam CaptionFontColor #5D6D7E
+
+skinparam usecase {
+  BackgroundColor #AED6F1
+  BorderColor #1B3A63
+  FontColor #14304F
+}
+skinparam actor {
+  BackgroundColor #AED6F1
+  BorderColor #1B3A63
+  FontColor #14304F
+}
+skinparam class {
+  BackgroundColor #AED6F1
+  BorderColor #1B3A63
+  FontColor #14304F
+  AttributeFontColor #14304F
+  AttributeFontSize 11
+  ArrowColor #1B3A63
+}
+skinparam sequence {
+  ParticipantBackgroundColor #AED6F1
+  ParticipantBorderColor #1B3A63
+  ParticipantFontColor #14304F
+  ActorBackgroundColor #AED6F1
+  ActorBorderColor #1B3A63
+  LifeLineBorderColor #1B3A63
+  ArrowColor #1B3A63
+  ArrowFontColor #14304F
+  GroupBackgroundColor #EAF2F8
+  GroupBorderColor #1B3A63
+  GroupFontColor #1B3A63
+  GroupHeaderFontColor #1B3A63
+}
+skinparam activity {
+  BackgroundColor #AED6F1
+  BorderColor #1B3A63
+  FontColor #14304F
+  DiamondBackgroundColor #FCF3CF
+  DiamondBorderColor #1B3A63
+  DiamondFontColor #14304F
+  StartColor #1B3A63
+  EndColor #1B3A63
+  ArrowColor #1B3A63
+}
+skinparam component {
+  BackgroundColor #AED6F1
+  BorderColor #1B3A63
+  FontColor #14304F
+}
+skinparam package {
+  BackgroundColor #F4F6F7
+  BorderColor #1B3A63
+  FontColor #1B3A63
+}
+skinparam node {
+  BackgroundColor #EAECEE
+  BorderColor #1B3A63
+  FontColor #14304F
+}
+skinparam state {
+  BackgroundColor #AED6F1
+  BorderColor #1B3A63
+  FontColor #14304F
+  ArrowColor #1B3A63
+}
+skinparam rectangle {
+  BackgroundColor #F4F6F7
+  BorderColor #1B3A63
+  FontColor #1B3A63
+}
+skinparam legend {
+  BackgroundColor white
+  BorderColor #1B3A63
+  FontColor #14304F
+}

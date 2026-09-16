@@ -1,0 +1,78 @@
+@startuml 05-component-current-poc
+!include _style.puml
+
+title ClassLink Current POC — Component Diagram
+caption Current POC layers, with a clearly separated future/planned package
+
+package "Flutter Presentation Layer" {
+  [Teacher Screen] as PScreenT
+  [Student Screen] as PScreenS
+  [Error and Permission Messages] as PMsg
+}
+
+package "Flutter Application Layer" {
+  [Session Controller] as ASession
+  [Scan Controller] as AScan
+  [Check-In Controller] as ACheckIn
+  [RSSI Proximity Evaluator] as AProximity #C8E6C9
+  [Session Code Transport] as ATransport #C8E6C9
+}
+
+package "BLE Communication Layer" {
+  [BLE Advertiser / Peripheral Service] as BAdvertiser #C8E6C9
+  [BLE Scanner / Central Service] as BScanner #C8E6C9
+  [GATT Check-In Service] as BGatt #C8E6C9
+}
+
+package "Native Platform Layer" {
+  [Android Bluetooth APIs] as NAndroidBt #D5D8DC
+  [Android Permission APIs] as NAndroidPerm #D5D8DC
+  [iOS CoreBluetooth] as NIosBt #D5D8DC
+  [iOS Permission / Bluetooth State APIs] as NIosPerm #D5D8DC
+}
+
+package "Development and Quality Layer" {
+  [Flutter Unit Tests] as DTests
+  [flutter analyze] as DAnalyze
+  [Android Release APK] as DApk #D5D8DC
+  [iOS Physical Device Build] as DIosBuild #D5D8DC
+  [Private GitHub Repository] as DRepo #D5D8DC
+}
+
+PScreenT --> ASession
+ASession --> BAdvertiser
+PScreenS --> AScan
+AScan --> BScanner
+AScan --> AProximity
+AScan --> ATransport
+ACheckIn --> BGatt
+
+BAdvertiser --> NAndroidBt
+BAdvertiser --> NIosBt
+BAdvertiser --> NAndroidPerm
+BScanner --> NAndroidBt
+BScanner --> NIosBt
+BScanner --> NIosPerm
+
+DTests --> ATransport
+DTests --> AProximity
+DAnalyze ..> ASession
+DRepo ..> PScreenT
+
+package "Future System, Not Implemented" <<Dashed>> #FADBD8 {
+  [FastAPI Backend] #F5B7B1
+  [Supabase / PostgreSQL] #F5B7B1
+  [Authentication Service] #F5B7B1
+  [Device Binding Service] #F5B7B1
+  [Biometric Authentication] #F5B7B1
+  [Attendance Audit Log] #F5B7B1
+  [CSV Export Service] #F5B7B1
+}
+
+note bottom of "Future System, Not Implemented"
+  Planned architecture only. These components are not
+  part of the current BLE POC and have no connection
+  to the layers above.
+end note
+
+@enduml

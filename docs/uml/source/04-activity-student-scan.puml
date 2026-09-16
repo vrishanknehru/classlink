@@ -1,0 +1,71 @@
+@startuml 04-activity-student-scan
+!include _style.puml
+
+title ClassLink Current POC — Student Scan and Check-In Activity
+caption Current POC — student-side BLE scan and check-in flow
+
+start
+:Open Student Mode;
+:Check Bluetooth state;
+
+if (Is Bluetooth powered on?) then (no)
+  #F5B7B1:Show actionable\nBluetooth error;
+  stop
+endif
+
+:Request / check permissions;
+
+if (Required Bluetooth\npermissions granted?) then (no)
+  #F5B7B1:Show permission\ninstructions;
+  stop
+endif
+
+:Start scanning;
+
+label ScanLoop
+:Search for ClassLink service UUID;
+
+if (Matching device found?) then (no)
+  #F5B7B1:Show scan timeout /\nno session found;
+  stop
+endif
+
+:Read manufacturer data;
+
+if (Valid code in\nmanufacturer data?) then (no)
+  :Read local name;
+  if (Valid CLXXXXXX\nlocal name?) then (no)
+    #D5D8DC:Ignore advertisement\nand continue scanning;
+    goto ScanLoop
+  endif
+endif
+
+#C8E6C9:Collect RSSI samples\nfor 4 seconds;
+#C8E6C9:Calculate median RSSI;
+
+if (Median RSSI\n>= -75 dBm?) then (no)
+  #F5B7B1:Show "Move closer\nto teacher";
+  stop
+endif
+
+label EntryLabel
+:Enter name and roll number;
+:Validate fields;
+
+if (Fields valid?) then (no)
+  #F5B7B1:Show validation error;
+  goto EntryLabel
+endif
+
+#C8E6C9:Connect to teacher\nGATT service;
+#C8E6C9:Write check-in payload;
+
+if (Write successful?) then (no)
+  #F5B7B1:Show connection /\nwrite error;
+  stop
+endif
+
+#C8E6C9:Show check-in success;
+stop
+
+@enduml

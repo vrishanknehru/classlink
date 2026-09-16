@@ -1,0 +1,333 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{xcolor}
+
+% -----------------------------------------------------
+% bvraghav-tiet-ucs503p-article.sty
+% -----------------------------------------------------
+
+% Variable: Lab Instructor
+\makeatletter \newcommand{\BvrSetLabInstructor}[1]{%
+  \gdef\Bvr@LabInstructor{#1}}
+% default
+\newcommand{\Bvr@LabInstructor}{Dr. Raghav %
+  B. Venkataramaiyer}
+% public accessor
+\newcommand{\BvrLabInstructorValue}{\Bvr@LabInstructor}
+\makeatother
+
+% Add subtitle
+\usepackage{titling}
+% -- Set title bold
+\pretitle{\begin{center}\bfseries\fontsize{18bp}{18bp}\selectfont}
+\makeatletter
+\newcommand{\BvrSubtitle}[1]{%
+  \posttitle{%
+    \par\end{center}
+    \begin{center}\large#1\end{center}
+    \vskip 0.5em}%
+}
+\makeatother
+
+% Hints in the section title(s)
+\newcommand{\BvrHint}[1]{%
+  {\normalfont\normalsize\itshape\hfill #1}}
+
+% -----------------------------------------------------
+
+\title{ClassLink: A BLE-Based Classroom Attendance System}
+
+\BvrSetLabInstructor{Dr. Raghav B. Venkataramaiyer}
+
+\BvrSubtitle{%
+  Project Proposal for UCS503P  \\
+  Submitted to: \BvrLabInstructorValue \\ \bfseries
+  Thapar Institute of Engineering and Technology%
+}
+
+\author{
+  Vemula Manvi Smaran, CSED%
+  \thanks{Roll No: \texttt{1024160111}}
+  \and
+  Vrishank Nehru, CSED%
+  \thanks{Roll No: \texttt{1024160109}}
+  \and
+  Mahi Singh, CSED%
+  \thanks{Roll No: \texttt{1024160102}}
+  \and
+  Khagendra Saini, CSED%
+  \thanks{Roll No: \texttt{1024160123}}
+}
+
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Higher-order goal%
+  \BvrHint{\ldots secondary framing}}
+This project aims to reduce administrative overhead and time lost to
+manual attendance-taking in classrooms, freeing instructional time and
+producing a reliable, auditable attendance record. The broader framing is
+\emph{efficient, low-friction classroom administration}; the immediate
+engineering objective is to translate that into a measurable, deployable
+mobile/backend system.
+
+\section{Time-to-value %
+\BvrHint{\ldots primary heuristic}}
+\begin{itemize}[leftmargin=0.7cm]
+    \item We deliver meaningful increments quickly: an offline
+    proof-of-concept validating the core Bluetooth Low Energy (BLE)
+    proximity mechanism was built first, before any backend or auth work.
+    \item We prioritize fast feedback over perfection by working in
+    vertical slices (auth $\rightarrow$ classrooms $\rightarrow$ device
+    binding $\rightarrow$ BLE $\rightarrow$ attendance transaction
+    $\rightarrow$ teacher operations), keeping the app runnable after every
+    phase.
+    \item Success in the first iteration is defined narrowly: prove that a
+    teacher phone can advertise a session over BLE and a student phone can
+    detect it by proximity and check in, with a working CI pipeline
+    running analyzers and tests on every change.
+\end{itemize}
+
+\section{Problem Statement}
+Manual, roll-call-based classroom attendance in a college setting is slow,
+easy to proxy, and produces attendance data that is hard to audit or
+export. Common pain points include:
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{Time cost:} calling out or circulating a sheet consumes
+    several minutes of every lecture.
+    \item \textbf{Proxy attendance:} a physical sheet or verbal roll call
+    cannot verify that the responding student is actually present.
+    \item \textbf{No live visibility:} the teacher has no real-time
+    roster of who has checked in during the session.
+    \item \textbf{Poor exportability:} paper or ad-hoc digital records are
+    difficult to aggregate into per-course, per-student attendance
+    percentages for reporting.
+\end{itemize}
+
+\textbf{Why this matters now (contextual relevance):} the problem is
+directly experienced by our own project team as students, in our own
+classrooms, making it both immediately relevant and immediately
+testable with real hardware and real class sessions.
+
+\section{Proposed Solution %
+\BvrHint{\ldots Software Proposition}}
+\subsection{Overview}
+Build \textbf{ClassLink}, an Android-first Flutter mobile application
+backed by a FastAPI service and a Supabase/PostgreSQL database, with the
+following components:
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{Teacher app role:} create classrooms, share a join code,
+    start/stop a BLE attendance session, and view a live roster.
+    \item \textbf{Student app role:} join a classroom once, then scan for
+    an active session's BLE beacon and submit a signed attendance claim.
+    \item \textbf{Server-authoritative backend:} validates enrollment,
+    session state, token freshness, device binding, duplicate claims, and
+    proximity evidence before accepting an attendance record.
+    \item \textbf{Audit trail:} every security-sensitive action (device
+    binding, manual correction, export) is logged as an audit event.
+\end{itemize}
+
+\subsection{Core workflow}
+\begin{enumerate}[leftmargin=0.7cm]
+    \item Teacher starts an attendance session; the phone begins
+    advertising a short-lived, rotating BLE token identifying the
+    session.
+    \item Enrolled student phones nearby scan for the token, collect
+    several RSSI (signal strength) samples, and apply a configured
+    proximity rule.
+    \item On a locally authenticated device, the student's phone signs and
+    submits an attendance claim to the backend.
+    \item The backend validates the claim end-to-end and returns a
+    server-authoritative result; the teacher's live roster updates
+    accordingly.
+\end{enumerate}
+
+\subsection{Operational constraints for an educational, single-classroom
+setting}
+\begin{itemize}[leftmargin=0.7cm]
+    \item Target Android phones as the primary, tested platform; keep
+    abstractions portable without claiming untested iOS support.
+    \item No Bluetooth mesh or student-to-student relay in the first
+    release --- strictly teacher-advertises, student-scans.
+    \item Keep the BLE advertisement payload small (at or below 20 bytes)
+    and free of any student/teacher identifiers.
+\end{itemize}
+
+\section{Solution Approach %
+\BvrHint{\ldots Engineering focus}}
+This is an engineering course project, so we focus on system correctness,
+security boundaries, and reproducible evaluation rather than novel
+algorithm research.
+
+\subsection{Proximity assistance %
+\BvrHint{\ldots non-research}}
+Proximity decisions are heuristic, not exact positioning:
+\begin{itemize}[leftmargin=0.7cm]
+    \item Treat RSSI as noisy evidence, never as proof of exact distance.
+    \item Use the median of multiple observations within a sampling
+    window rather than deciding on a single packet.
+    \item Store the RSSI threshold and sample policy per session so
+    experiments remain reproducible; do not present preset defaults as
+    scientific findings.
+\end{itemize}
+
+\subsection{Mobile + backend architecture %
+\BvrHint{\ldots BLE-based solution}}
+A three-tier architecture:
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{Mobile client (Flutter/Riverpod):} teacher
+    advertiser/student scanner roles, local biometric/device
+    authentication, offline-safe state handling.
+    \item \textbf{Backend API (FastAPI):} authentication verification,
+    session/token lifecycle, claim validation pipeline, roster and export
+    endpoints.
+    \item \textbf{Database (Supabase/PostgreSQL):} classrooms,
+    enrollments, sessions, tokens, attendance records, and audit events,
+    protected by row-level security policies.
+\end{itemize}
+
+\subsection{CI/CD and fast delivery enabler}
+CI/CD will be used to:
+\begin{itemize}[leftmargin=0.7cm]
+    \item Run \texttt{flutter analyze}, \texttt{dart format}, and Flutter
+    unit/widget tests on every change.
+    \item Run Ruff, MyPy, and Pytest for the backend, plus a SQL
+    migration smoke test where feasible.
+    \item Check that no \texttt{.env} secret files are committed.
+\end{itemize}
+
+\section{Evaluation Criterion %
+\BvrHint{\ldots measurable and attributable}}
+We define success using measurable metrics tied to the core workflow,
+gathered from executed tests on real Android hardware --- never
+pre-filled or assumed values.
+
+\subsection{Primary evaluation metric}
+\textbf{Detection success rate:} the fraction of labelled-position scan
+attempts (front, middle, back, door, corridor, adjacent room) that
+correctly accept or reject attendance according to the configured
+proximity policy.
+
+\subsection{Secondary evaluation metrics}
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{Discovery latency:} time from teacher advertising start
+    to first valid student packet.
+    \item \textbf{Attendance completion latency:} time from scan start to
+    server-authoritative result.
+    \item \textbf{False accept / false reject rate:} incorrect
+    accept/reject decisions at out-of-room and in-room test positions,
+    respectively.
+    \item \textbf{API latency:} p50/p95 latency for the challenge and
+    claim endpoints.
+    \item \textbf{Duplicate and expiry enforcement:} correct rejection
+    rate for duplicate claims and expired tokens.
+\end{itemize}
+
+\subsection{Pilot validation plan %
+\BvrHint{\ldots high-level}}
+\begin{itemize}[leftmargin=0.7cm]
+    \item Run scenario tests with one teacher phone (advertiser) and at
+    least two student phones (scanners) of different models, in an actual
+    classroom.
+    \item Record raw, timestamped CSV measurements for every scenario
+    under \texttt{docs/evaluation/}, including phone model, Android
+    version, room label, and position label, before deriving any summary
+    tables or figures.
+\end{itemize}
+
+\section{Scalability %
+\BvrHint{\ldots with foresight}}
+The proposition should scale in both theoretical and practical senses.
+
+\begin{enumerate}[leftmargin=0.7cm]
+    \item \textbf{Scalable (theoretically):} the system should support
+    growth in number of classrooms, sessions, and concurrent scanning
+    students by:
+    \begin{itemize}[leftmargin=0.7cm]
+        \item keeping BLE payloads compact and session-scoped,
+        \item indexing session/token lookups by alias and status,
+        \item making attendance writes idempotent under retry.
+    \end{itemize}
+
+    \item \textbf{Operationally deployable (practically):} the system
+    should run on common infrastructure:
+    \begin{itemize}[leftmargin=0.7cm]
+        \item a managed PostgreSQL instance (Supabase),
+        \item a standard FastAPI/Uvicorn deployment,
+        \item a CI pipeline gating merges on analyzer, lint, and test
+        results.
+    \end{itemize}
+\end{enumerate}
+
+\section{Engine availability heuristic}
+A mature set of ``engines'' (frameworks/services) is available to
+implement this as a mobile + backend project:
+\begin{itemize}[leftmargin=0.7cm]
+    \item Flutter/Dart for a single Android-first mobile codebase.
+    \item A maintained BLE package supporting both central (scan) and
+    peripheral (advertise) roles.
+    \item FastAPI for a typed, testable REST backend.
+    \item Supabase for managed PostgreSQL, auth, and row-level security.
+    \item Pytest/Flutter test tooling for unit, widget, and integration
+    tests.
+\end{itemize}
+We use these mature components to focus on workflow correctness, security
+boundaries, and measurement rather than inventing new infrastructure.
+
+\section{Project scope and deliverables %
+\BvrHint{\ldots iteration-friendly}}
+\subsection{Initial deliverable %
+\BvrHint{\ldots first iteration}}
+\begin{itemize}[leftmargin=0.7cm]
+    \item Offline BLE proof-of-concept: teacher advertise, student scan
+    and check-in by proximity, CSV export (\textbf{complete}).
+    \item Supabase schema, authentication, roles, and RLS isolation tests.
+    \item Classroom creation, join-code enrollment, teacher/student UI.
+    \item CI: Flutter analyzer/tests and backend Ruff/MyPy/Pytest.
+\end{itemize}
+
+\subsection{Subsequent deliverables}
+\begin{itemize}[leftmargin=0.7cm]
+    \item Device-key binding (Android Keystore) and signed attendance
+    claims.
+    \item Rotating-token BLE sessions, server-authoritative claim
+    validation, and live teacher roster.
+    \item Manual correction workflow with mandatory reason and audit
+    trail.
+    \item CSV export and real-device evaluation dataset under
+    \texttt{docs/evaluation/}.
+\end{itemize}
+
+\section{Risks and mitigations}
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{BLE peripheral-mode reliability on Android:} test only
+    on physical devices; emulators do not reliably support GATT-server/
+    peripheral advertising.
+    \item \textbf{Proxy/spoofing risk:} bind attendance claims to a
+    device-generated signing key and require local biometric
+    authentication before signing, rather than trusting a bare BLE
+    detection.
+    \item \textbf{Evaluation measurement ambiguity:} fix the metric
+    definitions and CSV schema (Section 7) before running any device
+    experiments.
+    \item \textbf{Secret leakage:} keep the session-token HMAC secret and
+    Supabase service-role key server-side only; commit only
+    \texttt{.env.example} files.
+\end{itemize}
+
+\section{Summary}
+This project proposes ClassLink, a BLE-based classroom attendance system
+that replaces manual roll call with a device-bound, server-authoritative
+check-in flow. It meets the course criteria by emphasizing time-to-value
+through an already-working offline proof-of-concept, implementing CI to
+support frequent safe releases, and using measurable, real-device
+evaluation criteria rather than assumed results. It remains focused on
+engineering correctness and security boundaries rather than research-
+driven novelty.
+
+\end{document}

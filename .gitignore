@@ -1,31 +1,70 @@
-# Flutter / Dart
-.dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
-.packages
-.pub-cache/
-.pub/
-build/
-*.g.dart
+# Icons downloaded by `make docs` (see Makefile)
+assets/icons/
 
-# Android
-android/.gradle/
-android/local.properties
-android/**/*.jks
-android/**/*.keystore
-android/key.properties
-**/android/app/debug
-**/android/app/profile
-**/android/app/release
+# MkDocs build output
+/site
 
-# iOS
-ios/Pods/
-ios/Flutter/Flutter.framework
-ios/Flutter/Flutter.podspec
-ios/.symlinks/
-ios/Runner.xcworkspace/xcuserdata/
-ios/Runner.xcodeproj/xcuserdata/
+# Flutter / Dart (code/)
+code/.dart_tool/
+code/.flutter-plugins
+code/.flutter-plugins-dependencies
+code/.packages
+code/.pub-cache/
+code/.pub/
+code/build/
+code/**/*.g.dart
+
+# Android (code/android)
+code/android/.gradle/
+code/android/local.properties
+code/android/**/*.jks
+code/android/**/*.keystore
+code/android/key.properties
+code/**/android/app/debug
+code/**/android/app/profile
+code/**/android/app/release
+
+# iOS (code/ios)
+code/ios/Pods/
+code/ios/Flutter/Flutter.framework
+code/ios/Flutter/Flutter.podspec
+code/ios/.symlinks/
+code/ios/Runner.xcworkspace/xcuserdata/
+code/ios/Runner.xcodeproj/xcuserdata/
 *.ipa
+
+# Python (docs tooling / pyproject.toml)
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# LaTeX auxiliary files (project-proposal/, project-report-*/)
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.lot
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.nav
+*.snm
+*.vrb
 
 # IDE
 .idea/
