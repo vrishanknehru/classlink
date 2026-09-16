@@ -1,0 +1,45 @@
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+*.g.dart
+
+# Android
+android/.gradle/
+android/local.properties
+android/**/*.jks
+android/**/*.keystore
+android/key.properties
+**/android/app/debug
+**/android/app/profile
+**/android/app/release
+
+# iOS
+ios/Pods/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/.symlinks/
+ios/Runner.xcworkspace/xcuserdata/
+ios/Runner.xcodeproj/xcuserdata/
+*.ipa
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# macOS
+.DS_Store
+
+# Secrets — never commit real values, only .env.example
+.env
+.env.*
+!.env.example
+
+# Coverage
+coverage/
+CLAUDE.md
