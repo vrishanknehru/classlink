@@ -82,3 +82,7 @@ htmlcov/
 # Coverage
 coverage/
 CLAUDE.md
+
+# Backend (backend/)
+backend/.env
+backend/*.egg-info/
