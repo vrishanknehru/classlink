@@ -1,0 +1,38 @@
+# Local development stack: Postgres plus the API.
+#   docker compose up --build
+# The API listens on http://localhost:8000 (docs at /docs).
+# These credentials are for local use only. Production uses Supabase.
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: classlink
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./backend/dev/supabase_stub.sql:/docker-entrypoint-initdb.d/01_supabase_stub.sql:ro
+      - ./backend/migrations/0001_init.sql:/docker-entrypoint-initdb.d/02_init.sql:ro
+      - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d classlink"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ./backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      CLASSLINK_ENVIRONMENT: development
+      CLASSLINK_DATABASE_URL: postgresql://postgres:postgres@db:5432/classlink
+      CLASSLINK_JWT_SECRET: local-dev-jwt-secret-change-me-0123456789
+      CLASSLINK_TOKEN_HMAC_SECRET: local-dev-token-secret-change-me-0123456789
+      CLASSLINK_TEACHER_EMAILS: '["teacher@example.edu"]'
+    ports:
+      - "8000:8000"
+
+volumes:
+  dbdata:

@@ -1,0 +1,22 @@
+# Render blueprint for the backend. Create it with: New > Blueprint > this repo.
+# Secrets (sync: false) are entered in the Render dashboard, never committed.
+services:
+  - type: web
+    name: classlink-api
+    runtime: docker
+    dockerContext: ./backend
+    dockerfilePath: ./backend/Dockerfile
+    plan: starter
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: CLASSLINK_ENVIRONMENT
+        value: production
+      - key: CLASSLINK_DATABASE_URL
+        sync: false   # Supabase Postgres connection string (server side only)
+      - key: CLASSLINK_JWT_SECRET
+        sync: false   # Supabase project JWT secret
+      - key: CLASSLINK_TOKEN_HMAC_SECRET
+        sync: false   # 32+ random bytes; python -c "import secrets; print(secrets.token_hex(32))"
+      - key: CLASSLINK_TEACHER_EMAILS
+        sync: false   # JSON list, e.g. ["teacher@thapar.edu"]
