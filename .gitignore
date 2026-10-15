@@ -86,3 +86,12 @@ CLAUDE.md
 # Backend (backend/)
 backend/.env
 backend/*.egg-info/
+
+# LaTeX build output (the published copy is project-srs/ClassLink-SRS.pdf)
+project-srs/main.pdf
+project-srs/*.aux
+project-srs/*.fdb_latexmk
+project-srs/*.fls
+project-srs/*.log
+project-srs/*.out
+project-srs/*.toc
