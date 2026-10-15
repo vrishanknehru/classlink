@@ -1,0 +1,66 @@
+name: ci
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  flutter:
+    name: Flutter analyze and test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: code
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Formatting (advisory until the legacy POC files are reformatted)
+        run: dart format --output=none --set-exit-if-changed .
+        continue-on-error: true
+      - run: flutter analyze
+      - run: flutter test
+
+  backend:
+    name: Backend lint, types and tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev]"
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: mypy app
+      - run: pytest
+
+  secrets:
+    name: No committed secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reject tracked .env files and keystores
+        run: |
+          bad=$(git ls-files | grep -E '(^|/)\.env($|\.)|\.jks$|\.keystore$|key\.properties$' | grep -v '\.env\.example$' || true)
+          if [ -n "$bad" ]; then
+            echo "Tracked secret files found:"
+            echo "$bad"
+            exit 1
+          fi

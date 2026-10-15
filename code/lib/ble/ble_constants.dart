@@ -8,7 +8,7 @@ import 'package:bluetooth_low_energy/bluetooth_low_energy.dart';
 /// Shared BLE identifiers for the ClassLink proof-of-concept.
 ///
 /// This is a POC protocol only — no rotating tokens, no signing, no
-/// server validation. See `CLAUDE.md` for the full production contract
+/// server validation. See `docs/srs/` for the full production contract
 /// this is a thin slice of.
 class BleConstants {
   BleConstants._();
