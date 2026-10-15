@@ -25,7 +25,8 @@ def main() -> None:
         sys.exit("usage: dev_token.py <email> [user-uuid]")
     email = sys.argv[1]
     user_id = sys.argv[2] if len(sys.argv) > 2 else str(uuid.uuid4())
-    claims = {"sub": user_id, "email": email, "aud": "authenticated", "exp": int(time.time()) + 86400}
+    expires = int(time.time()) + 86400
+    claims = {"sub": user_id, "email": email, "aud": "authenticated", "exp": expires}
     print(f"user id: {user_id}")
     print(jwt.encode(claims, SECRET, algorithm="HS256"))
 

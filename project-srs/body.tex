@@ -215,7 +215,7 @@ Constraint
 \bottomrule\noalign{}
 \endlastfoot
 CON-01 & Android is the primary tested platform. Abstractions stay portable but the project makes no claim about untested platforms. \\
-CON-02 & The BLE payload carries at most 20 bytes of application data and no student or teacher identifier. The token is 17 bytes. \\
+CON-02 & The BLE payload carries at most 20 bytes of application data and no student or teacher identifier. The token is 17 bytes. A legacy advertisement holds 31 bytes in total, and a 128 bit service UUID plus the token does not fit, so the token travels as manufacturer data only (3 bytes of flags, 2 bytes of company id, 2 bytes of length and type, 17 bytes of token, 24 in all) and students scan without a service filter. This layout is not yet confirmed on hardware. \\
 CON-03 & The teacher advertises and the student scans. There is no mesh and no student to student relay. \\
 CON-04 & The server is authoritative. A client\textquotesingle s own decision never creates an attendance record. \\
 CON-05 & The token HMAC secret, database credentials, and Supabase service keys exist only on the server. Only \texttt{.env.example} files enter the repository. \\
@@ -417,7 +417,7 @@ Status
 \endlastfoot
 FR-ATT-01 & The student app shall scan for the ClassLink service, read the token, and collect RSSI samples for the session\textquotesingle s sample window. & M & Planned \\
 FR-ATT-02 & On a challenge request the server shall verify the token tag, token freshness (current epoch, up to one epoch old, or one ahead for clock skew), that the session is active, that the student is enrolled, and that the student has a bound device. It shall then issue a single use nonce valid for 120 seconds together with the session policy. & M & Done \\
-FR-ATT-03 & A claim shall contain the nonce, token, median RSSI, sample count, observation time, and an ECDSA signature over the canonical string \texttt{classlink-claim-v1} joined with session id, nonce, token, median RSSI, sample count, and observation time, separated by newlines. & M & Done \\
+FR-ATT-03 & A claim shall contain the nonce, token, median RSSI, sample count, observation time, and an ECDSA signature over the canonical string \texttt{classlink-claim-v1} joined with session id, nonce, token, median RSSI, sample count, and observation time as whole Unix seconds, separated by newlines. & M & Done \\
 FR-ATT-04 & The server shall accept a claim only if the nonce belongs to the caller and is unused and unexpired, the token matches the challenge, the signature verifies against the active device key, the observation time lies within 60 seconds of server time, the sample count meets the session minimum, and the median RSSI meets the session threshold. & M & Done \\
 FR-ATT-05 & A student shall have at most one attendance record per session. A claim made with a new nonce after a record exists shall be rejected as a duplicate. & M & Done \\
 FR-ATT-06 & Repeating an accepted claim shall return the stored record and shall create no second record. & M & Done \\

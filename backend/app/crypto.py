@@ -29,7 +29,12 @@ def canonical_claim(
     sample_count: int,
     observed_at: datetime,
 ) -> bytes:
-    """The exact byte string a device signs. Clients must build it identically."""
+    """The exact byte string a device signs. Clients must build it identically.
+
+    Lines, joined with a single newline and no trailing newline, UTF-8 encoded:
+    domain, session id, nonce, token hex (lowercase), median RSSI, sample count,
+    observation time as whole seconds since the Unix epoch.
+    """
     parts = [
         CLAIM_DOMAIN,
         str(session_id),
@@ -37,7 +42,8 @@ def canonical_claim(
         token_hex.lower(),
         str(median_rssi),
         str(sample_count),
-        observed_at.isoformat(),
+        # Whole seconds since the Unix epoch: identical in every language, unlike ISO 8601.
+        str(int(observed_at.timestamp())),
     ]
     return "\n".join(parts).encode("utf-8")
 
