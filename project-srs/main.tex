@@ -1,0 +1,69 @@
+% ClassLink Software Requirements Specification.
+% Structure follows the Overleaf "Software Requirements Specification" template:
+% Introduction, Overall Description, System Features, Other Nonfunctional
+% Requirements, Other Requirements. Requirement IDs and a status column are added.
+% The body is generated from docs/srs/index.md by build.py. Edit the Markdown,
+% then run: python3 project-srs/build.py
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage{array,calc,longtable,booktabs}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+
+\DeclareUnicodeCharacter{2212}{\textminus}
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\newcommand{\pandocbounded}[1]{#1}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+\renewcommand{\arraystretch}{1.15}
+\setlength{\LTpre}{0.4em}
+\setlength{\LTpost}{0.8em}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{ClassLink SRS}
+\rhead{Version 1.0}
+\cfoot{\thepage}
+
+\begin{document}
+
+\begin{titlepage}
+  \centering
+  \vspace*{2cm}
+  {\Large\bfseries SOFTWARE REQUIREMENTS SPECIFICATION}\\[1.2em]
+  {\large for}\\[1.2em]
+  {\Huge\bfseries ClassLink}\\[0.6em]
+  {\large A BLE Based Classroom Attendance System}\\[2em]
+  {\large Version 1.0}\\[3em]
+  \begin{tabular}{rl}
+    \textbf{Prepared by:} & Vemula Manvi Smaran (1024160111)\\
+     & Vrishank Nehru (1024160109)\\
+     & Mahi Singh (1024160102)\\
+     & Khagendra Saini (1024160123)\\[1.2em]
+    \textbf{Submitted to:} & Dr.\ Raghav B.\ Venkataramaiyer\\[1.2em]
+    \textbf{Course:} & UCS503P Software Engineering Project\\
+    \textbf{Institute:} & Thapar Institute of Engineering and Technology\\[1.2em]
+    \textbf{Date:} & October 2026\\
+  \end{tabular}
+  \vfill
+\end{titlepage}
+
+\section*{Document Information}
+\input{preface.tex}
+
+\tableofcontents
+\clearpage
+
+\input{body.tex}
+
+\clearpage
+\appendix
+\input{appendix.tex}
+
+\end{document}

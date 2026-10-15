@@ -1,4 +1,5 @@
 - [Home](index.md)
+- [Software Requirements Specification](srs/index.md)
 - [UML Diagrams](uml/README.md)
 - [Criteria for Project Selection](criteria-for-project-selection.md)
 - Journals

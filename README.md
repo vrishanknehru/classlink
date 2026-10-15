@@ -9,9 +9,10 @@ enrolled students' phones scan for that token while physically nearby,
 collect proximity evidence, authenticate locally, and submit a signed
 attendance claim to a server-authoritative backend.
 
-The repository currently contains a runnable **proof of concept**
-validating the core BLE mechanism; see [`code/`](code/) and the docs site
-for details.
+The repository contains a tested **backend** (`backend/`), a runnable
+offline **proof of concept** app (`code/`), and the project documents. Mobile
+integration with the backend is in progress. The SRS (`docs/srs/`) marks every
+requirement as Done, POC, or Planned.
 
 ## Team
 
@@ -26,10 +27,12 @@ for details.
 
 ```
 classlink/
+├── backend/                       FastAPI + Supabase Postgres backend
 ├── code/                          Flutter application source
-├── docs/                          MkDocs documentation site
+├── docs/                          MkDocs documentation site (incl. docs/srs)
 ├── journals/                      Weekly progress journals, one per member
-├── project-proposal/              Project proposal (LaTeX)
+├── project-proposal/              Project proposal (LaTeX + PDF)
+├── project-srs/                   SRS (LaTeX + PDF, generated from docs/srs)
 ├── project-report-prototype-stage/  Prototype-stage report (TODO)
 ├── project-report-final/          Final report (TODO)
 └── assets/                        Docs site assets (logo, theme, icons)
@@ -46,12 +49,28 @@ flutter run
 Requires two physical Android devices with Bluetooth LE support — BLE
 peripheral/GATT-server mode is unreliable on most emulators.
 
+## Backend
+
+```bash
+cd backend
+python -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
+cp .env.example .env            # then fill in real values
+uvicorn app.main:app_from_env --factory --reload
+```
+
+Apply `backend/migrations/0001_init.sql` to the Supabase project first. API
+reference is served at `/docs`.
+
 ## Testing
 
 ```bash
-cd code
-flutter analyze
-flutter test
+# Flutter app
+cd code && flutter analyze && flutter test
+
+# Backend (uses a throwaway local Postgres if installed, else set
+# CLASSLINK_TEST_DATABASE_URL to a scratch database)
+cd backend && ruff check . && mypy app && pytest
 ```
 
 ## Docs site

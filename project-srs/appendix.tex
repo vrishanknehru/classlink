@@ -1,0 +1,162 @@
+\hypertarget{glossary}{%
+\section{Glossary}\label{glossary}}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.1772}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.8228}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Term
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Meaning
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+BLE & Bluetooth Low Energy \\
+RSSI & Received signal strength indicator, in dBm. Closer devices read less negative values \\
+Epoch & A fixed length time slice used to rotate tokens \\
+Alias & Four random bytes that identify a live session in a token \\
+Challenge & A single use nonce the server issues after validating a token \\
+Claim & A signed statement from a student device that it observed a valid token \\
+RLS & Row level security in Postgres \\
+JWT & JSON Web Token issued by Supabase Auth \\
+SPKI & SubjectPublicKeyInfo, the DER format for public keys \\
+\end{longtable}
+
+\hypertarget{api-summary}{%
+\section{API Summary}\label{api-summary}}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.4688}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.1875}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3438}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Method and path
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Role
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Purpose
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\texttt{POST\ /v1/profile} & any user & Create the caller\textquotesingle s profile \\
+\texttt{GET\ /v1/me} & any & Read the caller\textquotesingle s profile \\
+\texttt{POST\ /v1/classrooms} & teacher & Create a classroom \\
+\texttt{GET\ /v1/classrooms} & any & List own classrooms \\
+\texttt{POST\ /v1/classrooms/join} & student & Join with a join code \\
+\texttt{PUT\ /v1/devices/me} & student & Bind a device signing key \\
+\texttt{POST\ /v1/sessions} & teacher & Start a session \\
+\texttt{POST\ /v1/sessions/\{id\}/end} & teacher & End a session \\
+\texttt{GET\ /v1/sessions/\{id\}/token} & teacher & Current rotating token \\
+\texttt{GET\ /v1/sessions/\{id\}/roster} & teacher & Live roster \\
+\texttt{POST\ /v1/sessions/\{id\}/corrections} & teacher & Manual correction \\
+\texttt{GET\ /v1/sessions/\{id\}/export.csv} & teacher & CSV export \\
+\texttt{POST\ /v1/attendance/challenge} & student & Trade a token for a nonce \\
+\texttt{POST\ /v1/attendance/claim} & student & Submit a signed claim \\
+\texttt{GET\ /healthz}, \texttt{GET\ /readyz} & none & Liveness and readiness \\
+\end{longtable}
+
+\hypertarget{rejection-reasons}{%
+\section{Rejection Reasons}\label{rejection-reasons}}
+
+The API returns HTTP 409 with \texttt{\{"status":\ "rejected",\ "reason":\ "\textless{}code\textgreater{}"\}}.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.2222}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.6250}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.1528}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Code
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Meaning
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Stage
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+invalid\_token & Malformed token or wrong tag & challenge \\
+token\_expired & Token epoch outside the grace window & challenge \\
+session\_not\_active & Unknown alias or ended session & challenge, claim \\
+not\_enrolled & Student is not in the classroom & challenge \\
+no\_device\_bound & Student has no active device key & challenge, claim \\
+challenge\_unknown & Nonce missing or issued to someone else & claim \\
+challenge\_expired & Nonce older than 120 seconds & claim \\
+nonce\_reused & Nonce consumed by a different claim & claim \\
+token\_mismatch & Claim token differs from the challenge token & claim \\
+bad\_signature & Signature does not verify against the active key & claim \\
+claim\_stale & Observation time more than 60 seconds from server time & claim \\
+too\_few\_samples & Sample count below the session minimum & claim \\
+rssi\_below\_threshold & Median RSSI weaker than the session threshold & claim \\
+duplicate & The student already has a record in this session & claim \\
+\end{longtable}
+
+\hypertarget{evaluation-plan-and-data-schema}{%
+\section{Evaluation Plan and Data Schema}\label{evaluation-plan-and-data-schema}}
+
+\textbf{Primary metric.} Detection success rate: the fraction of labelled position scan attempts (front, middle, back, door, corridor, adjacent room) that accept or reject correctly under the configured policy.
+
+\textbf{Secondary metrics.} Discovery latency, attendance completion latency, false accept and false reject rates at out of room and in room positions, API p50 and p95 latency, and the rejection rate for duplicate claims and expired tokens.
+
+\textbf{Method.} One teacher phone and at least two student phones of different models, in a real classroom. Record raw rows before computing any summary.
+
+\textbf{Raw CSV schema} (\texttt{docs/evaluation/*.csv}):
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule\noalign{}
+Column & Meaning \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+run\_id & Identifier for one scenario run \\
+timestamp\_utc & ISO 8601 time of the attempt \\
+teacher\_phone, student\_phone & Device models \\
+android\_version & Version on the student phone \\
+room\_label & Room name \\
+position\_label & front, middle, back, door, corridor, adjacent\_room \\
+expected & accept or reject \\
+median\_rssi\_dbm, sample\_count & Values sent in the claim \\
+result & accepted or the rejection reason \\
+discovery\_ms, completion\_ms & Latencies \\
+\end{longtable}
+
+\hypertarget{test-traceability}{%
+\section{Test Traceability}\label{test-traceability}}
+
+Backend tests live in \texttt{backend/tests/}. The suite runs against a real Postgres.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.3137}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.6863}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Requirements
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Tests
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+FR-ACC-01 to FR-ACC-05 & \texttt{test\_teacher\_and\_accounts.py} (allowlist, roll number, idempotent profile, bad credentials, role separation) \\
+FR-CLS-01 to FR-CLS-03, FR-DEV-01, FR-DEV-02 & \texttt{test\_teacher\_and\_accounts.py} (join code format, listing, unknown code, invalid key), \texttt{test\_attendance\_flow.py} (rebinding revokes the old key) \\
+FR-SES-01 to FR-SES-05, FR-SES-07 & \texttt{test\_tokens.py}, \texttt{test\_teacher\_and\_accounts.py} (one active session, ownership, rotation) \\
+FR-ATT-02 to FR-ATT-08 & \texttt{test\_attendance\_flow.py}, \texttt{test\_claims.py}, \texttt{test\_crypto.py} \\
+FR-ROS-01, FR-COR-01, FR-COR-02 & \texttt{test\_teacher\_and\_accounts.py} (corrections, roster) \\
+FR-EXP-01 to FR-EXP-03 & \texttt{test\_teacher\_and\_accounts.py} (CSV contents, formula injection) \\
+FR-AUD-01, FR-AUD-02 & \texttt{test\_attendance\_flow.py} (rejections and acceptances audited), \texttt{test\_teacher\_and\_accounts.py} (export audited), \texttt{test\_rls.py} \\
+OTHER-DEP-04 & \texttt{test\_config.py} \\
+NFR-SEC-03 & \texttt{test\_rls.py} \\
+NFR-SEC-05 & \texttt{test\_attendance\_flow.py} (tampered RSSI breaks the signature) \\
+Reliability (4.3) & \texttt{test\_attendance\_flow.py} (concurrent claims never double count) \\
+\end{longtable}
+
+Requirements marked Planned have no automated test yet. The Flutter unit tests live in \texttt{code/test/}.

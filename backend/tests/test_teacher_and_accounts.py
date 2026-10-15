@@ -220,3 +220,36 @@ def test_csv_export_neutralises_formula_injection(world: World, new_user) -> Non
     cells = [r["Name"] for r in rows] + [r["Roll Number"] for r in rows]
     assert not any(c.startswith(("=", "@", "+")) for c in cells)
     assert "'=HYPERLINK" in resp.text
+
+
+# --- additions for classroom listing, join codes and export auditing ----------
+def test_join_code_format_and_listing(world: World) -> None:
+    import re
+
+    assert re.fullmatch(r"[A-HJ-NP-Z2-9]{6}", world.classroom["join_code"])
+    mine_t = world.client.get("/v1/classrooms", headers=world.teacher.headers).json()
+    mine_s = world.client.get("/v1/classrooms", headers=world.student.headers).json()
+    assert [c["id"] for c in mine_t] == [world.classroom["id"]]
+    assert [c["id"] for c in mine_s] == [world.classroom["id"]]
+
+
+def test_join_code_is_case_insensitive_and_joining_twice_is_harmless(world: World) -> None:
+    code = world.classroom["join_code"].lower()
+    for _ in range(2):
+        resp = world.client.post(
+            "/v1/classrooms/join", json={"join_code": code}, headers=world.student.headers
+        )
+        assert resp.status_code == 200
+    mine = world.client.get("/v1/classrooms", headers=world.student.headers).json()
+    assert len(mine) == 1
+
+
+def test_export_is_audited(world: World, migrated_url: str) -> None:
+    world.client.get(
+        f"/v1/sessions/{world.session['id']}/export.csv", headers=world.teacher.headers
+    )
+    with psycopg.connect(migrated_url) as conn:
+        row = conn.execute(
+            "select count(*) from audit_events where action = 'export_downloaded'"
+        ).fetchone()
+    assert row == (1,)
