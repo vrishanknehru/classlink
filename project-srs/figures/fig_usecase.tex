@@ -1,0 +1,22 @@
+\documentclass[tikz,border=5pt]{standalone}
+\input{figstyle}
+\begin{document}
+\begin{tikzpicture}
+  \tikzset{uc/.style={draw=black, thick, ellipse, fill=white, minimum width=4.6cm, minimum height=1cm, font=\small, inner sep=1pt},
+           act/.style={draw=black, thick, fill=accent, minimum width=2.6cm, minimum height=1cm, font=\small\bfseries, align=center, text width=2.4cm}}
+  \draw[thick] (3.4,1) rectangle (12.6,-14.3);
+  \node[font=\small\bfseries] at (8,0.45) {ClassLink system};
+  \foreach \i/\t in {1/Sign in, 2/Join a classroom, 3/Register the phone, 4/Check in,
+                     5/Create a classroom, 6/Start and end a session, 7/View the live roster,
+                     8/Correct attendance, 9/Export CSV, 10/Edit the teacher allowlist}{
+    \node[uc] (u\i) at (8,{-1.1-1.35*(\i-1)}) {\t};}
+  \node[act] (stu) at (0,-3.6) {Student};
+  \node[act] (tea) at (0,-9.2) {Teacher};
+  \node[act] (adm) at (16,-12.7) {Administrator};
+  \node[act] (aut) at (16,-1.1) {Supabase Auth};
+  \foreach \i in {1,2,3,4}{\draw[thick] (stu.east) -- (u\i.west);}
+  \foreach \i in {1,5,6,7,8,9}{\draw[thick] (tea.east) -- (u\i.west);}
+  \draw[thick] (adm.west) -- (u10.east);
+  \draw[thick] (aut.west) -- (u1.east);
+\end{tikzpicture}
+\end{document}
