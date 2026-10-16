@@ -6,7 +6,7 @@
   \node[lay, text width=4.6cm] (te) at (0,0) {\textbf{Teacher mode}\\[1pt]\footnotesize start session, show token, roster};
   \node[lay, text width=4.6cm] (st) at (6.4,0) {\textbf{Student mode}\\[1pt]\footnotesize scan, sample, sign, send claim};
   \draw[ble] (te) -- (st) node[lbl, midway, above=1pt] {BLE token};
-  \node[font=\small\bfseries] at (3.2,1.45) {Flutter app on Android phones};
+  \node[font=\small\bfseries] at (3.2,1.45) {Flutter app on Android and iOS phones};
   \node[lay, text width=11cm] (api) at (3.2,-3.2) {\textbf{REST API (FastAPI)}\\[1pt]\footnotesize authentication, validation, HTTPS and JSON};
   \node[lay, text width=5.2cm] (bl) at (0.4,-6.4) {\textbf{Business logic}\\[1pt]\footnotesize rotating tokens, claim checks,\\corrections, export};
   \node[lay, text width=4.6cm] (au) at (6.4,-6.4) {\textbf{Supabase Auth}\\[1pt]\footnotesize sign in, user tokens};

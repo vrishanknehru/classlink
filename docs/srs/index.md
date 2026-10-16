@@ -45,13 +45,13 @@ ClassLink gives Teachers and Students one place to run attendance, and gives the
 5. Privacy: the system keeps only name, roll number, email, a device public key, and attendance. It never collects location.
 6. Engineering quality: the backend passes Ruff and strict MyPy, and every requirement marked Done has an automated test run in CI.
 
-**In scope.** Teacher and student roles on Android. Classrooms with join codes. One registered phone per student. Attendance sessions with a signal strength rule. A live roster, manual corrections, and CSV export. An audit log. Testing on real phones in a real room.
+**In scope.** Teacher and student roles on Android and iOS, built from one Flutter code base. Classrooms with join codes. One registered phone per student. Attendance sessions with a signal strength rule. A live roster, manual corrections, and CSV export. An audit log. Testing on real phones in a real room.
 
-**Optional extensions** (outside this course submission). An iOS app, links to learning management systems, and a signal threshold that adapts to each room.
+**Optional extensions** (outside this course submission). Links to learning management systems, and a signal threshold that adapts to each room.
 
 **Out of scope.** Proving that the phone's owner is the person holding it. Student to student relaying. Grading and timetables.
 
-**Status terms.** *Done* means built and covered by an automated test. *POC* means present only in the offline proof of concept. *Planned* means specified but not built. Today the server side is built and tested. The Android app does not call it yet, so anything that needs the app is Planned.
+**Status terms.** *Done* means built and covered by an automated test. *POC* means present only in the offline proof of concept. *Planned* means specified but not built. Today the server side is built and tested. The mobile apps (Android and iOS) do not call it yet, so anything that needs an app is Planned.
 
 **Stakeholders.**
 
@@ -76,7 +76,7 @@ Figure 1.1 is the overview of the project. A Teacher creates a Classroom. The Cl
 
 ClassLink grew from an offline proof of concept, the Flutter app in `code/`, that showed a teacher phone can announce a session over BLE and a student phone can check in by proximity. Version 1.0 adds a server so the result no longer depends on trusting the student's phone. It follows a layered client and server design (Figure 2.1).
 
-- **Mobile app:** Flutter, Android first, with a teacher mode and a student mode.
+- **Mobile app:** Flutter, for Android and iOS, with a teacher mode and a student mode.
 - **Backend API:** FastAPI (Python) for sign in checks, validation, sessions, and claims.
 - **Business logic:** rotating tokens, claim checks, corrections, and export.
 - **Database:** Supabase Postgres. Supabase Auth signs users in.
@@ -125,7 +125,7 @@ Level 1 (Figure 2.4) opens the box into six processes. Each process keeps its da
 
 ## 2.4 Operating Environment
 
-Students and teachers use Android 8.0 or later with Bluetooth LE. The teacher phone must support BLE advertising, so we test on real phones. The server runs in a Linux container behind HTTPS. The database is Supabase Postgres. Phones need internet during check in, but the Bluetooth exchange itself does not.
+Students and teachers use an Android phone (8.0 or later) or an iPhone, both with Bluetooth LE. The lowest iOS version is still to be confirmed. The teacher phone must support BLE advertising, so we test on real phones of both kinds. The server runs in a Linux container behind HTTPS. The database is Supabase Postgres. Phones need internet during check in, but the Bluetooth exchange itself does not.
 
 **External interfaces.**
 
@@ -136,10 +136,10 @@ Students and teachers use Android 8.0 or later with Bluetooth LE. The teacher ph
 
 **Design and implementation constraints.**
 
-- Stack: Flutter (Android first), FastAPI on Python 3.11 or later, psycopg 3, Supabase Postgres and Auth.
+- Stack: Flutter (Android and iOS), FastAPI on Python 3.11 or later, psycopg 3, Supabase Postgres and Auth.
 - A phone never creates an attendance record on its own. Only the server decides.
 - Secrets stay on the server. Only `.env.example` files enter the repository.
-- The BLE token is 17 bytes and travels in the manufacturer data field of the BLE advertisement, because a service identifier plus the token does not fit in a basic one. We have not yet confirmed this layout on phones.
+- The BLE token is 17 bytes and travels in the manufacturer data field of the BLE advertisement, because a service identifier plus the token does not fit in a basic one. We have not yet confirmed this layout on phones. iOS only lets an app advertise a local name and service identifiers, so an iPhone may not be able to broadcast the token this way. We test this first, and the token layout or the teacher device may need to change.
 - Apps write only through the API. The database gives apps read only access to their own rows.
 - Four person team, one semester, with the work split across backend, app, documentation, and testing.
 
@@ -220,7 +220,7 @@ The server is a FastAPI service built and tested against a real Postgres. The ap
 |---|---|---|---|
 | FR-DEV-01 | A student shall register one device key (ECDSA P-256 public key). The server shall reject any other key type. | Must | Done |
 | FR-DEV-02 | Registering a new key shall cancel the old one and write an audit event. | Must | Done |
-| FR-DEV-03 | The private key shall never leave the phone, and the app shall sign only after fingerprint or screen lock authentication. | Must | Planned |
+| FR-DEV-03 | The private key shall never leave the phone (kept in the Android Keystore or the iOS Keychain), and the app shall sign only after fingerprint, face, or screen lock authentication. | Must | Planned |
 
 **Sessions and tokens**
 
@@ -231,6 +231,7 @@ The server is a FastAPI service built and tested against a real Postgres. The ap
 | FR-SES-03 | The server shall issue a 17 byte rotating token that changes every 15 seconds and carries no student or teacher identity. | Must | Done |
 | FR-SES-04 | Only the classroom's teacher shall see or change its sessions. Other teachers shall get HTTP 404. | Must | Done |
 | FR-SES-05 | The teacher app shall fetch a fresh token each period and broadcast it. | Must | Planned |
+| FR-SES-06 | On iOS the teacher app shall broadcast the token in a layout iOS allows. If that is not possible, the document shall say that an Android phone must act as the teacher device. | Should | Planned |
 
 **Attendance claims**
 
@@ -311,19 +312,19 @@ Table: Acceptance criteria.
 
 # 5. Other Requirements
 
-ClassLink needs maintenance after the course, because phones, Android versions, and BLE behaviour keep changing. Other requirements are:
+ClassLink needs maintenance after the course, because phones, Android and iOS versions, and BLE behaviour keep changing. Other requirements are:
 
 - **Documentation:** the repository holds this SRS in Markdown and LaTeX, the project proposal, UML diagrams, the deployment runbook, and the API reference served at `/docs`.
-- **Deployment:** the server is packaged as a container that does not run as an admin user, and it refuses to start in production without its database address and secrets. The administrator runs the database setup file on Supabase before the first start. GitHub Actions runs the app and server checks and rejects committed secrets. The team publishes a signed Android APK for the pilot. See `docs/deployment.md`.
+- **Deployment:** the server is packaged as a container that does not run as an admin user, and it refuses to start in production without its database address and secrets. The administrator runs the database setup file on Supabase before the first start. GitHub Actions runs the app and server checks and rejects committed secrets. The team publishes a signed Android APK and an iOS build for the pilot. How the iOS build reaches testers is still to be decided. See `docs/deployment.md`.
 - **Privacy:** pilot participants learn what the app stores before they join a classroom. Deleting a user deletes their profile, enrollments, devices, and attendance. English only in the first version.
-- **Phasing:** Phase 1 (done): server, database schema, tests, CI, and documents. Phase 2 (planned): Android client with sign in, key storage, token broadcast, scan and claim, and roster screens. Phase 3 (planned): pilot on real phones in a real room, with measured results. Extensions follow only after the pilot.
-- **Open issues to confirm:** whether the 17 byte token fits the BLE advertisement on real phones; the signal threshold that works in a real room; whether to move the sign in token from a shared secret to public key signing; the Android application id, which still carries the old proof of concept name; and the consent wording for pilot students.
+- **Phasing:** Phase 1 (done): server, database schema, tests, CI, and documents. Phase 2 (planned): Android and iOS apps with sign in, key storage, token broadcast, scan and claim, and roster screens. Phase 3 (planned): pilot on real phones in a real room, with measured results. Extensions follow only after the pilot.
+- **Open issues to confirm:** whether the 17 byte token fits the BLE advertisement on real Android and iOS phones, and whether an iPhone can act as the teacher device; the signal threshold that works in a real room; whether to move the sign in token from a shared secret to public key signing; the Android application id, which still carries the old proof of concept name; and the consent wording for pilot students.
 
 **Risks and mitigations.**
 
 | Risk | What we do |
 |---|---|
-| Some phones cannot advertise BLE | Test on real phones early and list supported models |
+| Some phones cannot advertise BLE, and iOS limits what an advert can hold | Test on real Android and iOS phones early, list supported models, and fall back to an Android teacher phone if needed |
 | Signal strength varies by room and phone | Median of several samples, a per session threshold, and a manual correction path |
 | A friend relays a live token | Short token life, one time code, the signal rule, and the audit log |
 | Server or database downtime | Health endpoints, a single container image, and managed Postgres |

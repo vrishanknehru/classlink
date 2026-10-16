@@ -72,7 +72,7 @@ The API returns HTTP 409 with `{"status": "rejected", "reason": "<code>"}`.
 | run_id | Identifier for one scenario run |
 | timestamp_utc | ISO 8601 time of the attempt |
 | teacher_phone, student_phone | Device models |
-| android_version | Version on the student phone |
+| os_version | Android or iOS version on the student phone |
 | room_label | Room name |
 | position_label | front, middle, back, door, corridor, adjacent_room |
 | expected | accept or reject |
