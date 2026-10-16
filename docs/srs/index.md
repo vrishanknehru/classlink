@@ -4,7 +4,7 @@
 
 Version 1.0, October 2026. UCS503P Software Engineering Project, Thapar Institute of Engineering and Technology.
 
-Prepared by Vemula Manvi Smaran (1024160111), Vrishank Nehru (1024160109), Mahi Singh (1024160102), and Khagendra Saini (1024160123). Submitted to Anshuka.
+Prepared by Vemula Manvi Smaran (1024160111), Vrishank Nehru (1024160109), Mahi Singh (1024160102), and Khagendra Saini (1024160123). Submitted to Ms. Anshuka.
 
 The glossary, API summary, rejection codes, evaluation plan, test traceability, and two more diagrams live in the [supplement](supplement.md).
 
