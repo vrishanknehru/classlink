@@ -139,7 +139,7 @@ Students and teachers use an Android phone (8.0 or later) or an iPhone, both wit
 - Stack: Flutter (Android and iOS), FastAPI on Python 3.11 or later, psycopg 3, Supabase Postgres and Auth.
 - A phone never creates an attendance record on its own. Only the server decides.
 - Secrets stay on the server. Only `.env.example` files enter the repository.
-- The BLE token is 17 bytes and travels in the manufacturer data field of the BLE advertisement, because a service identifier plus the token does not fit in a basic one. We have not yet confirmed this layout on phones. iOS only lets an app advertise a local name and service identifiers, so an iPhone may not be able to broadcast the token this way. We test this first, and the token layout or the teacher device may need to change.
+- The BLE token is 17 bytes and travels in the manufacturer data field of the BLE advertisement, because a service identifier plus the token does not fit in a basic one. We have not yet confirmed this layout on phones. iOS does not allow manufacturer data in an advertisement. The proof of concept handles this by sending its 6 digit session code in the advertised device name on iPhones (CL plus the digits) and in manufacturer data on Android, and the student scanner reads both. Version 1.0 must fit its 17 byte token into the same two routes, and we have not yet confirmed that it fits.
 - Apps write only through the API. The database gives apps read only access to their own rows.
 - Four person team, one semester, with the work split across backend, app, documentation, and testing.
 
@@ -231,7 +231,7 @@ The server is a FastAPI service built and tested against a real Postgres. The ap
 | FR-SES-03 | The server shall issue a 17 byte rotating token that changes every 15 seconds and carries no student or teacher identity. | Must | Done |
 | FR-SES-04 | Only the classroom's teacher shall see or change its sessions. Other teachers shall get HTTP 404. | Must | Done |
 | FR-SES-05 | The teacher app shall fetch a fresh token each period and broadcast it. | Must | Planned |
-| FR-SES-06 | On iOS the teacher app shall broadcast the token in a layout iOS allows. If that is not possible, the document shall say that an Android phone must act as the teacher device. | Should | Planned |
+| FR-SES-06 | On iOS the teacher app shall broadcast the token through a route iOS allows, such as the advertised device name used in the proof of concept. If the 17 byte token cannot fit, the document shall say that an Android phone must act as the teacher device. | Should | Planned |
 
 **Attendance claims**
 
@@ -318,13 +318,13 @@ ClassLink needs maintenance after the course, because phones, Android and iOS ve
 - **Deployment:** the server is packaged as a container that does not run as an admin user, and it refuses to start in production without its database address and secrets. The administrator runs the database setup file on Supabase before the first start. GitHub Actions runs the app and server checks and rejects committed secrets. The team publishes a signed Android APK and an iOS build for the pilot. How the iOS build reaches testers is still to be decided. See `docs/deployment.md`.
 - **Privacy:** pilot participants learn what the app stores before they join a classroom. Deleting a user deletes their profile, enrollments, devices, and attendance. English only in the first version.
 - **Phasing:** Phase 1 (done): server, database schema, tests, CI, and documents. Phase 2 (planned): Android and iOS apps with sign in, key storage, token broadcast, scan and claim, and roster screens. Phase 3 (planned): pilot on real phones in a real room, with measured results. Extensions follow only after the pilot.
-- **Open issues to confirm:** whether the 17 byte token fits the BLE advertisement on real Android and iOS phones, and whether an iPhone can act as the teacher device; the signal threshold that works in a real room; whether to move the sign in token from a shared secret to public key signing; the Android application id, which still carries the old proof of concept name; and the consent wording for pilot students.
+- **Open issues to confirm:** whether the 17 byte token fits the BLE advertisement on real Android and iOS phones, and whether the token fits the route iOS allows for an iPhone teacher (the advertised device name); the signal threshold that works in a real room; whether to move the sign in token from a shared secret to public key signing; the Android application id, which still carries the old proof of concept name; and the consent wording for pilot students.
 
 **Risks and mitigations.**
 
 | Risk | What we do |
 |---|---|
-| Some phones cannot advertise BLE, and iOS limits what an advert can hold | Test on real Android and iOS phones early, list supported models, and fall back to an Android teacher phone if needed |
+| Some phones cannot advertise BLE, and iOS limits what an advert can hold | Reuse the proof of concept's two routes (device name on iOS, manufacturer data on Android), test the 17 byte token on real phones early, and fall back to an Android teacher phone if it does not fit |
 | Signal strength varies by room and phone | Median of several samples, a per session threshold, and a manual correction path |
 | A friend relays a live token | Short token life, one time code, the signal rule, and the audit log |
 | Server or database downtime | Health endpoints, a single container image, and managed Postgres |
