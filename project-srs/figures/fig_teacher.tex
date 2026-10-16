@@ -1,19 +1,13 @@
 \documentclass[tikz,border=5pt]{standalone}
 \input{figstyle}
 \begin{document}
-\begin{tikzpicture}[node distance=7mm]
-  \node[start] (s0) {};
-  \node[act, text width=4.6cm, below=of s0] (a1) {Sign in, create a classroom,\\share the join code};
-  \node[act, below=of a1] (a2) {Start a session};
-  \node[act, text width=4.6cm, below=of a2] (a3) {Phone broadcasts a changing\\token over Bluetooth};
-  \node[act, below=of a3] (a4) {Watch the live roster};
-  \node[dec, below=9mm of a4, text width=2.4cm] (d) {Anyone wrong?};
-  \node[act, right=1.8cm of d, text width=3.4cm] (c) {Fix by hand\\(reason required)};
-  \node[act, below=9mm of d] (a5) {End session,\\export CSV};
-  \node[stop, below=of a5] (s1) {};
-  \foreach \a/\b in {s0/a1,a1/a2,a2/a3,a3/a4,a4/d,a5/s1}{\draw[flow] (\a) -- (\b);}
-  \draw[flow] (d) -- (a5) node[lbl, pos=.4] {no};
-  \draw[flow] (d) -- (c) node[lbl, pos=.4] {yes};
-  \draw[flow] (c.north) -- ++(0,1.55) -| ([xshift=3.2cm]a4.east) -- (a4.east);
+\begin{tikzpicture}
+  \draw[grp] (0,0) rectangle (15.4,-6.7);
+  \tbl{Cls}{2.4,-0.5}{Classroom}{Create classroom, Share join code, View students}
+  \tbl{Ses}{7.7,-1.7}{Session}{Start session, Broadcast token, Watch live roster, End session}
+  \tbl{Rec}{13.0,-0.5}{Records}{Correct with reason, Export CSV}
+  \draw[curve] (Cls-2.east) to[out=0,in=180] (Ses-1.west);
+  \draw[curve] (Ses-3.east) to[out=0,in=180] (Rec-1.west);
+  \node[grplabel] at (7.7,-6.1) {Teacher};
 \end{tikzpicture}
 \end{document}

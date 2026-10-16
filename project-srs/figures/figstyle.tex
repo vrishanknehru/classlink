@@ -27,3 +27,27 @@
   lbl/.style={font=\scriptsize, fill=white, inner sep=1.2pt},
   laneh/.style={font=\small\bfseries},
 }
+% Template style: black header tables with grey rows, boxed groups, block arrows.
+\newlength{\tblw}\setlength{\tblw}{3.2cm}
+\tikzset{
+  thead/.style={fill=black, text=white, font=\small\bfseries, minimum width=\tblw,
+    minimum height=6.4mm, inner sep=2pt, align=center, text width=\tblw-4pt},
+  trow/.style={text=ink, font=\small, minimum width=\tblw, minimum height=6.4mm,
+    inner sep=2pt, align=center, text width=\tblw-4pt},
+  curve/.style={-{Stealth[length=2.6mm]}, thick, draw=black},
+  stp/.style={draw=black, rounded corners=5pt, fill=white, align=center, font=\small,
+    minimum width=2.5cm, minimum height=1.25cm, inner sep=3pt, text width=2.2cm},
+  grp/.style={draw=black, thick},
+  grplabel/.style={font=\large\bfseries, text=black},
+}
+% \tbl{name}{position}{header}{row, row, ...}
+\newcommand{\tbl}[4]{%
+  \node[thead] (#1) at (#2) {#3};
+  \xdef\prevnode{#1}%
+  \foreach \r [count=\i] in {#4}{%
+    \ifodd\i\def\rowcolor{gray!32}\else\def\rowcolor{gray!12}\fi
+    \node[trow, fill=\rowcolor, anchor=north] (#1-\i) at (\prevnode.south) {\r};%
+    \xdef\prevnode{#1-\i}}}
+% \blockarrow{x}{y}{length}{shaft}{head}  grey arrow pointing right, centred on y
+\newcommand{\blockarrow}[5]{\fill[gray!30] (#1,{#2-#4/2}) -- ++(#3-1.1,0) -- ++(0,{-(#5-#4)/2})
+  -- ++(1.1,{#5/2}) -- ++(-1.1,{#5/2}) -- ++(0,{-(#5-#4)/2}) -- ++(-#3+1.1,0) -- cycle;}

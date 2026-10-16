@@ -2,23 +2,19 @@
 \input{figstyle}
 \begin{document}
 \begin{tikzpicture}
-  \node[ent] (tea) at (0,2.2) {Teacher};
-  \node[ent] (stu) at (12,2.2) {Student};
-  \node[proc] (p1) at (6,4.4) {\textbf{1.0}\\Manage\\classrooms};
-  \node[proc] (p2) at (3.4,0) {\textbf{2.0}\\Run session,\\issue tokens};
-  \node[proc] (p3) at (8.6,0) {\textbf{3.0}\\Check\\attendance};
-  \node[store] (d1) at (6,6.9) {Classrooms,\\students};
-  \node[store] (d2) at (3.4,-2.3) {Sessions};
-  \node[store] (d3) at (8.6,-2.3) {Attendance};
-  \foreach \n/\t in {d1/D1,d2/D2,d3/D3}{\node[font=\footnotesize\bfseries, anchor=east] at (\n.west) {\t};}
-  \draw[flow] (tea) -- (p1) node[lbl, pos=.55] {create classroom};
-  \draw[flow] (stu) -- (p1) node[lbl, pos=.55] {join, bind phone};
-  \draw[df] (tea) -- (p2) node[lbl, pos=.5] {start, end / token};
-  \draw[flow] (stu) -- (p3) node[lbl, pos=.5] {signed claim};
-  \draw[flow] (p3) -- (tea) node[lbl, pos=.3] {roster, CSV};
-  \draw[df] (p1) -- (d1);
-  \draw[df] (p2) -- (d2);
-  \draw[df] (p3) -- (d3);
-  \draw[ble] (tea.south) -- (0,-4.5) -- (12,-4.5) -- (stu.south) node[lbl, pos=.5, at={(6,-4.5)}] {BLE token, no identifier};
+  \tbl{Profiles}{0,0}{profiles}{id, role, full\_name, roll\_number, email}
+  \tbl{Classrooms}{4.5,0}{classrooms}{id, teacher\_id, name, join\_code}
+  \tbl{Sessions}{9,0}{sessions}{id, classroom\_id, alias, rssi\_threshold, min\_samples, started\_at, ended\_at}
+  \tbl{Attendance}{13.5,0}{attendance}{id, session\_id, student\_id, challenge\_id, status, source, median\_rssi}
+  \tbl{Devices}{0,-6.2}{devices}{id, student\_id, public\_key, revoked\_at}
+  \tbl{Enrollments}{4.5,-6.2}{enrollments}{classroom\_id, student\_id, joined\_at}
+  \tbl{Challenges}{9,-6.2}{challenges}{id, session\_id, student\_id, token\_hex, expires\_at, used\_at}
+  \draw[curve] (Profiles-1.east) -- (Classrooms-2.west);
+  \draw[curve] (Classrooms-1.east) -- (Sessions-2.west);
+  \draw[curve] (Sessions-1.east) -- (Attendance-2.west);
+  \draw[curve] (Profiles-5.south) -- (Devices.north);
+  \draw[curve] (Classrooms-4.south) -- (Enrollments.north);
+  \draw[curve] (Sessions-7.south) -- (Challenges.north);
+  \draw[curve] (Challenges-1.east) -- ++(0.65,0) |- (Attendance-4.west);
 \end{tikzpicture}
 \end{document}

@@ -58,7 +58,9 @@ One check in works like this. The teacher app fetches a fresh token from the ser
 5. **Roster, corrections, export.** Watch check ins, fix mistakes with a reason, download a CSV.
 6. **Audit.** Record every security relevant action.
 
-![Data flow diagram of ClassLink.](figures/fig_dfd.png){width=100%}
+The diagram below shows how ClassLink's data flows from record to record. Each arrow means one table points at another.
+
+![Data flow diagram: the tables that hold ClassLink's data and how they link.](figures/fig_dfd.png){width=100%}
 
 ## 2.4 Operating Environment
 
@@ -79,13 +81,17 @@ These rules shape the design.
 - **Apps write only through the API.** The database gives apps read only access to their own rows.
 - **Real data only.** Evaluation figures come only from recorded real runs.
 
-The student signs in, joins a classroom, registers the phone once, and then checks in each session.
+A student has three activities: join a classroom, register the phone once, and check in. Everything ends in the student's profile.
 
-![Student activities.](figures/fig_student.png){height=14cm}
+![Student activities.](figures/fig_student.png){width=100%}
 
-The teacher creates a classroom, starts a session, watches the roster, and corrects mistakes with a reason.
+A teacher sets up a classroom, runs a session, and keeps the records straight.
 
-![Teacher activities.](figures/fig_teacher.png){height=13cm}
+![Teacher activities.](figures/fig_teacher.png){width=100%}
+
+The administrator has one small job. They keep the server running and decide who is a teacher.
+
+![Administrator activities.](figures/fig_admin.png){width=45%}
 
 The server checks each claim in order. The first failed check ends the flow with a reason, and every outcome is audited.
 

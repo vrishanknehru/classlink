@@ -94,8 +94,6 @@ Backend tests live in `backend/tests/` and run against a real Postgres.
 
 Requirements marked Planned have no automated test yet. The Flutter unit tests live in `code/test/`.
 
-## F. More Diagrams
+## F. Sequence Diagram
 
 ![Sequence of one session, from start to roster.](figures/fig_sequence.png)
-
-![Entity relationship diagram of the Postgres schema.](figures/fig_er.png)
