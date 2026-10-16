@@ -1,21 +1,19 @@
 \documentclass[tikz,border=5pt]{standalone}
 \input{figstyle}
 \begin{document}
-\begin{tikzpicture}[node distance=6.5mm]
+\begin{tikzpicture}[node distance=7mm]
   \node[start] (s0) {};
-  \node[act, below=of s0] (a1) {Sign in\\(allowlisted email)};
-  \node[act, below=of a1] (a2) {Create classroom,\\share join code};
-  \node[act, text width=4.6cm, below=of a2] (a3) {Start session\\(RSSI threshold, window)};
-  \node[act, text width=4.6cm, below=of a3] (a4) {Fetch token every epoch,\\advertise over BLE};
-  \node[act, below=of a4] (a5) {Watch live roster};
-  \node[dec, below=9mm of a5, text width=2.4cm] (d1) {Student missing\\or wrong?};
-  \node[act, right=2.2cm of d1] (a6) {Manual correction\\(reason required)};
-  \node[act, below=9mm of d1] (a7) {End session};
-  \node[act, below=of a7] (a8) {Export CSV};
-  \node[stop, below=of a8] (s1) {};
-  \foreach \a/\b in {s0/a1,a1/a2,a2/a3,a3/a4,a4/a5,a5/d1,a7/a8,a8/s1}{\draw[flow] (\a) -- (\b);}
-  \draw[flow] (d1) -- (a7) node[lbl, pos=.4] {no};
-  \draw[flow] (d1) -- (a6) node[lbl, pos=.4] {yes};
-  \draw[flow] (a6.north) -- ++(0,1.55) -| ([xshift=3.4cm]a5.east) -- (a5.east);
+  \node[act, text width=4.6cm, below=of s0] (a1) {Sign in, create a classroom,\\share the join code};
+  \node[act, below=of a1] (a2) {Start a session};
+  \node[act, text width=4.6cm, below=of a2] (a3) {Phone broadcasts a changing\\token over Bluetooth};
+  \node[act, below=of a3] (a4) {Watch the live roster};
+  \node[dec, below=9mm of a4, text width=2.4cm] (d) {Anyone wrong?};
+  \node[act, right=1.8cm of d, text width=3.4cm] (c) {Fix by hand\\(reason required)};
+  \node[act, below=9mm of d] (a5) {End session,\\export CSV};
+  \node[stop, below=of a5] (s1) {};
+  \foreach \a/\b in {s0/a1,a1/a2,a2/a3,a3/a4,a4/d,a5/s1}{\draw[flow] (\a) -- (\b);}
+  \draw[flow] (d) -- (a5) node[lbl, pos=.4] {no};
+  \draw[flow] (d) -- (c) node[lbl, pos=.4] {yes};
+  \draw[flow] (c.north) -- ++(0,1.55) -| ([xshift=3.2cm]a4.east) -- (a4.east);
 \end{tikzpicture}
 \end{document}

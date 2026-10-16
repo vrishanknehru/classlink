@@ -82,20 +82,20 @@ The API returns HTTP 409 with `{"status": "rejected", "reason": "<code>"}`.
 
 ## E. Test Traceability
 
-Backend tests live in `backend/tests/`. The suite runs against a real Postgres.
+Backend tests live in `backend/tests/` and run against a real Postgres.
 
 | Requirements | Tests |
 |---|---|
-| FR-ACC-01 to FR-ACC-05 | `test_teacher_and_accounts.py` (allowlist, roll number, idempotent profile, bad credentials, role separation) |
-| FR-CLS-01 to FR-CLS-03, FR-DEV-01, FR-DEV-02 | `test_teacher_and_accounts.py` (join code format, listing, unknown code, invalid key), `test_attendance_flow.py` (rebinding revokes the old key) |
-| FR-SES-01 to FR-SES-05, FR-SES-07 | `test_tokens.py`, `test_teacher_and_accounts.py` (one active session, ownership, rotation) |
-| FR-ATT-02 to FR-ATT-08 | `test_attendance_flow.py`, `test_claims.py`, `test_crypto.py` |
-| FR-ROS-01, FR-COR-01, FR-COR-02 | `test_teacher_and_accounts.py` (corrections, roster) |
-| FR-EXP-01 to FR-EXP-03 | `test_teacher_and_accounts.py` (CSV contents, formula injection) |
-| FR-AUD-01, FR-AUD-02 | `test_attendance_flow.py` (rejections and acceptances audited), `test_teacher_and_accounts.py` (export audited), `test_rls.py` |
-| OTHER-DEP-04 | `test_config.py` |
-| NFR-SEC-03 | `test_rls.py` |
-| NFR-SEC-05 | `test_attendance_flow.py` (tampered RSSI breaks the signature) |
-| Reliability (4.3) | `test_attendance_flow.py` (concurrent claims never double count) |
+| FR-ACC-01 to FR-ACC-03, FR-CLS-01, FR-CLS-02, FR-DEV-01, FR-DEV-02 | `test_teacher_and_accounts.py`, `test_attendance_flow.py` |
+| FR-SES-01 to FR-SES-04 | `test_tokens.py`, `test_teacher_and_accounts.py` |
+| FR-ATT-02 to FR-ATT-07 | `test_attendance_flow.py`, `test_claims.py`, `test_crypto.py` |
+| FR-ROS-01, FR-COR-01, FR-EXP-01, FR-AUD-01 | `test_teacher_and_accounts.py`, `test_attendance_flow.py`, `test_rls.py` |
+| Row level security, signed claim coverage, atomic writes (Section 4) | `test_rls.py`, `test_attendance_flow.py` |
 
 Requirements marked Planned have no automated test yet. The Flutter unit tests live in `code/test/`.
+
+## F. More Diagrams
+
+![Sequence of one session, from start to roster.](figures/fig_sequence.png)
+
+![Entity relationship diagram of the Postgres schema.](figures/fig_er.png)
