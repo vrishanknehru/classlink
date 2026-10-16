@@ -97,10 +97,6 @@ The administrator has one small job. They keep the server running and decide who
 
 ![Administrator activities.](figures/fig_admin.png){width=45%}
 
-The server checks each claim in order. The first failed check ends the flow with a reason, and every outcome is audited.
-
-![How the server checks a claim.](figures/fig_server.png){height=16cm}
-
 # 3. System Features
 
 ## 3.1 Description and Priority

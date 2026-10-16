@@ -102,3 +102,9 @@ The tables behind the data stores in the level 1 diagram, and how they link.
 
 
 ![Sequence of one session, from start to roster.](figures/fig_sequence.png)
+
+## G. How the Server Checks a Claim
+
+The server runs these checks in order. The first failed check ends the flow with a reason code, and every outcome is audited.
+
+![How the server checks a claim.](figures/fig_server.png)
