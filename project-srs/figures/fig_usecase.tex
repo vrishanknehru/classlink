@@ -1,0 +1,81 @@
+\documentclass[tikz,border=6pt]{standalone}
+\input{figstyle}
+\definecolor{stucol}{HTML}{E3EEF9}
+\definecolor{teacol}{HTML}{E6F2E4}
+\definecolor{admcol}{HTML}{FBEFD9}
+\definecolor{acccol}{HTML}{EDE6F5}
+\begin{document}
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \tikzset{
+    uc/.style={draw=ink, thick, ellipse, minimum width=4.3cm, minimum height=1cm, font=\small, inner sep=1pt, align=center},
+    inc/.style={uc, dashed, minimum width=3.9cm, minimum height=0.9cm, font=\footnotesize},
+    actor/.pic={
+      \draw[thick, fill=white] (0,0.95) circle (0.22);
+      \draw[thick] (0,0.73) -- (0,0.05) (-0.4,0.55) -- (0.4,0.55) (0,0.05) -- (-0.32,-0.55) (0,0.05) -- (0.32,-0.55);},
+    rel/.style={-{Stealth[length=2.4mm]}, thick, dashed, draw=ink},
+    assoc/.style={thick, draw=ink},
+    grpbox/.style={draw=ink!55, thick, rounded corners=6pt},
+    grplbl/.style={font=\footnotesize\bfseries, text=ink!80, anchor=north}}
+
+  % system boundary
+  \draw[thick, rounded corners=3pt, fill=gray!5] (0,0.9) rectangle (12,-13.7);
+  \node[font=\large\bfseries] at (6,0.35) {ClassLink system};
+
+  % groups
+  \draw[grpbox, fill=stucol] (0.3,-2.3) rectangle (5.8,-11.5);
+  \node[grplbl] at (3.05,-2.4) {Student functions};
+  \draw[grpbox, fill=teacol] (6.2,-2.3) rectangle (11.7,-10.4);
+  \node[grplbl] at (8.95,-2.4) {Teacher functions};
+  \draw[grpbox, fill=acccol] (3.2,-0.55) rectangle (8.8,-1.95);
+  \draw[grpbox, fill=admcol] (3.2,-12.0) rectangle (8.8,-13.45);
+
+  % account and admin use cases
+  \node[uc, fill=white] (signin) at (6,-1.25) {Sign in};
+  \node[uc, fill=white] (allow) at (6,-12.75) {Edit approved teachers};
+
+  % student use cases
+  \node[uc, fill=white] (join) at (3.05,-3.5) {Join a classroom};
+  \node[uc, fill=white] (reg) at (3.05,-5.0) {Register the phone};
+  \node[uc, fill=white] (chk) at (3.05,-6.5) {Check in};
+  \node[inc, fill=white] (scan) at (3.05,-8.2) {Scan the BLE token};
+  \node[inc, fill=white] (sign) at (3.05,-9.4) {Sign the claim with\\device key};
+  \node[inc, fill=white] (ver) at (3.05,-10.6) {Server verifies the claim};
+
+  % teacher use cases
+  \node[uc, fill=white] (cls) at (8.95,-3.5) {Create a classroom};
+  \node[uc, fill=white] (ses) at (8.95,-5.0) {Start and end a session};
+  \node[uc, fill=white] (ros) at (8.95,-6.5) {View the live roster};
+  \node[inc, fill=white] (cor) at (8.95,-8.2) {Correct attendance};
+  \node[inc, fill=white] (exp) at (8.95,-9.4) {Export CSV};
+
+  % include and extend arrows
+  \draw[rel] (chk) -- (scan) node[lbl, midway] {\scriptsize$\langle\langle$include$\rangle\rangle$};
+  \draw[rel] (scan) -- (sign);
+  \draw[rel] (sign) -- (ver);
+  \draw[rel] (cor) -- (ros) ;
+  \draw[rel] (exp.east) to[out=0,in=0,looseness=1.6] (ros.south east);
+
+  \node[lbl] at (8.95,-7.35) {\scriptsize$\langle\langle$extend$\rangle\rangle$};
+
+  % actors
+  \pic at (-2.4,-6.5) {actor};
+  \node[font=\small\bfseries] at (-2.4,-7.5) {Student};
+  \pic at (14.6,-6.5) {actor};
+  \node[font=\small\bfseries] at (14.6,-7.5) {Teacher};
+  \pic at (14.6,-12.2) {actor};
+  \node[font=\small\bfseries] at (14.6,-13.2) {Administrator};
+  \node[draw=ink, thick, fill=acccol, minimum width=2.3cm, minimum height=1.1cm, font=\small\bfseries, align=center] (auth) at (14.6,-1.25) {Supabase\\Auth};
+
+  % associations
+  \draw[assoc] (-2.0,-6.4) -- (join.west);
+  \draw[assoc] (-2.0,-6.4) -- (reg.west);
+  \draw[assoc] (-2.0,-6.4) -- (chk.west);
+  \draw[assoc] (-2.0,-6.4) to[out=80,in=180] (signin.west);
+  \draw[assoc] (14.2,-6.4) -- (cls.east);
+  \draw[assoc] (14.2,-6.4) -- (ses.east);
+  \draw[assoc] (14.2,-6.4) -- (ros.east);
+  \draw[assoc] (14.2,-6.4) to[out=100,in=0] (signin.east);
+  \draw[assoc] (14.2,-12.2) -- (allow.east);
+  \draw[assoc] (signin.east |- auth.west) -- (auth.west);
+\end{tikzpicture}
+\end{document}

@@ -1,4 +1,8 @@
 - [Home](index.md)
+- [Software Requirements Specification](srs/index.md)
+- [SRS Supplement](srs/supplement.md)
+- [Deployment and Pilot Runbook](deployment.md)
+- [Evaluation Data](evaluation/README.md)
 - [UML Diagrams](uml/README.md)
 - [Criteria for Project Selection](criteria-for-project-selection.md)
 - Journals

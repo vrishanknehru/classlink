@@ -1,0 +1,13 @@
+\documentclass[tikz,border=5pt]{standalone}
+\input{figstyle}
+\begin{document}
+\begin{tikzpicture}
+  \draw[grp] (0,0) rectangle (15.4,-6.7);
+  \tbl{Cls}{2.4,-0.5}{Classroom}{Create classroom, Share join code, View students}
+  \tbl{Ses}{7.7,-1.7}{Session}{Start session, Broadcast token, Watch live roster, End session}
+  \tbl{Rec}{13.0,-0.5}{Records}{Correct with reason, Export CSV}
+  \draw[curve] (Cls-2.east) to[out=0,in=180] (Ses-1.west);
+  \draw[curve] (Ses-3.east) to[out=0,in=180] (Rec-1.west);
+  \node[grplabel] at (7.7,-6.1) {Teacher};
+\end{tikzpicture}
+\end{document}

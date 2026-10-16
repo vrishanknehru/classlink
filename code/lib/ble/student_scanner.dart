@@ -12,14 +12,18 @@ enum ScanState { idle, scanning, tooFar, connecting, checkedIn, failure }
 /// Wraps [CentralManager] to scan for a classroom's advertisement, sample
 /// RSSI over a short window, and — once within range — connect once to
 /// write a check-in. Student-only central/scanner role — never relays to
-/// other students (see `CLAUDE.md` rule #6, no mesh).
+/// other students (no mesh; see SRS constraint CON-03).
 class StudentScanner extends ChangeNotifier {
   final CentralManager _manager = CentralManager();
   final int thresholdDbm;
+  final Duration maxScanDuration;
 
   static const _sampleWindow = Duration(seconds: 4);
 
-  StudentScanner({this.thresholdDbm = -75});
+  StudentScanner({
+    this.thresholdDbm = -75,
+    this.maxScanDuration = const Duration(seconds: 90),
+  });
 
   ScanState _state = ScanState.idle;
   ScanState get state => _state;
@@ -38,6 +42,7 @@ class StudentScanner extends ChangeNotifier {
   Timer? _windowTimer;
   final List<int> _samples = [];
   Peripheral? _peripheral;
+  DateTime? _scanStartedAt;
 
   Future<void> startScanning({
     required String name,
@@ -46,6 +51,9 @@ class StudentScanner extends ChangeNotifier {
     if (_state == ScanState.scanning || _state == ScanState.connecting) {
       return;
     }
+    await _discoveredSub?.cancel();
+    await _stateSub?.cancel();
+    _scanStartedAt = DateTime.now();
     _errorMessage = null;
     _lastMedianRssi = null;
     _samples.clear();
@@ -106,6 +114,12 @@ class StudentScanner extends ChangeNotifier {
   Future<void> _evaluateWindow(String name, String rollNumber) async {
     if (_state != ScanState.scanning && _state != ScanState.tooFar) {
       return; // Already moved on (connecting/checkedIn/failure/stopped).
+    }
+    final startedAt = _scanStartedAt;
+    if (startedAt != null &&
+        DateTime.now().difference(startedAt) > maxScanDuration) {
+      await _timeOut();
+      return;
     }
     if (_samples.isEmpty) {
       // No advertisement observed in this window yet; keep waiting.
@@ -178,6 +192,14 @@ class StudentScanner extends ChangeNotifier {
         // Already disconnected or never connected.
       }
     }
+    notifyListeners();
+  }
+
+  Future<void> _timeOut() async {
+    await stopScanning();
+    _errorMessage =
+        'No classroom session found. Move closer to the teacher and try again.';
+    _state = ScanState.failure;
     notifyListeners();
   }
 

@@ -1,0 +1,13 @@
+.env
+.env.*
+!.env.example
+tests
+dev
+scripts
+migrations
+*.egg-info
+__pycache__
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.venv

@@ -1,0 +1,71 @@
+\usepackage[T1]{fontenc}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,shapes.geometric,shapes.multipart,fit,calc,backgrounds}
+\definecolor{ink}{HTML}{222222}
+\definecolor{accent}{HTML}{DCE8F5}
+\definecolor{lane}{HTML}{F4F4F4}
+\definecolor{warn}{HTML}{FBE9D0}
+\tikzset{
+  every node/.style={font=\small, text=ink},
+  box/.style={draw=ink, thick, rounded corners=2pt, fill=white, align=center,
+    minimum height=8mm, inner sep=4pt},
+  ent/.style={box, fill=accent, rounded corners=0pt},
+  act/.style={box, rounded corners=7pt, text width=3.6cm},
+  proc/.style={box, rounded corners=8pt, fill=white, text width=2.7cm, minimum height=1.5cm},
+  dec/.style={diamond, draw=ink, thick, fill=warn, aspect=3, inner sep=1pt,
+    align=center, font=\footnotesize},
+  rej/.style={box, fill=warn, font=\footnotesize, minimum height=6mm, inner sep=3pt},
+  store/.style={draw=none, align=center, minimum height=8mm, inner sep=5pt,
+    path picture={
+      \draw[ink,thick] (path picture bounding box.north east)--(path picture bounding box.north west)--(path picture bounding box.south west)--(path picture bounding box.south east);}},
+  df/.style={{Stealth[length=2.2mm]}-{Stealth[length=2.2mm]}, thick, draw=ink},
+  start/.style={circle, fill=ink, minimum size=4mm, inner sep=0pt},
+  stop/.style={circle, draw=ink, thick, fill=ink, double=white, double distance=0.9pt,
+    minimum size=4.6mm, inner sep=0pt},
+  flow/.style={-{Stealth[length=2.4mm]}, thick, draw=ink},
+  ble/.style={-{Stealth[length=2.4mm]}, thick, dashed, draw=ink},
+  lbl/.style={font=\scriptsize, fill=white, inner sep=1.2pt},
+  laneh/.style={font=\small\bfseries},
+}
+% Template style: black header tables with grey rows, boxed groups, block arrows.
+\newlength{\tblw}\setlength{\tblw}{3.2cm}
+\tikzset{
+  thead/.style={fill=black, text=white, font=\small\bfseries, minimum width=\tblw,
+    minimum height=6.4mm, inner sep=2pt, align=center, text width=\tblw-4pt},
+  trow/.style={text=ink, font=\small, minimum width=\tblw, minimum height=6.4mm,
+    inner sep=2pt, align=center, text width=\tblw-4pt},
+  curve/.style={-{Stealth[length=2.6mm]}, thick, draw=black},
+  stp/.style={draw=black, rounded corners=5pt, fill=white, align=center, font=\small,
+    minimum width=2.5cm, minimum height=1.25cm, inner sep=3pt, text width=2.2cm},
+  grp/.style={draw=black, thick},
+  grplabel/.style={font=\large\bfseries, text=black},
+}
+% \tbl{name}{position}{header}{row, row, ...}
+\newcommand{\tbl}[4]{%
+  \node[thead] (#1) at (#2) {#3};
+  \xdef\prevnode{#1}%
+  \foreach \r [count=\i] in {#4}{%
+    \ifodd\i\def\rowcolor{gray!32}\else\def\rowcolor{gray!12}\fi
+    \node[trow, fill=\rowcolor, anchor=north] (#1-\i) at (\prevnode.south) {\r};%
+    \xdef\prevnode{#1-\i}}}
+% \blockarrow{x}{y}{length}{shaft}{head}  grey arrow pointing right, centred on y
+\newcommand{\blockarrow}[5]{\fill[gray!30] (#1,{#2-#4/2}) -- ++(#3-1.1,0) -- ++(0,{-(#5-#4)/2})
+  -- ++(1.1,{#5/2}) -- ++(-1.1,{#5/2}) -- ++(0,{-(#5-#4)/2}) -- ++(-#3+1.1,0) -- cycle;}
+% Data flow diagram helpers (template style: boxed entities, labelled two way flows).
+\tikzset{
+  dent/.style={draw=black, thick, fill=white, align=center, font=\small\bfseries,
+    minimum height=9mm, minimum width=2.9cm, inner sep=3pt, text width=2.7cm},
+  dproc/.style={draw=black, thick, rounded corners=6pt, fill=gray!8, align=center,
+    font=\small\bfseries, minimum width=4.2cm, minimum height=1.9cm, text width=3.9cm},
+  dstore/.style={draw=none, align=center, font=\small, minimum height=7mm, minimum width=4cm,
+    path picture={\draw[black,thick] (path picture bounding box.north west)--(path picture bounding box.north east);
+                  \draw[black,thick] (path picture bounding box.south west)--(path picture bounding box.south east);}},
+}
+\newcommand{\dflow}[4]{\draw[{Stealth[length=2mm]}-{Stealth[length=2mm]}, thick]
+  (#1,#3) -- (#2,#3) node[midway, fill=white, align=center, font=\scriptsize,
+  inner sep=1.5pt, text width=3.3cm] {#4};}
+
+\newcommand{\dflowL}[4]{\draw[{Stealth[length=2.4mm]}-{Stealth[length=2.4mm]}, thick]
+  (#1,#3) -- (#2,#3) node[midway, fill=white, align=center, font=\footnotesize,
+  inner sep=2pt, text width=5.2cm] {#4};}
+\hyphenpenalty=10000 \exhyphenpenalty=10000

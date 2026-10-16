@@ -11,7 +11,7 @@ enum BroadcastState { idle, starting, advertising, stopping, failure }
 
 /// Wraps [PeripheralManager] to advertise a classroom session and collect
 /// check-ins written by student devices. Teacher-only advertiser role —
-/// see `CLAUDE.md` rule #6: no mesh, no student-to-student relaying.
+/// no mesh and no student to student relaying (SRS constraint CON-03).
 class TeacherBroadcaster extends ChangeNotifier {
   final PeripheralManager _manager = PeripheralManager();
 

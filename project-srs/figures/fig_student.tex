@@ -1,0 +1,32 @@
+\documentclass[tikz,border=5pt]{standalone}
+\input{figstyle}
+\begin{document}
+\begin{tikzpicture}
+  % Group A: join a classroom
+  \draw[grp] (0,0) rectangle (9.6,-3.4);
+  \blockarrow{1.9}{-1.45}{7.5}{1.7}{2.5}
+  \node[stp] (a1) at (2.0,-1.45) {Sign in};
+  \node[stp] (a2) at (4.7,-1.45) {Create profile};
+  \node[stp] (a3) at (7.4,-1.45) {Join with code};
+  \node[grplabel] at (4.8,-2.8) {Join a Classroom};
+  % Group B: register the phone
+  \draw[grp] (7.0,-5.0) rectangle (16.6,-8.4);
+  \blockarrow{8.9}{-6.45}{7.5}{1.7}{2.5}
+  \node[stp] (b1) at (9.0,-6.45) {Make key on phone};
+  \node[stp] (b2) at (11.7,-6.45) {Fingerprint or lock};
+  \node[stp] (b3) at (14.4,-6.45) {Server stores key};
+  \node[grplabel] at (11.8,-7.8) {Register the Phone};
+  % Group C: check in
+  \draw[grp] (0,-10.0) rectangle (9.6,-13.4);
+  \blockarrow{1.9}{-11.45}{7.5}{1.7}{2.5}
+  \node[stp] (c1) at (2.0,-11.45) {Scan for token};
+  \node[stp] (c2) at (4.7,-11.45) {Measure signal};
+  \node[stp] (c3) at (7.4,-11.45) {Send signed claim};
+  \node[grplabel] at (4.8,-12.8) {Check In};
+  % Student profile
+  \tbl{Prof}{13.4,-10.4}{Student Profile}{Personal details, Classrooms, Registered phone, Attendance result}
+  \draw[curve] (9.6,-1.7) to[out=0,in=90] (11.8,-5.0);
+  \draw[curve] (11.8,-8.4) to[out=-90,in=0] (9.6,-10.8);
+  \draw[curve] (9.6,-12.2) to[out=0,in=180] (Prof-3.west);
+\end{tikzpicture}
+\end{document}

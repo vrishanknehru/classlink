@@ -111,9 +111,10 @@ class _StudentCheckinScreenState extends State<StudentCheckinScreen> {
               onPressed: isBusy
                   ? null
                   : (_scanner.state == ScanState.checkedIn
-                        ? () => setState(() {
-                            _statusMessage = null;
-                          })
+                        ? () async {
+                            setState(() => _statusMessage = null);
+                            await _scanner.stopScanning();
+                          }
                         : _startScanning),
               child: Text(
                 _scanner.state == ScanState.checkedIn
