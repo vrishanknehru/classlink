@@ -1,0 +1,67 @@
+@startuml 03-sequence-student-checkin
+!include _style.puml
+
+title ClassLink Current POC — Student BLE Check-In Sequence
+caption Current POC — single classroom session, one-hop BLE, no backend
+
+actor Teacher
+participant "Teacher Flutter App" as TFA
+participant "Teacher BLE Peripheral" as TBP #C8E6C9
+participant "BLE Advertisement Channel" as CH #D5D8DC
+participant "Student BLE Central" as SBC #C8E6C9
+participant "Student Flutter App" as SFA
+actor Student
+
+Teacher -> TFA : Start session
+TFA -> TFA : Generate six-digit code
+TFA -> TBP : Wait for Bluetooth ready state
+TBP -> CH : Advertise ClassLink service UUID
+
+alt Android teacher
+  TBP -> CH : Advertise manufacturer data\n(session code)
+else iOS teacher
+  TBP -> CH : Advertise local name "CLXXXXXX"
+end
+
+Student -> SFA : Start scan
+SFA -> SBC : Start BLE scan
+SBC -> CH : Search for ClassLink service UUID
+CH --> SBC : Service UUID, RSSI,\nadvertisement fields
+SBC -> SBC : Try manufacturer data first
+
+alt manufacturer data present and valid
+  SBC -> SBC : Decode session code\nfrom manufacturer data
+else manufacturer data missing or invalid
+  SBC -> SBC : Fall back to local-name\nparsing (CLXXXXXX)
+end
+
+alt no valid session code found
+  SBC --> SFA : No valid session found
+  SFA -[#C0392B]-> Student : Show "No valid ClassLink\nsession found"
+else valid session code found
+  SBC -> SBC : Collect RSSI samples\nfor 4 seconds
+  SBC -> SBC : Calculate median RSSI
+
+  alt median RSSI below -75 dBm
+    SBC --> SFA : RSSI below threshold
+    SFA -[#C0392B]-> Student : Show "Move closer\nto the teacher"
+  else median RSSI passes threshold
+    SFA -> Student : Ask for name\nand roll number
+    Student -> SFA : Enter name and roll number
+    SFA -> SFA : Validate details and\ncreate check-in payload
+    SFA -> SBC : Connect to Teacher\nBLE Peripheral
+    SBC -> TBP : Connect (GATT)
+    SBC -> TBP : Write check-in payload
+    TBP -> TFA : Deliver received payload
+    TFA -> Teacher : Display received\nstudent check-in
+    SBC --> SFA : Write confirmed
+    SFA -[#1E8449]-> Student : Show successful check-in
+  end
+end
+
+note over TFA, TBP
+  Current POC flow: attendance is displayed locally on the
+  teacher device. It is not written to a backend database.
+end note
+
+@enduml

@@ -1,0 +1,104 @@
+@startuml 02-class-current-poc
+!include _style.puml
+
+title ClassLink Current POC — Class Diagram
+caption Current POC — client-side Flutter classes, simplified for clarity
+
+class Session #AED6F1 {
+  - sessionCode: String
+  - serviceUuid: String
+  - isActive: bool
+  - startedAt: DateTime
+  --
+  + generateCode()
+  + startSession()
+  + stopSession()
+}
+
+class BleAdvertiser #C8E6C9 {
+  - bluetoothState
+  - platform
+  - advertisingData
+  --
+  + waitUntilPoweredOn()
+  + startAdvertising()
+  + stopAdvertising()
+}
+
+class BleScanner #C8E6C9 {
+  - scanResults
+  - rssiSamples: List<int>
+  - scanWindowSeconds: int
+  --
+  + startScan()
+  + stopScan()
+  + collectRssiSamples()
+  + discoverClassLinkDevice()
+}
+
+class SessionCodeTransport #C8E6C9 {
+  - classLinkPrefix: String = "CL"
+  - manufacturerDataSize: int
+  --
+  + encodeAndroidManufacturerData()
+  + encodeIosLocalName()
+  + decodeManufacturerData()
+  + decodeLocalName()
+}
+
+class ProximityEvaluator #C8E6C9 {
+  - thresholdDbm: int = -75
+  --
+  + calculateMedian()
+  + isWithinRange()
+}
+
+class StudentProfile #AED6F1 {
+  - name: String
+  - rollNumber: String
+  --
+  + validate()
+}
+
+class CheckInPayload #AED6F1 {
+  - name: String
+  - rollNumber: String
+  - sessionCode: String
+  --
+  + encode()
+  + validate()
+}
+
+class GattCheckInService #C8E6C9 {
+  --
+  + connectToTeacher()
+  + writePayload()
+  + receivePayload()
+}
+
+class BluetoothPermissionService #D5D8DC {
+  --
+  + requestPermissions()
+  + checkBluetoothState()
+  + showPermissionError()
+}
+
+Session --> BleAdvertiser : uses
+BleAdvertiser --> SessionCodeTransport : uses
+BleScanner --> SessionCodeTransport : uses
+BleScanner --> ProximityEvaluator : sends RSSI samples
+ProximityEvaluator --> CheckInPayload : allows send
+StudentProfile --> CheckInPayload : creates
+BleScanner --> GattCheckInService : uses
+GattCheckInService --> CheckInPayload : transfers to teacher
+BleAdvertiser ..> BluetoothPermissionService : depends on
+BleScanner ..> BluetoothPermissionService : depends on
+
+note bottom
+  This class diagram describes the present client-side Flutter POC.
+  It is not a database ER diagram. Class names are grouped for
+  clarity; see docs/uml/README.md for the mapping to actual
+  source files (e.g. lib/ble/ble_constants.dart, student_scanner.dart).
+end note
+
+@enduml

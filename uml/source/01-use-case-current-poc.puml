@@ -1,0 +1,72 @@
+@startuml 01-use-case-current-poc
+!include _style.puml
+
+title ClassLink Current POC — Use Case Diagram
+caption Current POC — client-side BLE proof of concept only
+
+left to right direction
+
+actor Teacher
+actor Student
+
+rectangle "ClassLink BLE Attendance POC" {
+
+  rectangle "Teacher actions" {
+    usecase "Start Session" as UC_Start
+    usecase "Generate 6-Digit Code" as UC_GenCode #C8E6C9
+    usecase "Start BLE Advertising" as UC_Advertise #C8E6C9
+    usecase "Receive Student Check-In" as UC_Receive #C8E6C9
+    usecase "Stop Session" as UC_Stop
+    usecase "View Received Check-Ins" as UC_View
+  }
+
+  rectangle "Student actions" {
+    usecase "Grant Bluetooth Permission" as UC_Perm #D5D8DC
+    usecase "Start BLE Scan" as UC_Scan #C8E6C9
+    usecase "Discover ClassLink Service" as UC_Discover #C8E6C9
+    usecase "Read Session Code" as UC_ReadCode #C8E6C9
+    usecase "Collect RSSI Samples" as UC_Collect #C8E6C9
+    usecase "Calculate Median RSSI" as UC_Median #C8E6C9
+    usecase "Enter Name and Roll Number" as UC_Enter
+    usecase "Connect to Teacher Device" as UC_Connect #C8E6C9
+    usecase "Send Check-In Payload" as UC_Send #C8E6C9
+    usecase "View Check-In Result" as UC_Result
+  }
+}
+
+Teacher -- UC_Start
+Teacher -- UC_Stop
+Teacher -- UC_View
+
+Student -- UC_Perm
+Student -- UC_Scan
+Student -- UC_Enter
+Student -- UC_Result
+
+UC_Start ..> UC_GenCode : <<include>>
+UC_Start ..> UC_Advertise : <<include>>
+UC_Scan ..> UC_Discover : <<include>>
+UC_Discover ..> UC_ReadCode : <<include>>
+UC_Discover ..> UC_Collect : <<include>>
+UC_Collect ..> UC_Median : <<include>>
+
+UC_Median -[#1B3A63]-> UC_Send : requires successful\nRSSI validation
+UC_Enter -[#1B3A63]-> UC_Connect
+UC_Connect -[#1B3A63]-> UC_Send
+UC_Send -[#1B3A63]-> UC_Receive : follows
+UC_Receive -[#1B3A63]-> UC_View
+
+note bottom of UC_Send
+  This diagram shows only features implemented in the BLE proof
+  of concept. Backend authentication, database storage, device
+  binding and biometrics are future work.
+end note
+
+legend right
+  |= Color |= Meaning |
+  | <back:#AED6F1>    </back> | Flutter app action |
+  | <back:#C8E6C9>    </back> | BLE operation |
+  | <back:#D5D8DC>    </back> | Platform permission API |
+endlegend
+
+@enduml

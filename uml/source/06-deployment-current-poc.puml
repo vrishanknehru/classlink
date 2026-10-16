@@ -1,0 +1,56 @@
+@startuml 06-deployment-current-poc
+!include _style.puml
+
+title ClassLink Current POC — Deployment Diagram
+caption Current POC deployment — two physical phones, no server
+
+node "Teacher Smartphone\n(Android or iOS)" as TeacherPhone {
+  [Flutter ClassLink App] as TApp
+  [BLE Peripheral Role] as TRole #C8E6C9
+  [GATT Check-In Service] as TGatt #C8E6C9
+}
+
+node "Student Smartphone\n(Android or iOS)" as StudentPhone {
+  [Flutter ClassLink App] as SApp
+  [BLE Central Role] as SRole #C8E6C9
+  [RSSI Sampling Module] as SRssi #C8E6C9
+}
+
+node "Private GitHub Repository" as Repo #D5D8DC {
+  [Flutter source code] as RepoSrc #D5D8DC
+}
+note bottom of Repo
+  .gitignore excludes build artifacts,
+  keystores and .env files
+end note
+
+node "Android APK" as Apk #D5D8DC {
+  [Release build] as ApkBuild #D5D8DC
+}
+note bottom of Apk : Sideloaded for testing
+
+node "iOS Test Device" as IosDevice #D5D8DC {
+  [Direct installation via devicectl] as IosInstall #D5D8DC
+}
+
+TeacherPhone <-[#1E8449]-> StudentPhone : BLE advertising\nand GATT check-in
+
+Repo --> TeacherPhone : source
+Repo --> StudentPhone : source
+Apk --> StudentPhone : install
+Apk --> TeacherPhone : install
+IosDevice --> TeacherPhone : install\n(either role)
+IosDevice --> StudentPhone : install\n(either role)
+
+package "Future Cloud Deployment, Not Implemented" <<Dashed>> #FADBD8 {
+  node "FastAPI Server" as FutureApi #F5B7B1
+  node "Supabase Database" as FutureDb #F5B7B1
+  node "Auth and Audit Services" as FutureAuth #F5B7B1
+}
+
+note bottom of "Future Cloud Deployment, Not Implemented"
+  Cloud deployment is planned but not implemented in the
+  present proof of concept.
+end note
+
+@enduml
