@@ -170,7 +170,7 @@ The administrator has one small job. They keep the server running and decide who
 
 Figure 2.9 shows every use case and who starts it.
 
-![Use case diagram (Student, Teacher and Administrator activities).](figures/fig_usecase.png){height=17cm}
+![Use case diagram (Student, Teacher and Administrator activities).](figures/fig_usecase.png){height=16cm}
 
 **UC-1 Check in to a session.** Actor: student, who must be signed in, enrolled, and have a registered phone. The teacher has an active session. The student taps Check in. The app scans for the token for the sample window and requests a challenge. The server checks the token, session, enrollment, and device, then issues a single use nonce. The app signs the claim and sends it. The server checks the nonce, signature, time, sample count, and median signal, then records attendance and shows Present. If the signal is weak or samples are too few, the student sees a plain message and may move closer and retry. Any other failure shows its reason code and nothing is recorded.
 
