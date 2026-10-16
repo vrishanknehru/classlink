@@ -21,7 +21,7 @@
   \dflow{-\ex+1.3}{-2.1}{0.9}{$\rightarrow$ profile, join code\\$\leftarrow$ classrooms joined}
   \dflow{-\ex+1.3}{-2.1}{-0.9}{$\rightarrow$ user tokens}
   \dflow{2.1}{\ex-1.3}{0.9}{$\rightarrow$ create classroom\\$\leftarrow$ join code, students}
-  \dflow{2.1}{\ex-1.3}{-0.9}{$\rightarrow$ teacher allowlist}
+  \dflow{2.1}{\ex-1.3}{-0.9}{$\rightarrow$ approved teacher list}
   % 2.0 devices
   \node[dent] at (-\ex,-4.4) {Student};
   \dflow{-\ex+1.3}{-2.1}{-4.4}{$\rightarrow$ device public key\\$\leftarrow$ binding result}
@@ -32,7 +32,7 @@
   \dflow{2.1}{\ex-1.3}{-8.0}{$\rightarrow$ start, end, policy\\$\leftarrow$ rotating token}
   % 4.0 claims
   \node[dent] at (-\ex,-12.2) {Student};
-  \dflow{-\ex+1.3}{-2.1}{-12.2}{$\rightarrow$ challenge request,\\signed claim\\$\leftarrow$ nonce, result, reason}
+  \dflow{-\ex+1.3}{-2.1}{-12.2}{$\rightarrow$ challenge request,\\signed claim\\$\leftarrow$ one time code, result, reason}
   % 5.0 report
   \node[dent] at (\ex,-16.4) {Teacher};
   \dflow{2.1}{\ex-1.3}{-16.4}{$\rightarrow$ correction with reason\\$\leftarrow$ live roster, CSV}

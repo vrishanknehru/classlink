@@ -5,9 +5,9 @@
   \node[act] (t1) at (0,0)      {Create classroom,\\start session};
   \node[act] (v1) at (5.2,0)    {Store session,\\issue rotating token};
   \node[act] (s1) at (10.4,0)   {Join classroom,\\bind device key};
-  \node[act] (t2) at (0,-2.3)   {Advertise token over\\BLE (15 s epochs)};
-  \node[act] (s2) at (10.4,-2.3){Scan token,\\sample RSSI};
-  \node[act] (v2) at (5.2,-4.6) {Verify token,\\issue single use nonce};
+  \node[act] (t2) at (0,-2.3)   {Advertise token over\\BLE (changes every 15 s)};
+  \node[act] (s2) at (10.4,-2.3){Scan token,\\measure signal};
+  \node[act] (v2) at (5.2,-4.6) {Verify token,\\issue one time code};
   \node[act] (s3) at (10.4,-6.9){Sign claim with\\device key};
   \node[act] (v3) at (5.2,-6.9) {Validate claim,\\record, audit};
   \node[act] (t3) at (0,-6.9)   {Live roster, manual\\correction, CSV export};
@@ -21,7 +21,7 @@
   \draw[flow] (v1.south west) -- (t2.north east) node[lbl, pos=.5] {token};
   \draw[ble] (t2) -- (s2) node[lbl, pos=.5] {BLE broadcast, no identifier};
   \draw[flow] (s2.south west) -- (v2.north east) node[lbl, pos=.45] {token};
-  \draw[flow] (v2.south east) -- (s3.north west) node[lbl, pos=.5] {nonce};
+  \draw[flow] (v2.south east) -- (s3.north west) node[lbl, pos=.5] {one time code};
   \draw[flow] (s3) -- (v3) node[lbl, pos=.5] {claim};
   \draw[flow] (v3) -- (t3);
 \end{tikzpicture}

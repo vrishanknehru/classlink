@@ -24,12 +24,12 @@ Key terms used in this document:
 
 - **BLE (Bluetooth Low Energy)**: the short range radio the phones use. It needs no pairing.
 - **Token**: a 17 byte code the teacher phone broadcasts. It changes every 15 seconds and names no person.
-- **Challenge and nonce**: a one time value the server gives a student before a check in, so a claim cannot be replayed.
-- **Claim**: the signed message a student phone sends. It holds the nonce, token, signal strength, sample count, and time.
+- **Challenge (nonce)**: a one time code the server gives a student before a check in, so nobody can reuse an old claim.
+- **Claim**: the signed message a student phone sends. It holds the one time code, token, signal strength, sample count, and time.
 - **RSSI**: received signal strength in dBm. A larger number (closer to zero) means a closer phone.
 - **Session**: one class period in which attendance is open.
 - **Device key**: the signing key kept on a student's phone. The server stores only its public half.
-- **Audit log**: the server's permanent record of security relevant actions.
+- **Audit log**: the server's permanent record of who did what.
 - **POC**: the earlier offline proof of concept app.
 
 ## 1.3 Project Scope
@@ -40,7 +40,7 @@ ClassLink gives Teachers and Students one place to run attendance, and gives the
 
 1. Speed: a student checks in within 10 seconds of starting the scan, so roll call stops costing lecture time.
 2. Trust: the server verifies every claim, so a phone cannot mark itself present.
-3. Auditability: every claim, rejection, and correction leaves a record.
+3. Traceability: every claim, rejection, and correction leaves a record.
 4. Teacher control: a live roster, manual corrections with a reason, and CSV export.
 5. Privacy: the system keeps only name, roll number, email, a device public key, and attendance. It never collects location.
 6. Engineering quality: the backend passes Ruff and strict MyPy, and every requirement marked Done has an automated test run in CI.
@@ -59,7 +59,7 @@ ClassLink gives Teachers and Students one place to run attendance, and gives the
 |---|---|---|
 | Students | Join classrooms, register a phone, check in | A quick check in that counts |
 | Teachers | Create classrooms, run sessions, correct records | Accurate attendance without roll call |
-| Administrator | Deploys the server, edits the teacher allowlist | A secure, running system |
+| Administrator | Sets up the server, edits the approved teacher list | A secure, running system |
 | Development team | Design, build, test, deploy | Clear, testable requirements |
 | Course instructor | Reviews and evaluates the project | Consistency with the approved proposal |
 | Supabase | Hosts the database and sign in | Fair use of its free tier |
@@ -89,9 +89,9 @@ One check in works like this. The teacher app fetches a fresh token from the ser
 
 ClassLink has four user classes (Figure 2.2).
 
-- **Teacher.** Runs sessions for classrooms they own. The role comes only from an email allowlist kept by the administrator.
+- **Teacher.** Runs sessions for classrooms they own. The role comes only from a list of approved teacher emails kept by the administrator.
 - **Student.** Joins classrooms with a join code and checks in with one registered phone.
-- **Administrator.** Deploys the server and edits the teacher allowlist. This is not an in app role.
+- **Administrator.** Sets up the server and edits the approved teacher list. This is not an in app role.
 - **Evaluator.** Reads the exported CSV files. No app access needed.
 
 Supabase Auth is the one external system. It signs users in and issues their tokens.
@@ -102,20 +102,20 @@ Students and teachers need only basic phone skills. The administrator needs medi
 
 ## 2.3 Product Functions
 
-ClassLink stores classrooms, sessions, and attendance, and keeps an audit trail. At a high level it lets users sign in and get a role, create or join a classroom, register a device key, start and end sessions with rotating tokens, check in with a signed claim, watch a live roster, correct mistakes with a reason, and export a CSV. Users must sign in before using any of these functions.
+ClassLink stores classrooms, sessions, and attendance, and keeps a record of every important action. At a high level it lets users sign in and get a role, create or join a classroom, register a device key, start and end sessions with rotating tokens, check in with a signed claim, watch a live roster, correct mistakes with a reason, and export a CSV. Users must sign in before using any of these functions.
 
-The principal data entities are:
+The main data records are:
 
 - **profiles**: user id, role (teacher or student), full name, roll number, email.
 - **classrooms**: classroom id, teacher id, name, unique join code.
 - **enrollments**: classroom id and student id, with the join time.
-- **devices**: student id, public key, label, revoked time. A student has one active device.
+- **devices**: student id, public key, label, time it was cancelled. A student has one active device.
 - **sessions**: classroom id, alias, signal threshold, sample window, minimum samples, start and end time. A classroom has at most one active session.
 - **challenges**: session id, student id, token, issue and expiry time, used time. Each is single use.
-- **attendance**: session id, student id, status, source (BLE claim or manual correction), median RSSI, sample count, observation time, and correction details. One record per student per session.
+- **attendance**: session id, student id, status, source (BLE claim or manual correction), median RSSI, sample count, time of measurement, and correction details. One record per student per session.
 - **audit_events**: actor, action, subject, details, time.
 
-Foreign keys keep the data consistent. The level 0 diagram (Figure 2.3) treats ClassLink as one box and shows what crosses its edge. Arrows pointing right mean data going in. Arrows pointing left mean data coming out.
+Links between the tables keep the data consistent. The level 0 diagram (Figure 2.3) treats ClassLink as one box and shows what crosses its edge. Arrows pointing right mean data going in. Arrows pointing left mean data coming out.
 
 ![Data flow diagram, level 0.](figures/fig_dfd0.png){width=100%}
 
@@ -132,14 +132,14 @@ Students and teachers use Android 8.0 or later with Bluetooth LE. The teacher ph
 - **User interface:** a Flutter app with a teacher mode (classrooms, session control, live roster, corrections, export) and a student mode (join, register phone, check in, result). Every rejection shows a plain explanation.
 - **Hardware:** Bluetooth LE radio. The teacher phone needs BLE advertising. No other hardware.
 - **Software:** FastAPI backend, Supabase Postgres, Supabase Auth, GitHub Actions for CI.
-- **Communications:** HTTPS with JSON over REST. A Supabase JWT in the Authorization header. A 17 byte token over BLE manufacturer data.
+- **Communications:** HTTPS with JSON over REST. A Supabase sign in token (JWT) in the Authorization header. A 17 byte token inside the BLE advertisement.
 
 **Design and implementation constraints.**
 
 - Stack: Flutter (Android first), FastAPI on Python 3.11 or later, psycopg 3, Supabase Postgres and Auth.
 - A phone never creates an attendance record on its own. Only the server decides.
 - Secrets stay on the server. Only `.env.example` files enter the repository.
-- The BLE token is 17 bytes and travels as manufacturer data, because a service identifier plus the token does not fit in a basic advertisement. We have not yet confirmed this layout on phones.
+- The BLE token is 17 bytes and travels in the manufacturer data field of the BLE advertisement, because a service identifier plus the token does not fit in a basic one. We have not yet confirmed this layout on phones.
 - Apps write only through the API. The database gives apps read only access to their own rows.
 - Four person team, one semester, with the work split across backend, app, documentation, and testing.
 
@@ -172,7 +172,7 @@ Figure 2.9 shows every use case and who starts it.
 
 ![Use case diagram (Student, Teacher and Administrator activities).](figures/fig_usecase.png){height=16cm}
 
-**UC-1 Check in to a session.** Actor: student, who must be signed in, enrolled, and have a registered phone. The teacher has an active session. The student taps Check in. The app scans for the token for the sample window and requests a challenge. The server checks the token, session, enrollment, and device, then issues a single use nonce. The app signs the claim and sends it. The server checks the nonce, signature, time, sample count, and median signal, then records attendance and shows Present. If the signal is weak or samples are too few, the student sees a plain message and may move closer and retry. Any other failure shows its reason code and nothing is recorded.
+**UC-1 Check in to a session.** Actor: student, who must be signed in, enrolled, and have a registered phone. The teacher has a session running. The student taps Check in. The app scans for the token for the sample window and requests a challenge. The server checks the token, session, enrollment, and device, then issues a one time code. The app signs the claim and sends it. The server checks the one time code, signature, time, sample count, and median signal, then records attendance and shows Present. If the signal is weak or samples are too few, the student sees a plain message and may move closer and retry. Any other failure shows its reason code and nothing is recorded.
 
 **UC-2 Correct attendance.** Actor: teacher, who owns the classroom. The teacher opens the roster, picks a student, and marks them present or absent with a reason of at least five characters. The server stores the change with the teacher's name and writes an audit event. A reason that is too short is refused and nothing changes.
 
@@ -196,7 +196,7 @@ ClassLink has main features and some sub features. In priority order, from top t
 4. **Accounts and classrooms** (Must, pilot): sign in, roles, join codes.
 5. **Roster and corrections** (Must, pilot): live list, fixes with a reason.
 6. **Export and audit** (Should): CSV download and audit log.
-7. **Offline mode** (Could): the original no server demo, labelled as not authoritative.
+7. **Offline mode** (Could): the original no server demo, labelled as not the official record.
 
 The first meaningful milestone is a working pilot where a teacher starts a session, a student checks in from a real phone, and the roster shows the result. The server side of this is done. The app side is planned.
 
@@ -209,7 +209,7 @@ The server is a FastAPI service built and tested against a real Postgres. The ap
 | ID | Requirement | Priority | Status |
 |---|---|---|---|
 | FR-ACC-01 | The API shall accept only requests with a valid, unexpired Supabase token and answer all others with HTTP 401. | Must | Done |
-| FR-ACC-02 | A user shall have one profile with the role teacher or student. Only emails on the server allowlist become teachers. A student profile shall require a roll number. | Must | Done |
+| FR-ACC-02 | A user shall have one profile with the role teacher or student. Only emails on the approved teacher list become teachers. A student profile shall require a roll number. | Must | Done |
 | FR-ACC-03 | Students shall not reach teacher operations, and teachers shall not reach student operations (HTTP 403). | Must | Done |
 | FR-CLS-01 | A teacher shall create a classroom and receive a unique six character join code. | Must | Done |
 | FR-CLS-02 | A student shall join a classroom with its code. An unknown code shall return HTTP 404. | Must | Done |
@@ -219,7 +219,7 @@ The server is a FastAPI service built and tested against a real Postgres. The ap
 | ID | Requirement | Priority | Status |
 |---|---|---|---|
 | FR-DEV-01 | A student shall register one device key (ECDSA P-256 public key). The server shall reject any other key type. | Must | Done |
-| FR-DEV-02 | Registering a new key shall revoke the old one and write an audit event. | Must | Done |
+| FR-DEV-02 | Registering a new key shall cancel the old one and write an audit event. | Must | Done |
 | FR-DEV-03 | The private key shall never leave the phone, and the app shall sign only after fingerprint or screen lock authentication. | Must | Planned |
 
 **Sessions and tokens**
@@ -237,11 +237,11 @@ The server is a FastAPI service built and tested against a real Postgres. The ap
 | ID | Requirement | Priority | Status |
 |---|---|---|---|
 | FR-ATT-01 | The student app shall scan for the token and collect signal strength samples. | Must | Planned |
-| FR-ATT-02 | On a challenge request the server shall check the token, the active session, enrollment, and the student's registered device, then issue a single use nonce valid for 120 seconds. | Must | Done |
-| FR-ATT-03 | A claim shall hold the nonce, token, median signal strength, sample count, and observation time (whole Unix seconds), signed with the device key over a fixed text format. | Must | Done |
-| FR-ATT-04 | The server shall accept a claim only if the nonce is the caller's, unused, and unexpired, the token matches, the signature verifies, the observation time is within 60 seconds of server time, the sample count meets the minimum, and the median signal meets the threshold. | Must | Done |
+| FR-ATT-02 | On a challenge request the server shall check the token, the active session, enrollment, and the student's registered device, then issue a one time code (nonce) valid for 120 seconds. | Must | Done |
+| FR-ATT-03 | A claim shall hold the one time code, token, median signal strength, sample count, and time of measurement (whole seconds), signed with the device key over a fixed text format. | Must | Done |
+| FR-ATT-04 | The server shall accept a claim only if the one time code is the caller's, unused, and unexpired, the token matches, the signature verifies, the time of measurement is within 60 seconds of server time, the sample count meets the minimum, and the median signal meets the threshold. | Must | Done |
 | FR-ATT-05 | A student shall have at most one attendance record per session. Repeating an accepted claim shall return the same record. | Must | Done |
-| FR-ATT-06 | A weak signal or too few samples shall leave the nonce usable so the student can move closer and retry. | Should | Done |
+| FR-ATT-06 | A weak signal or too few samples shall leave the one time code usable so the student can move closer and retry. | Should | Done |
 | FR-ATT-07 | Every rejection shall carry a reason code (listed in the supplement) with HTTP 409. | Must | Done |
 | FR-ATT-08 | The student app shall show the result and explain each reason in plain words. | Must | Planned |
 
@@ -252,9 +252,9 @@ The server is a FastAPI service built and tested against a real Postgres. The ap
 | FR-ROS-01 | A teacher shall see every enrolled student of a session with status, source, signal strength, and time. | Must | Done |
 | FR-ROS-02 | The teacher app shall refresh the roster at least every 5 seconds during a session. | Should | Planned |
 | FR-COR-01 | A teacher shall mark a student present or absent with a reason of at least five characters. The server shall audit each correction. | Must | Done |
-| FR-EXP-01 | A teacher shall download a session as CSV with every enrolled student. The export shall neutralise cells that start with `=`, `+`, `-`, or `@`. | Must | Done |
+| FR-EXP-01 | A teacher shall download a session as CSV with every enrolled student. The export shall make safe any cell that starts with `=`, `+`, `-`, or `@`. | Must | Done |
 | FR-AUD-01 | The server shall audit classroom creation, device binding, session start and end, accepted and rejected claims, corrections, and exports. Apps shall have no access to the audit log. | Must | Done |
-| FR-POC-01 | The original offline mode shall remain and be labelled as not authoritative. | Could | POC |
+| FR-POC-01 | The original offline mode shall remain and be labelled as not the official record. | Could | POC |
 
 # 4. Other Nonfunctional Requirements
 
@@ -271,19 +271,19 @@ These are targets. We report only values measured in the pilot.
 
 - All traffic shall use HTTPS in production.
 - Secrets, such as the token key and database credentials, shall exist only on the server. CI shall fail if a `.env` file or keystore is committed.
-- The database shall have row level security on every table. Apps read only their own rows and write nothing.
-- A signed claim shall cover the session, nonce, token, signal strength, sample count, and time, so changing any value breaks the signature.
-- The server shall check token tags in constant time and verify every request's token signature, expiry, and audience.
+- The database shall have row level security on every table, so each user sees only their own rows. Apps read but never write.
+- A signed claim shall cover the session, one time code, token, signal strength, sample count, and time, so changing any value breaks the signature.
+- The server shall compare token tags with a timing safe method, and check every request's sign in token for its signature, expiry, and intended use.
 - The system shall store only name, roll number, email, a device public key, and attendance. It shall not collect location.
 
-ClassLink resists casual proxy attendance. It does not stop a friend who holds the student's unlocked phone, or someone who relays a live token to a faraway phone within its few seconds of life. Short token periods, the signal rule, and the audit log reduce these risks but do not remove them.
+ClassLink stops casual proxy attendance (a friend marking you present). It does not stop a friend who holds the student's unlocked phone, or someone who relays a live token to a faraway phone within its few seconds of life. Short token periods, the signal rule, and the audit log reduce these risks but do not remove them.
 
 ## 4.3 Software Quality Attributes
 
-- **Reliability:** attendance writes are atomic and safe to retry. Two racing claims for one student produce one record.
-- **Availability:** `/healthz` and `/readyz` report server and database health.
+- **Reliability:** attendance writes happen fully or not at all, so a retry is safe. If two claims for one student arrive together, only one record is made.
+- **Availability:** the pages `/healthz` and `/readyz` report whether the server and database are working.
 - **Maintainability:** the backend passes Ruff and strict MyPy in CI, and every Done requirement has an automated test.
-- **Portability:** the server runs from one container image configured by environment variables.
+- **Portability:** the server runs from one ready to run package (a container image) and is set up with environment variables.
 - **Usability:** a student checks in with one tap, and every rejection has a plain explanation.
 
 **Acceptance criteria.**
@@ -306,7 +306,7 @@ Table: Acceptance criteria.
 - Only a classroom's teacher can see or change its attendance.
 - A manual correction always has a reason and a named teacher.
 - An ended session never restarts. A new session gets new tokens.
-- A student has one active phone. Replacing it revokes the old key.
+- A student has one active phone. Replacing it cancels the old key.
 - Only the administrator decides who becomes a teacher.
 
 # 5. Other Requirements
@@ -314,18 +314,18 @@ Table: Acceptance criteria.
 ClassLink needs maintenance after the course, because phones, Android versions, and BLE behaviour keep changing. Other requirements are:
 
 - **Documentation:** the repository holds this SRS in Markdown and LaTeX, the project proposal, UML diagrams, the deployment runbook, and the API reference served at `/docs`.
-- **Deployment:** the server builds into a container with a non root user and refuses to start in production without its database URL and secrets. The administrator applies the migration file to Supabase before the first start. GitHub Actions runs the app and server checks and rejects committed secrets. The team publishes a signed Android APK for the pilot. See `docs/deployment.md`.
+- **Deployment:** the server is packaged as a container that does not run as an admin user, and it refuses to start in production without its database address and secrets. The administrator runs the database setup file on Supabase before the first start. GitHub Actions runs the app and server checks and rejects committed secrets. The team publishes a signed Android APK for the pilot. See `docs/deployment.md`.
 - **Privacy:** pilot participants learn what the app stores before they join a classroom. Deleting a user deletes their profile, enrollments, devices, and attendance. English only in the first version.
 - **Phasing:** Phase 1 (done): server, database schema, tests, CI, and documents. Phase 2 (planned): Android client with sign in, key storage, token broadcast, scan and claim, and roster screens. Phase 3 (planned): pilot on real phones in a real room, with measured results. Extensions follow only after the pilot.
-- **Open issues to confirm:** the BLE manufacturer data layout on real phones; the signal threshold that works in a real room; whether to move from a shared secret JWT to asymmetric keys; the Android application id, which still carries the old proof of concept name; and the consent wording for pilot students.
+- **Open issues to confirm:** whether the 17 byte token fits the BLE advertisement on real phones; the signal threshold that works in a real room; whether to move the sign in token from a shared secret to public key signing; the Android application id, which still carries the old proof of concept name; and the consent wording for pilot students.
 
 **Risks and mitigations.**
 
-| Risk | Mitigation |
+| Risk | What we do |
 |---|---|
 | Some phones cannot advertise BLE | Test on real phones early and list supported models |
 | Signal strength varies by room and phone | Median of several samples, a per session threshold, and a manual correction path |
-| A friend relays a live token | Short token life, one time nonce, the signal rule, and the audit log |
+| A friend relays a live token | Short token life, one time code, the signal rule, and the audit log |
 | Server or database downtime | Health endpoints, a single container image, and managed Postgres |
 | Leaked secrets | Secrets only on the server, and a CI check that rejects committed ones |
 | Scope creep | Keep extensions out of the pilot, and track status in Section 3.2 |

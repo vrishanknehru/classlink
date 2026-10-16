@@ -16,8 +16,8 @@
     -4.7/4.2/0/{17 byte token}/ble,
     -5.7/0/12.6/{BLE advertisement, no identifier}/ble,
     -7.5/12.6/4.2/{request challenge (token)}/flow,
-    -8.3/4.2/8.4/{check enrollment, device; store nonce}/flow,
-    -9.1/4.2/12.6/{nonce, policy}/ble,
+    -8.3/4.2/8.4/{check enrollment, device; store one time code}/flow,
+    -9.1/4.2/12.6/{one time code, policy}/ble,
     -10.9/12.6/4.2/{submit signed claim}/flow,
     -11.7/4.2/8.4/{validate, insert attendance, audit}/flow,
     -12.5/4.2/12.6/{accepted, or rejected with reason}/ble,
@@ -26,7 +26,7 @@
     \draw[\s] (\a,\y) -- (\b,\y);
     \node[font=\scriptsize, fill=white, inner sep=1pt] at ({(\a+\b)/2},{\y+0.22}) {\t};}
   % self messages on the student app
-  \foreach \y/\t in {-6.4/{sample RSSI for the window, take median}, -10.1/{sign claim with device key}}{
+  \foreach \y/\t in {-6.4/{measure signal for the window, take median}, -10.1/{sign claim with device key}}{
     \draw[flow] (12.6,\y) -- (13.5,\y) -- (13.5,{\y-.45}) -- (12.6,{\y-.45});
     \node[font=\scriptsize, anchor=east, fill=white, inner sep=1pt] at (12.45,{\y-.22}) {\t};}
 \end{tikzpicture}
