@@ -58,9 +58,13 @@ One check in works like this. The teacher app fetches a fresh token from the ser
 5. **Roster, corrections, export.** Watch check ins, fix mistakes with a reason, download a CSV.
 6. **Audit.** Record every security relevant action.
 
-The diagram below shows how ClassLink's data flows from record to record. Each arrow means one table points at another.
+The level 0 diagram treats ClassLink as one box and shows what crosses its edge. Arrows pointing right mean data going in. Arrows pointing left mean data coming out.
 
-![Data flow diagram: the tables that hold ClassLink's data and how they link.](figures/fig_dfd.png){width=100%}
+![Data flow diagram, level 0.](figures/fig_dfd0.png){width=100%}
+
+Level 1 opens the box into six processes. Each process keeps its data in a store, drawn under it.
+
+![Data flow diagram, level 1.](figures/fig_dfd1.png){height=21cm}
 
 ## 2.4 Operating Environment
 

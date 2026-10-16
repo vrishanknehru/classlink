@@ -94,6 +94,11 @@ Backend tests live in `backend/tests/` and run against a real Postgres.
 
 Requirements marked Planned have no automated test yet. The Flutter unit tests live in `code/test/`.
 
-## F. Sequence Diagram
+## F. Data Tables and Sequence Diagram
+
+The tables behind the data stores in the level 1 diagram, and how they link.
+
+![Data tables of ClassLink and how they link.](figures/fig_tables.png)
+
 
 ![Sequence of one session, from start to roster.](figures/fig_sequence.png)

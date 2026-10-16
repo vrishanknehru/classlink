@@ -1,0 +1,16 @@
+\documentclass[tikz,border=5pt]{standalone}
+\input{figstyle}
+\begin{document}
+\begin{tikzpicture}
+  \node[draw=black, thick, rounded corners=8pt, fill=gray!8, minimum width=3.2cm, minimum height=9.5cm,
+        align=center, font=\large\bfseries] (sys) at (0,0) {0\\ClassLink\\System};
+  \node[dent] (stu) at (-9.2,2.8) {Student};
+  \node[dent] (aut) at (-9.2,-2.8) {Supabase Auth};
+  \node[dent] (tea) at (9.2,2.8) {Teacher};
+  \node[dent] (adm) at (9.2,-2.8) {Administrator};
+  \dflowL{-7.9}{-1.6}{2.8}{$\rightarrow$ profile, join code, device key,\\signed claim\\$\leftarrow$ challenge, result with reason}
+  \dflowL{-7.9}{-1.6}{-2.8}{$\rightarrow$ user tokens (JWT)}
+  \dflowL{1.6}{7.9}{2.8}{$\rightarrow$ classroom, session policy,\\corrections\\$\leftarrow$ rotating token, live roster, CSV}
+  \dflowL{1.6}{7.9}{-2.8}{$\rightarrow$ teacher allowlist, settings\\$\leftarrow$ health status, audit log}
+\end{tikzpicture}
+\end{document}

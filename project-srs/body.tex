@@ -81,12 +81,20 @@ One check in works like this. The teacher app fetches a fresh token from the ser
   \textbf{Audit.} Record every security relevant action.
 \end{enumerate}
 
-The diagram below shows how ClassLink\textquotesingle s data flows from record to record. Each arrow means one table points at another.
+The level 0 diagram treats ClassLink as one box and shows what crosses its edge. Arrows pointing right mean data going in. Arrows pointing left mean data coming out.
 
 \begin{figure}
 \centering
-\includegraphics[width=1\textwidth,height=\textheight,keepaspectratio]{figures/fig_dfd.pdf}
-\caption{Data flow diagram: the tables that hold ClassLink\textquotesingle s data and how they link.}
+\includegraphics[width=1\textwidth,height=\textheight,keepaspectratio]{figures/fig_dfd0.pdf}
+\caption{Data flow diagram, level 0.}
+\end{figure}
+
+Level 1 opens the box into six processes. Each process keeps its data in a store, drawn under it.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth,height=21cm,keepaspectratio]{figures/fig_dfd1.pdf}
+\caption{Data flow diagram, level 1.}
 \end{figure}
 
 \hypertarget{operating-environment}{%
