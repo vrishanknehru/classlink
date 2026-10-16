@@ -12,8 +12,12 @@
 \usepackage{array,calc,longtable,booktabs}
 \usepackage{enumitem}
 \usepackage{graphicx}
-\usepackage{float}
-\floatplacement{figure}{H}
+\usepackage{etoolbox}
+\usepackage{needspace}
+\usepackage{lastpage}
+\makeatletter\def\fps@figure{!htbp}\makeatother
+\setlength{\textfloatsep}{14pt plus 2pt minus 4pt}
+\setlength{\intextsep}{12pt plus 2pt minus 4pt}
 \usepackage[font=small,labelfont=bf]{caption}
 \usepackage{xcolor}
 \usepackage[hidelinks]{hyperref}
@@ -22,8 +26,11 @@
 \DeclareUnicodeCharacter{2212}{\textminus}
 \providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \newcommand{\pandocbounded}[1]{#1}
+\linespread{1.03}\selectfont
+\widowpenalty=10000 \clubpenalty=10000
+\AtBeginEnvironment{longtable}{\small}
 \setlength{\parindent}{0pt}
-\setlength{\parskip}{0.6em}
+\setlength{\parskip}{0.5em}
 \renewcommand{\arraystretch}{1.15}
 \setlength{\LTpre}{0.4em}
 \setlength{\LTpost}{0.8em}
@@ -32,7 +39,7 @@
 \fancyhf{}
 \lhead{ClassLink Software Requirements Specification}
 \rhead{UCS503P -- 2026--27 ODD}
-\cfoot{\thepage}
+\cfoot{\thepage\ of \pageref{LastPage}}
 \renewcommand{\headrulewidth}{0.6pt}
 \let\oldsection\section
 \renewcommand{\section}{\clearpage\oldsection}

@@ -70,6 +70,11 @@ def keep_aspect(tex: str) -> str:
     return re.sub(r"\\includegraphics\[([^\]]*)\]", r"\\includegraphics[\1,keepaspectratio]", tex)
 
 
+def keep_heading_with_table(tex: str) -> str:
+    """Stop a bold table title from stranding at the bottom of a page."""
+    return re.sub(r"(\\textbf\{[^\n]*\}\n\n)(\\begin\{longtable\})", r"\\needspace{9\\baselineskip}\n\1\2", tex)
+
+
 def pandoc(md: str) -> str:
     result = subprocess.run(
         ["pandoc", "-f", "markdown+pipe_tables+link_attributes-smart", "-t", "latex",
@@ -101,7 +106,7 @@ def main() -> None:
     body_md = "# 1. Introduction" + rest
     build_figures()
     (HERE / "body.tex").write_text(
-        keep_aspect(pandoc(use_pdf_figures(strip_numbers(tune_tables(body_md))))),
+        keep_heading_with_table(keep_aspect(pandoc(use_pdf_figures(strip_numbers(tune_tables(body_md)))))),
         encoding="utf-8",
     )
     print("wrote body.tex and the figures")
