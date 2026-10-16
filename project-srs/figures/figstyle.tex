@@ -1,0 +1,29 @@
+\usepackage[T1]{fontenc}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,shapes.geometric,shapes.multipart,fit,calc,backgrounds}
+\definecolor{ink}{HTML}{222222}
+\definecolor{accent}{HTML}{DCE8F5}
+\definecolor{lane}{HTML}{F4F4F4}
+\definecolor{warn}{HTML}{FBE9D0}
+\tikzset{
+  every node/.style={font=\small, text=ink},
+  box/.style={draw=ink, thick, rounded corners=2pt, fill=white, align=center,
+    minimum height=8mm, inner sep=4pt},
+  ent/.style={box, fill=accent, rounded corners=0pt},
+  act/.style={box, rounded corners=7pt, text width=3.6cm},
+  proc/.style={box, rounded corners=8pt, fill=white, text width=2.7cm, minimum height=1.5cm},
+  dec/.style={diamond, draw=ink, thick, fill=warn, aspect=3, inner sep=1pt,
+    align=center, font=\footnotesize},
+  rej/.style={box, fill=warn, font=\footnotesize, minimum height=6mm, inner sep=3pt},
+  store/.style={draw=none, align=center, minimum height=8mm, inner sep=5pt,
+    path picture={
+      \draw[ink,thick] (path picture bounding box.north east)--(path picture bounding box.north west)--(path picture bounding box.south west)--(path picture bounding box.south east);}},
+  df/.style={{Stealth[length=2.2mm]}-{Stealth[length=2.2mm]}, thick, draw=ink},
+  start/.style={circle, fill=ink, minimum size=4mm, inner sep=0pt},
+  stop/.style={circle, draw=ink, thick, fill=ink, double=white, double distance=0.9pt,
+    minimum size=4.6mm, inner sep=0pt},
+  flow/.style={-{Stealth[length=2.4mm]}, thick, draw=ink},
+  ble/.style={-{Stealth[length=2.4mm]}, thick, dashed, draw=ink},
+  lbl/.style={font=\scriptsize, fill=white, inner sep=1.2pt},
+  laneh/.style={font=\small\bfseries},
+}

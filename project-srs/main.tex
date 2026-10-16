@@ -4,7 +4,7 @@
 % Requirements, Other Requirements. Requirement IDs and a status column are added.
 % The body is generated from docs/srs/index.md by build.py. Edit the Markdown,
 % then run: python3 project-srs/build.py
-\documentclass[10pt,a4paper]{article}
+\documentclass[11pt,a4paper]{article}
 \usepackage[margin=1in]{geometry}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -12,6 +12,9 @@
 \usepackage{array,calc,longtable,booktabs}
 \usepackage{enumitem}
 \usepackage{graphicx}
+\usepackage{float}
+\floatplacement{figure}{H}
+\usepackage[font=small,labelfont=bf]{caption}
 \usepackage{xcolor}
 \usepackage[hidelinks]{hyperref}
 \usepackage{fancyhdr}
@@ -27,43 +30,44 @@
 
 \pagestyle{fancy}
 \fancyhf{}
-\lhead{ClassLink SRS}
-\rhead{Version 1.0}
+\lhead{ClassLink Software Requirements Specification}
+\rhead{UCS503P -- 2026--27 ODD}
 \cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.6pt}
+\let\oldsection\section
+\renewcommand{\section}{\clearpage\oldsection}
 
 \begin{document}
 
 \begin{titlepage}
   \centering
-  \vspace*{2cm}
-  {\Large\bfseries SOFTWARE REQUIREMENTS SPECIFICATION}\\[1.2em]
-  {\large for}\\[1.2em]
-  {\Huge\bfseries ClassLink}\\[0.6em]
-  {\large A BLE Based Classroom Attendance System}\\[2em]
-  {\large Version 1.0}\\[3em]
+  \rule{\linewidth}{1.2pt}\\[5cm]
+  {\Large\bfseries SOFTWARE REQUIREMENTS\\SPECIFICATION}\\[1.6em]
+  {\normalsize for}\\[1.6em]
+  {\LARGE\bfseries ClassLink}\\[0.6em]
+  {\normalsize A BLE Based Classroom Attendance System}\\[1.6em]
+  {\normalsize Version 1.0}\\[2.2em]
+  {\normalsize\bfseries Prepared by:}\\[0.5em]
   \begin{tabular}{rl}
-    \textbf{Prepared by:} & Vemula Manvi Smaran (1024160111)\\
-     & Vrishank Nehru (1024160109)\\
-     & Mahi Singh (1024160102)\\
-     & Khagendra Saini (1024160123)\\[1.2em]
-    \textbf{Submitted to:} & Dr.\ Raghav B.\ Venkataramaiyer\\[1.2em]
-    \textbf{Course:} & UCS503P Software Engineering Project\\
-    \textbf{Institute:} & Thapar Institute of Engineering and Technology\\[1.2em]
-    \textbf{Date:} & October 2026\\
-  \end{tabular}
+    1. & Vemula Manvi Smaran (1024160111)\\
+    2. & Vrishank Nehru (1024160109)\\
+    3. & Mahi Singh (1024160102)\\
+    4. & Khagendra Saini (1024160123)\\
+  \end{tabular}\\[2em]
+  {\normalsize\bfseries Submitted to:}\\[0.5em]
+  Dr.\ Raghav B.\ Venkataramaiyer\\
+  UCS503P Software Engineering Project\\[1.4em]
+  Thapar Institute of Engineering and Technology\\
+  Session 2026--27 ODD\\[1.4em]
+  October 2026
   \vfill
+  {\footnotesize Document status: the backend is implemented and tested. The Android client integration is planned. Section 3.2 records the status of every requirement.}
 \end{titlepage}
 
-\section*{Document Information}
-\input{preface.tex}
-
+\setcounter{tocdepth}{2}
 \tableofcontents
 \clearpage
 
 \input{body.tex}
-
-\clearpage
-\appendix
-\input{appendix.tex}
 
 \end{document}

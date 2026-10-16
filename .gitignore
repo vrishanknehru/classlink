@@ -95,3 +95,5 @@ project-srs/*.fls
 project-srs/*.log
 project-srs/*.out
 project-srs/*.toc
+project-srs/figures/*.aux
+project-srs/figures/*.log

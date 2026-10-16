@@ -2,13 +2,11 @@
 
 **ClassLink: A BLE Based Classroom Attendance System**
 
-UCS503P Software Engineering Project, Thapar Institute of Engineering and Technology
+Version 1.0, October 2026. UCS503P Software Engineering Project, Thapar Institute of Engineering and Technology.
 
-| Version | Status | Notes |
-|---|---|---|
-| 1.0 | Pilot release specification | First complete SRS. Backend implemented and tested. Mobile integration in progress. |
+Prepared by Vemula Manvi Smaran (1024160111), Vrishank Nehru (1024160109), Mahi Singh (1024160102), and Khagendra Saini (1024160123). Submitted to Dr. Raghav B. Venkataramaiyer.
 
-**Requirement status legend.** *Done* means implemented and covered by an automated test in this repository. *POC* means present in the offline proof of concept only. *Planned* means specified but not yet implemented. The status column in Section 3.2 is the authoritative record of what exists today.
+The glossary, API summary, rejection reasons, evaluation plan, and test traceability live in the [supplement](supplement.md).
 
 # 1. Introduction
 
@@ -20,16 +18,15 @@ The specification covers the whole system: the Android application used by teach
 
 ## 1.2 Intended Audience and Reading Suggestions
 
-| Reader | Start with | Then read |
-|---|---|---|
-| Course instructor and evaluators | 1.3 Project Scope, 3.1 Description and Priority | 4.2 Security Requirements, Appendix D (evaluation plan) |
-| Developers on the team | 2.1 Product Perspective, 3.2 Functional Requirements | Appendix B (API summary), Appendix E (test traceability) |
-| Testers | 3.2 Functional Requirements, Appendix C (rejection reasons) | Appendix E, Appendix D |
-| Pilot teachers and administrators | 2.2 User Classes, 5.1 Deployment | 4.4 Business Rules |
+This document is for the project team, the course instructor and evaluators, testers, pilot teachers, and future maintainers. Section 1 introduces the project. Section 2 describes the system, its users, and its design with diagrams. Section 3 lists the features and functional requirements, each with a status. Section 4 sets the non functional requirements and business rules. Section 5 records deployment, privacy, and documentation requirements. Readers who only want to know what exists today should read the status column in Section 3.2. The supplement holds the glossary, API summary, rejection codes, evaluation plan, and test traceability.
 
 ## 1.3 Project Scope
 
 Manual attendance is slow, easy to proxy, and hard to audit. ClassLink lets a teacher's phone broadcast a short lived BLE token during a session. Enrolled students' phones detect the token, collect several signal strength samples, and send a signed attendance claim to a server. The server decides whether the claim counts.
+
+**Status terms.** *Done* means implemented and covered by an automated test in this repository. *POC* means present in the offline proof of concept only. *Planned* means specified but not yet implemented. Right now the backend is implemented and tested. The Android client does not yet call it, so every requirement that depends on the client is marked Planned.
+
+![Overall workflow of ClassLink across the teacher app, the server, and the student app.](figures/fig_overview.png){width=100%}
 
 **In scope for version 1.0**
 
@@ -50,7 +47,7 @@ Manual attendance is slow, easy to proxy, and hard to audit. ClassLink lets a te
 - Integration with learning management systems, grading, or timetables.
 - Cross course attendance percentages and analytics dashboards.
 
-**Goal.** Cut the time spent on attendance to seconds per student while producing an auditable record. The primary success measure is detection success rate on labelled positions in a real room (Appendix D).
+**Goal.** Cut the time spent on attendance to seconds per student while producing an auditable record. The primary success measure is detection success rate on labelled positions in a real room (see the supplement).
 
 # 2. Overall Description
 
@@ -83,6 +80,8 @@ Data flow for one check in:
 | Administrator | Deploys the backend, manages secrets, edits the teacher allowlist | High | Not an in app role. Works through configuration and the Supabase dashboard |
 | Evaluator | Reads exported CSV files and evaluation data | Medium | No application access needed |
 
+![User classes of ClassLink. Teacher and student are in app roles.](figures/fig_users.png){width=100%}
+
 ## 2.3 Product Functions
 
 1. **Accounts and roles.** Sign in, create a profile, receive a role.
@@ -95,6 +94,8 @@ Data flow for one check in:
 8. **Audit.** Record every security relevant action.
 9. **Offline proof of concept mode.** Keep the original no server demo available.
 
+![Data flow diagram: external entities, processes, and data stores.](figures/fig_dfd.png){width=100%}
+
 ## 2.4 Operating Environment
 
 - **Mobile.** Android 8.0 (API 26) or later with a Bluetooth LE radio. The teacher device must support BLE peripheral advertising, which depends on hardware and vendor firmware. This is why testing happens on physical devices only.
@@ -102,6 +103,12 @@ Data flow for one check in:
 - **Database.** Supabase Postgres (PostgreSQL 15 or later) with the `auth` schema provided by Supabase.
 - **Network.** Phones need internet access during check in. The BLE exchange itself needs no network.
 - **Development.** Flutter stable (Dart 3.9 or later), Ruff, MyPy, Pytest, GitHub Actions.
+
+The design rests on these assumptions and dependencies.
+
+- Students attend with the phone they bound. A student who changes phones rebinds, and the change is audited.
+- Supabase issues HS256 signed JWTs verified with the project JWT secret. Projects that use asymmetric signing keys need JWKS verification, which version 1.0 does not implement.
+- Server and phone clocks stay within about a minute of each other. The server uses its own clock for every freshness decision.
 
 ## 2.5 Design
 
@@ -119,11 +126,25 @@ These constraints bind the design and implementation.
 | CON-08 | Clients write data only through the API. Row level security gives clients read only access to their own rows. |
 | CON-09 | Evaluation figures come only from recorded real runs. No figure appears in a report before the raw data exists in the repository. |
 
-## 2.6 Assumptions and Dependencies
+The student starts by signing in and joining a classroom, binds a device key once, and then checks in during each session.
 
-- Students attend with the phone they bound. A student who changes phones rebinds, and the change is audited.
-- Supabase issues HS256 signed JWTs verified with the project JWT secret. Projects that use asymmetric signing keys need JWKS verification, which version 1.0 does not implement.
-- Server and phone clocks stay within about a minute of each other. The server uses its own clock for every freshness decision.
+![Student activities, from sign in to the server's answer.](figures/fig_student.png){height=17cm}
+
+The teacher creates a classroom, starts a session, keeps the token advertised, watches the roster, and corrects mistakes with a recorded reason.
+
+![Teacher activities, from sign in to CSV export.](figures/fig_teacher.png){height=15cm}
+
+The server decides every claim. It runs the checks below in order. The first failed check ends the flow with a reason code, and every outcome writes an audit event.
+
+![Server side claim validation. Each failed check returns HTTP 409 with a reason.](figures/fig_server.png){height=19cm}
+
+The sequence below shows one full session as the three tiers see it.
+
+![Sequence of one session, from start to roster.](figures/fig_sequence.png){width=100%}
+
+The database keeps eight tables. Row level security gives clients read only access to their own rows.
+
+![Entity relationship diagram of the Postgres schema.](figures/fig_er.png){width=100%}
 
 # 3. System Features
 
@@ -194,7 +215,7 @@ Priorities use MoSCoW: **M**ust, **S**hould, **C**ould.
 | FR-ATT-05 | A student shall have at most one attendance record per session. A claim made with a new nonce after a record exists shall be rejected as a duplicate. | M | Done |
 | FR-ATT-06 | Repeating an accepted claim shall return the stored record and shall create no second record. | M | Done |
 | FR-ATT-07 | A rejection caused by policy (too few samples, weak signal) shall leave the nonce usable so the student can move closer and retry until it expires. Acceptance shall consume the nonce atomically. | S | Done |
-| FR-ATT-08 | Every rejection shall carry a reason from the set in Appendix C, returned with HTTP 409. | M | Done |
+| FR-ATT-08 | Every rejection shall carry a reason from this set, returned with HTTP 409: `invalid_token`, `token_expired`, `session_not_active`, `not_enrolled`, `no_device_bound`, `challenge_unknown`, `challenge_expired`, `nonce_reused`, `token_mismatch`, `bad_signature`, `claim_stale`, `too_few_samples`, `rssi_below_threshold`, and `duplicate`. The supplement explains each. | M | Done |
 | FR-ATT-09 | The student app shall show the server's result and explain each rejection reason in plain language. | M | Planned |
 | FR-ATT-10 | The student app shall stop scanning and report failure after 90 seconds without a valid session. | S | POC (no automated test yet) |
 
@@ -227,6 +248,10 @@ Priorities use MoSCoW: **M**ust, **S**hould, **C**ould.
 | ID | Requirement | Pri | Status |
 |---|---|---|---|
 | FR-POC-01 | The original offline mode shall remain: the teacher advertises a six digit code, the student checks in by a GATT write, and the teacher exports CSV on the device. The app shall label this mode as not authoritative. | C | POC |
+
+## 3.3 Implementation Requirements
+
+The backend is a FastAPI service on Python 3.11 or later, using psycopg 3 against Supabase Postgres, with Supabase Auth for identity. The client is a Flutter app, Android first, using `bluetooth_low_energy` for the teacher advertiser and the student scanner. The backend is implemented and has automated tests that run against a real Postgres. The Flutter app today holds the offline proof of concept and the claim wire format. The API client, sign in, key storage, token advertising, and live roster screens remain to be built, and Section 3.2 marks them Planned. Status is recorded per requirement, so this section never claims more than the repository holds.
 
 # 4. Other Nonfunctional Requirements
 
@@ -275,7 +300,7 @@ These are targets. The pilot measures them, and the project reports only measure
 |---|---|
 | Reliability | Attendance writes shall be idempotent under retry and atomic. Two racing claims for one student shall produce one record. |
 | Availability | The API shall expose `/healthz` (process) and `/readyz` (database). The pilot targets best effort availability during class hours. |
-| Maintainability | The backend shall pass Ruff and strict MyPy in CI. Every functional requirement marked Done shall have an automated test (Appendix E). |
+| Maintainability | The backend shall pass Ruff and strict MyPy in CI. Every functional requirement marked Done shall have an automated test (see the supplement). |
 | Testability | Time shall be injectable so tests can exercise token expiry without waiting. Tests shall run against a real Postgres. |
 | Portability | The backend shall run from one container image configured by environment variables. |
 | Usability | A student shall complete a check in with one tap after joining a classroom. Every rejection shall have a plain language explanation. |
@@ -313,101 +338,3 @@ These are targets. The pilot measures them, and the project reports only measure
 
 - **OTHER-DOC-01.** The repository shall hold this SRS in Markdown (`docs/srs/`) and LaTeX (`project-srs/`), the project proposal, UML diagrams, and a deployment runbook.
 - **OTHER-DOC-02.** The API shall publish its own reference at `/docs`.
-
-# Appendix A. Glossary
-
-| Term | Meaning |
-|---|---|
-| BLE | Bluetooth Low Energy |
-| RSSI | Received signal strength indicator, in dBm. Closer devices read less negative values |
-| Epoch | A fixed length time slice used to rotate tokens |
-| Alias | Four random bytes that identify a live session in a token |
-| Challenge | A single use nonce the server issues after validating a token |
-| Claim | A signed statement from a student device that it observed a valid token |
-| RLS | Row level security in Postgres |
-| JWT | JSON Web Token issued by Supabase Auth |
-| SPKI | SubjectPublicKeyInfo, the DER format for public keys |
-
-# Appendix B. API Summary
-
-| Method and path | Role | Purpose |
-|---|---|---|
-| `POST /v1/profile` | any user | Create the caller's profile |
-| `GET /v1/me` | any | Read the caller's profile |
-| `POST /v1/classrooms` | teacher | Create a classroom |
-| `GET /v1/classrooms` | any | List own classrooms |
-| `POST /v1/classrooms/join` | student | Join with a join code |
-| `PUT /v1/devices/me` | student | Bind a device signing key |
-| `POST /v1/sessions` | teacher | Start a session |
-| `POST /v1/sessions/{id}/end` | teacher | End a session |
-| `GET /v1/sessions/{id}/token` | teacher | Current rotating token |
-| `GET /v1/sessions/{id}/roster` | teacher | Live roster |
-| `POST /v1/sessions/{id}/corrections` | teacher | Manual correction |
-| `GET /v1/sessions/{id}/export.csv` | teacher | CSV export |
-| `POST /v1/attendance/challenge` | student | Trade a token for a nonce |
-| `POST /v1/attendance/claim` | student | Submit a signed claim |
-| `GET /healthz`, `GET /readyz` | none | Liveness and readiness |
-
-# Appendix C. Rejection Reasons
-
-The API returns HTTP 409 with `{"status": "rejected", "reason": "<code>"}`.
-
-| Code | Meaning | Stage |
-|---|---|---|
-| invalid_token | Malformed token or wrong tag | challenge |
-| token_expired | Token epoch outside the grace window | challenge |
-| session_not_active | Unknown alias or ended session | challenge, claim |
-| not_enrolled | Student is not in the classroom | challenge |
-| no_device_bound | Student has no active device key | challenge, claim |
-| challenge_unknown | Nonce missing or issued to someone else | claim |
-| challenge_expired | Nonce older than 120 seconds | claim |
-| nonce_reused | Nonce consumed by a different claim | claim |
-| token_mismatch | Claim token differs from the challenge token | claim |
-| bad_signature | Signature does not verify against the active key | claim |
-| claim_stale | Observation time more than 60 seconds from server time | claim |
-| too_few_samples | Sample count below the session minimum | claim |
-| rssi_below_threshold | Median RSSI weaker than the session threshold | claim |
-| duplicate | The student already has a record in this session | claim |
-
-# Appendix D. Evaluation Plan and Data Schema
-
-**Primary metric.** Detection success rate: the fraction of labelled position scan attempts (front, middle, back, door, corridor, adjacent room) that accept or reject correctly under the configured policy.
-
-**Secondary metrics.** Discovery latency, attendance completion latency, false accept and false reject rates at out of room and in room positions, API p50 and p95 latency, and the rejection rate for duplicate claims and expired tokens.
-
-**Method.** One teacher phone and at least two student phones of different models, in a real classroom. Record raw rows before computing any summary.
-
-**Raw CSV schema** (`docs/evaluation/*.csv`):
-
-| Column | Meaning |
-|---|---|
-| run_id | Identifier for one scenario run |
-| timestamp_utc | ISO 8601 time of the attempt |
-| teacher_phone, student_phone | Device models |
-| android_version | Version on the student phone |
-| room_label | Room name |
-| position_label | front, middle, back, door, corridor, adjacent_room |
-| expected | accept or reject |
-| median_rssi_dbm, sample_count | Values sent in the claim |
-| result | accepted or the rejection reason |
-| discovery_ms, completion_ms | Latencies |
-
-# Appendix E. Test Traceability
-
-Backend tests live in `backend/tests/`. The suite runs against a real Postgres.
-
-| Requirements | Tests |
-|---|---|
-| FR-ACC-01 to FR-ACC-05 | `test_teacher_and_accounts.py` (allowlist, roll number, idempotent profile, bad credentials, role separation) |
-| FR-CLS-01 to FR-CLS-03, FR-DEV-01, FR-DEV-02 | `test_teacher_and_accounts.py` (join code format, listing, unknown code, invalid key), `test_attendance_flow.py` (rebinding revokes the old key) |
-| FR-SES-01 to FR-SES-05, FR-SES-07 | `test_tokens.py`, `test_teacher_and_accounts.py` (one active session, ownership, rotation) |
-| FR-ATT-02 to FR-ATT-08 | `test_attendance_flow.py`, `test_claims.py`, `test_crypto.py` |
-| FR-ROS-01, FR-COR-01, FR-COR-02 | `test_teacher_and_accounts.py` (corrections, roster) |
-| FR-EXP-01 to FR-EXP-03 | `test_teacher_and_accounts.py` (CSV contents, formula injection) |
-| FR-AUD-01, FR-AUD-02 | `test_attendance_flow.py` (rejections and acceptances audited), `test_teacher_and_accounts.py` (export audited), `test_rls.py` |
-| OTHER-DEP-04 | `test_config.py` |
-| NFR-SEC-03 | `test_rls.py` |
-| NFR-SEC-05 | `test_attendance_flow.py` (tampered RSSI breaks the signature) |
-| Reliability (4.3) | `test_attendance_flow.py` (concurrent claims never double count) |
-
-Requirements marked Planned have no automated test yet. The Flutter unit tests live in `code/test/`.

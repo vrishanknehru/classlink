@@ -1,0 +1,34 @@
+\documentclass[tikz,border=5pt]{standalone}
+\input{figstyle}
+\begin{document}
+\begin{tikzpicture}
+  \node[ent] (tea) at (5.5,5.8) {Teacher};
+  \node[ent] (adm) at (-5.4,0) {Administrator};
+  \node[ent] (stu) at (5.5,-8.2) {Student};
+  \node[proc] (p1) at (0,0)  {\textbf{1.0}\\Manage accounts\\and classrooms};
+  \node[proc] (p2) at (5.5,0)  {\textbf{2.0}\\Run session,\\issue tokens};
+  \node[proc] (p4) at (11,0) {\textbf{4.0}\\Report and\\correct};
+  \node[proc] (p3) at (5.5,-4.7) {\textbf{3.0}\\Validate\\attendance claim};
+  \node[store] (d1) at (-5.4,-3.6) {Profiles, classrooms,\\devices};
+  \node[store] (d2) at (5.5,-2.35) {Sessions, challenges};
+  \node[store] (d3) at (11,-2.35) {Attendance,\\audit log};
+  \node[font=\footnotesize\bfseries, anchor=east] at (d1.west) {D1};
+  \node[font=\footnotesize\bfseries, anchor=east] at (d2.west) {D2};
+  \node[font=\footnotesize\bfseries, anchor=east] at (d3.west) {D3};
+  \draw[flow] (adm) -- (p1) node[lbl, pos=.5] {allowlist};
+  \draw[flow] (tea.south west) -- (p1.north) node[lbl, pos=.7] {classroom};
+  \draw[flow] ([xshift=-4mm]tea.south) -- ([xshift=-4mm]p2.north) node[lbl, pos=.5, anchor=east] {start, end, policy};
+  \draw[flow] ([xshift=4mm]p2.north) -- ([xshift=4mm]tea.south) node[lbl, pos=.5, anchor=west] {token};
+  \draw[flow] ([xshift=-3mm]tea.south east) -- ([xshift=-5mm]p4.north) node[lbl, pos=.45, anchor=east] {correction};
+  \draw[flow] ([xshift=5mm]p4.north) -- ([xshift=3mm]tea.south east) node[lbl, pos=.45, anchor=west] {roster, CSV};
+  \draw[flow] (stu.west) -| ([xshift=-3mm]p1.south);
+  \node[lbl] at (1.6,-8.2) {profile, join code, device key};
+  \draw[flow] ([xshift=-4mm]stu.north) -- ([xshift=-4mm]p3.south) node[lbl, pos=.5, anchor=east] {token, claim};
+  \draw[flow] ([xshift=4mm]p3.south) -- ([xshift=4mm]stu.north) node[lbl, pos=.5, anchor=west] {nonce, result};
+  \draw[df] (p1) -- (d1.north east);
+  \draw[df] (p2) -- (d2);
+  \draw[df] (d2) -- (p3);
+  \draw[df] (p3.east) -| ([xshift=-4mm]d3.south);
+  \draw[df] (p4) -- (d3);
+\end{tikzpicture}
+\end{document}

@@ -11,32 +11,20 @@ The specification covers the whole system: the Android application used by teach
 \hypertarget{intended-audience-and-reading-suggestions}{%
 \subsection{Intended Audience and Reading Suggestions}\label{intended-audience-and-reading-suggestions}}
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.2185}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.4118}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3697}}@{}}
-\toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Reader
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Start with
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Then read
-\end{minipage} \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-Course instructor and evaluators & 1.3 Project Scope, 3.1 Description and Priority & 4.2 Security Requirements, Appendix D (evaluation plan) \\
-Developers on the team & 2.1 Product Perspective, 3.2 Functional Requirements & Appendix B (API summary), Appendix E (test traceability) \\
-Testers & 3.2 Functional Requirements, Appendix C (rejection reasons) & Appendix E, Appendix D \\
-Pilot teachers and administrators & 2.2 User Classes, 5.1 Deployment & 4.4 Business Rules \\
-\end{longtable}
+This document is for the project team, the course instructor and evaluators, testers, pilot teachers, and future maintainers. Section 1 introduces the project. Section 2 describes the system, its users, and its design with diagrams. Section 3 lists the features and functional requirements, each with a status. Section 4 sets the non functional requirements and business rules. Section 5 records deployment, privacy, and documentation requirements. Readers who only want to know what exists today should read the status column in Section 3.2. The supplement holds the glossary, API summary, rejection codes, evaluation plan, and test traceability.
 
 \hypertarget{project-scope}{%
 \subsection{Project Scope}\label{project-scope}}
 
 Manual attendance is slow, easy to proxy, and hard to audit. ClassLink lets a teacher\textquotesingle s phone broadcast a short lived BLE token during a session. Enrolled students\textquotesingle{} phones detect the token, collect several signal strength samples, and send a signed attendance claim to a server. The server decides whether the claim counts.
+
+\textbf{Status terms.} \emph{Done} means implemented and covered by an automated test in this repository. \emph{POC} means present in the offline proof of concept only. \emph{Planned} means specified but not yet implemented. Right now the backend is implemented and tested. The Android client does not yet call it, so every requirement that depends on the client is marked Planned.
+
+\begin{figure}
+\centering
+\includegraphics[width=1\textwidth,height=\textheight,keepaspectratio]{figures/fig_overview.pdf}
+\caption{Overall workflow of ClassLink across the teacher app, the server, and the student app.}
+\end{figure}
 
 \textbf{In scope for version 1.0}
 
@@ -76,7 +64,7 @@ Manual attendance is slow, easy to proxy, and hard to audit. ClassLink lets a te
   Cross course attendance percentages and analytics dashboards.
 \end{itemize}
 
-\textbf{Goal.} Cut the time spent on attendance to seconds per student while producing an auditable record. The primary success measure is detection success rate on labelled positions in a real room (Appendix D).
+\textbf{Goal.} Cut the time spent on attendance to seconds per student while producing an auditable record. The primary success measure is detection success rate on labelled positions in a real room (see the supplement).
 
 \hypertarget{overall-description}{%
 \section{Overall Description}\label{overall-description}}
@@ -129,10 +117,10 @@ Data flow for one check in:
 \subsection{User Classes and Characteristics}\label{user-classes-and-characteristics}}
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1258}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.4403}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.0629}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.3711}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1677}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.4192}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.0599}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.3533}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 User class
@@ -152,6 +140,12 @@ Student & Joins classrooms with a join code and checks in during sessions & Low 
 Administrator & Deploys the backend, manages secrets, edits the teacher allowlist & High & Not an in app role. Works through configuration and the Supabase dashboard \\
 Evaluator & Reads exported CSV files and evaluation data & Medium & No application access needed \\
 \end{longtable}
+
+\begin{figure}
+\centering
+\includegraphics[width=1\textwidth,height=\textheight,keepaspectratio]{figures/fig_users.pdf}
+\caption{User classes of ClassLink. Teacher and student are in app roles.}
+\end{figure}
 
 \hypertarget{product-functions}{%
 \subsection{Product Functions}\label{product-functions}}
@@ -179,6 +173,12 @@ Evaluator & Reads exported CSV files and evaluation data & Medium & No applicati
   \textbf{Offline proof of concept mode.} Keep the original no server demo available.
 \end{enumerate}
 
+\begin{figure}
+\centering
+\includegraphics[width=1\textwidth,height=\textheight,keepaspectratio]{figures/fig_dfd.pdf}
+\caption{Data flow diagram: external entities, processes, and data stores.}
+\end{figure}
+
 \hypertarget{operating-environment}{%
 \subsection{Operating Environment}\label{operating-environment}}
 
@@ -196,14 +196,26 @@ Evaluator & Reads exported CSV files and evaluation data & Medium & No applicati
   \textbf{Development.} Flutter stable (Dart 3.9 or later), Ruff, MyPy, Pytest, GitHub Actions.
 \end{itemize}
 
+The design rests on these assumptions and dependencies.
+
+\begin{itemize}
+\tightlist
+\item
+  Students attend with the phone they bound. A student who changes phones rebinds, and the change is audited.
+\item
+  Supabase issues HS256 signed JWTs verified with the project JWT secret. Projects that use asymmetric signing keys need JWKS verification, which version 1.0 does not implement.
+\item
+  Server and phone clocks stay within about a minute of each other. The server uses its own clock for every freshness decision.
+\end{itemize}
+
 \hypertarget{design}{%
 \subsection{Design}\label{design}}
 
 These constraints bind the design and implementation.
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.1139}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.8861}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.1566}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.8434}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 ID
@@ -225,18 +237,45 @@ CON-08 & Clients write data only through the API. Row level security gives clien
 CON-09 & Evaluation figures come only from recorded real runs. No figure appears in a report before the raw data exists in the repository. \\
 \end{longtable}
 
-\hypertarget{assumptions-and-dependencies}{%
-\subsection{Assumptions and Dependencies}\label{assumptions-and-dependencies}}
+The student starts by signing in and joining a classroom, binds a device key once, and then checks in during each session.
 
-\begin{itemize}
-\tightlist
-\item
-  Students attend with the phone they bound. A student who changes phones rebinds, and the change is audited.
-\item
-  Supabase issues HS256 signed JWTs verified with the project JWT secret. Projects that use asymmetric signing keys need JWKS verification, which version 1.0 does not implement.
-\item
-  Server and phone clocks stay within about a minute of each other. The server uses its own clock for every freshness decision.
-\end{itemize}
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth,height=17cm,keepaspectratio]{figures/fig_student.pdf}
+\caption{Student activities, from sign in to the server\textquotesingle s answer.}
+\end{figure}
+
+The teacher creates a classroom, starts a session, keeps the token advertised, watches the roster, and corrects mistakes with a recorded reason.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth,height=15cm,keepaspectratio]{figures/fig_teacher.pdf}
+\caption{Teacher activities, from sign in to CSV export.}
+\end{figure}
+
+The server decides every claim. It runs the checks below in order. The first failed check ends the flow with a reason code, and every outcome writes an audit event.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth,height=19cm,keepaspectratio]{figures/fig_server.pdf}
+\caption{Server side claim validation. Each failed check returns HTTP 409 with a reason.}
+\end{figure}
+
+The sequence below shows one full session as the three tiers see it.
+
+\begin{figure}
+\centering
+\includegraphics[width=1\textwidth,height=\textheight,keepaspectratio]{figures/fig_sequence.pdf}
+\caption{Sequence of one session, from start to roster.}
+\end{figure}
+
+The database keeps eight tables. Row level security gives clients read only access to their own rows.
+
+\begin{figure}
+\centering
+\includegraphics[width=1\textwidth,height=\textheight,keepaspectratio]{figures/fig_er.pdf}
+\caption{Entity relationship diagram of the Postgres schema.}
+\end{figure}
 
 \hypertarget{system-features}{%
 \section{System Features}\label{system-features}}
@@ -245,10 +284,10 @@ CON-09 & Evaluation figures come only from recorded real runs. No figure appears
 \subsection{Description and Priority}\label{description-and-priority}}
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.0889}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.3111}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1333}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.4667}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.0938}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.2917}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1771}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.4375}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Rank
@@ -283,10 +322,10 @@ Priorities use MoSCoW: \textbf{M}ust, \textbf{S}hould, \textbf{C}ould.
 \subsubsection{F1. Accounts and roles}\label{f1.-accounts-and-roles}}
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1386}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.6931}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.0792}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.0891}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1712}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.6306}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.0811}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1171}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 ID
@@ -312,10 +351,10 @@ FR-ACC-05 & Creating a profile twice shall return the existing profile unchanged
 \subsubsection{F2. Classrooms and enrollment}\label{f2.-classrooms-and-enrollment}}
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1386}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.6931}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.0792}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.0891}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1712}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.6306}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.0811}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1171}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 ID
@@ -339,10 +378,10 @@ FR-CLS-03 & A teacher shall list the classrooms they own and a student shall lis
 \subsubsection{F3. Device binding}\label{f3.-device-binding}}
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1359}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.6796}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.0777}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1068}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1681}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.6195}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.0796}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1327}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 ID
@@ -366,10 +405,10 @@ FR-DEV-03 & The private key shall never leave the device, and the app shall sign
 \subsubsection{F4. Sessions and rotating tokens}\label{f4.-sessions-and-rotating-tokens}}
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1359}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.6796}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.0777}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1068}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1681}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.6195}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.0796}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1327}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 ID
@@ -397,10 +436,10 @@ FR-SES-07 & A session shall belong to its classroom\textquotesingle s teacher al
 \subsubsection{F5. Attendance claims}\label{f5.-attendance-claims}}
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1296}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.6481}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.0741}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1481}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1667}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.6140}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.0789}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1404}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 ID
@@ -422,7 +461,7 @@ FR-ATT-04 & The server shall accept a claim only if the nonce belongs to the cal
 FR-ATT-05 & A student shall have at most one attendance record per session. A claim made with a new nonce after a record exists shall be rejected as a duplicate. & M & Done \\
 FR-ATT-06 & Repeating an accepted claim shall return the stored record and shall create no second record. & M & Done \\
 FR-ATT-07 & A rejection caused by policy (too few samples, weak signal) shall leave the nonce usable so the student can move closer and retry until it expires. Acceptance shall consume the nonce atomically. & S & Done \\
-FR-ATT-08 & Every rejection shall carry a reason from the set in Appendix C, returned with HTTP 409. & M & Done \\
+FR-ATT-08 & Every rejection shall carry a reason from this set, returned with HTTP 409: \texttt{invalid\_token}, \texttt{token\_expired}, \texttt{session\_not\_active}, \texttt{not\_enrolled}, \texttt{no\_device\_bound}, \texttt{challenge\_unknown}, \texttt{challenge\_expired}, \texttt{nonce\_reused}, \texttt{token\_mismatch}, \texttt{bad\_signature}, \texttt{claim\_stale}, \texttt{too\_few\_samples}, \texttt{rssi\_below\_threshold}, and \texttt{duplicate}. The supplement explains each. & M & Done \\
 FR-ATT-09 & The student app shall show the server\textquotesingle s result and explain each rejection reason in plain language. & M & Planned \\
 FR-ATT-10 & The student app shall stop scanning and report failure after 90 seconds without a valid session. & S & POC (no automated test yet) \\
 \end{longtable}
@@ -431,10 +470,10 @@ FR-ATT-10 & The student app shall stop scanning and report failure after 90 seco
 \subsubsection{F6. Live roster and corrections}\label{f6.-live-roster-and-corrections}}
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1359}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.6796}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.0777}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1068}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1681}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.6195}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.0796}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1327}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 ID
@@ -459,10 +498,10 @@ FR-COR-02 & Each correction shall write an audit event holding the actor, the st
 \subsubsection{F7. Export}\label{f7.-export}}
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1386}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.6931}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.0792}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.0891}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1712}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.6306}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.0811}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1171}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 ID
@@ -486,10 +525,10 @@ FR-EXP-03 & Each export shall write an audit event. & S & Done \\
 \subsubsection{F8. Audit}\label{f8.-audit}}
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1386}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.6931}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.0792}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.0891}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1712}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.6306}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.0811}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1171}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 ID
@@ -512,10 +551,10 @@ FR-AUD-02 & Clients shall have no read or write access to the audit log. & M & D
 \subsubsection{F9. Offline proof of concept mode}\label{f9.-offline-proof-of-concept-mode}}
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1386}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.6931}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.0792}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.0891}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1712}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.6306}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.0811}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1171}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 ID
@@ -533,6 +572,11 @@ Status
 FR-POC-01 & The original offline mode shall remain: the teacher advertises a six digit code, the student checks in by a GATT write, and the teacher exports CSV on the device. The app shall label this mode as not authoritative. & C & POC \\
 \end{longtable}
 
+\hypertarget{implementation-requirements}{%
+\subsection{Implementation Requirements}\label{implementation-requirements}}
+
+The backend is a FastAPI service on Python 3.11 or later, using psycopg 3 against Supabase Postgres, with Supabase Auth for identity. The client is a Flutter app, Android first, using \texttt{bluetooth\_low\_energy} for the teacher advertiser and the student scanner. The backend is implemented and has automated tests that run against a real Postgres. The Flutter app today holds the offline proof of concept and the claim wire format. The API client, sign in, key storage, token advertising, and live roster screens remain to be built, and Section 3.2 marks them Planned. Status is recorded per requirement, so this section never claims more than the repository holds.
+
 \hypertarget{other-nonfunctional-requirements}{%
 \section{Other Nonfunctional Requirements}\label{other-nonfunctional-requirements}}
 
@@ -542,9 +586,9 @@ FR-POC-01 & The original offline mode shall remain: the teacher advertises a six
 These are targets. The pilot measures them, and the project reports only measured values.
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.1532}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.6306}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.2162}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.2034}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.5932}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.2034}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 ID
@@ -568,8 +612,8 @@ NFR-PERF-05 & Roster read for a session of 300 students & p95 of 500 ms or less 
 \subsection{Security Requirements}\label{security-requirements}}
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.1860}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.8140}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.2391}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.7609}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 ID
@@ -637,7 +681,7 @@ Requirement
 \endlastfoot
 Reliability & Attendance writes shall be idempotent under retry and atomic. Two racing claims for one student shall produce one record. \\
 Availability & The API shall expose \texttt{/healthz} (process) and \texttt{/readyz} (database). The pilot targets best effort availability during class hours. \\
-Maintainability & The backend shall pass Ruff and strict MyPy in CI. Every functional requirement marked Done shall have an automated test (Appendix E). \\
+Maintainability & The backend shall pass Ruff and strict MyPy in CI. Every functional requirement marked Done shall have an automated test (see the supplement). \\
 Testability & Time shall be injectable so tests can exercise token expiry without waiting. Tests shall run against a real Postgres. \\
 Portability & The backend shall run from one container image configured by environment variables. \\
 Usability & A student shall complete a check in with one tap after joining a classroom. Every rejection shall have a plain language explanation. \\
@@ -648,8 +692,8 @@ Observability & Every accepted and rejected claim shall leave an audit event tha
 \subsection{Business Rules}\label{business-rules}}
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.1026}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.8974}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.1358}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.8642}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 ID

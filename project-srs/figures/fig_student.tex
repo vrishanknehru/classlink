@@ -1,0 +1,32 @@
+\documentclass[tikz,border=5pt]{standalone}
+\input{figstyle}
+\begin{document}
+\begin{tikzpicture}[node distance=6.5mm]
+  \node[start] (s0) {};
+  \node[act, below=of s0] (a1) {Sign in, create profile\\(roll number)};
+  \node[act, below=of a1] (a2) {Join classroom\\with join code};
+  \node[act, below=of a2] (a3) {Bind device key\\(first time only)};
+  \node[act, below=of a3] (a4) {Scan for ClassLink token,\\collect RSSI samples};
+  \node[act, below=of a4] (a5) {Request challenge\\with token};
+  \node[dec, below=9mm of a5, text width=2.2cm] (d1) {Challenge\\granted?};
+  \node[act, below=9mm of d1] (a6) {Sign claim with\\device key, submit};
+  \node[dec, below=9mm of a6, text width=2.2cm] (d2) {Accepted?};
+  \node[act, below=9mm of d2] (a7) {Show present};
+  \node[stop, below=of a7] (s1) {};
+  \node[rej, right=2.0cm of d1, text width=4.2cm] (r1) {Show reason\\(not enrolled, session ended)};
+  \node[rej, right=2.0cm of d2, text width=4.2cm] (r2) {Policy reject: move closer\\and retry before nonce expires};
+  \node[rej, below=8mm of r2, text width=4.2cm] (r3) {Other reject: show reason};
+  \node[stop, below=5mm of r1] (f1) {};
+  \node[stop, below=5mm of r3] (f2) {};
+  \foreach \a/\b in {s0/a1,a1/a2,a2/a3,a3/a4,a4/a5,a5/d1,a6/d2}{\draw[flow] (\a) -- (\b);}
+  \draw[flow] (d1) -- (a6) node[lbl, pos=.4] {yes};
+  \draw[flow] (d2) -- (a7) node[lbl, pos=.4] {yes};
+  \draw[flow] (a7) -- (s1);
+  \draw[flow] (d1) -- (r1) node[lbl, pos=.4] {no};
+  \draw[flow] (d2) -- (r2) node[lbl, pos=.4] {no};
+  \draw[flow] (r2) -- (r3);
+  \draw[flow] (r1) -- (f1);
+  \draw[flow] (r3) -- (f2);
+  \draw[flow] (r2.east) -- ++(1.0,0) |- (a4.east) node[lbl, pos=.2] {retry};
+\end{tikzpicture}
+\end{document}
