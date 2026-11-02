@@ -1,37 +1,34 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:bluetooth_low_energy/bluetooth_low_energy.dart';
 import 'package:flutter/foundation.dart';
 
-import '../attendance/attendance_record.dart';
 import 'ble_constants.dart';
 
-enum BroadcastState { idle, starting, advertising, stopping, failure }
+enum BroadcastState { idle, starting, broadcasting, failure }
 
-/// Wraps [PeripheralManager] to advertise a classroom session and collect
-/// check-ins written by student devices. Teacher-only advertiser role —
-/// no mesh and no student to student relaying (SRS constraint CON-03).
+/// Teacher phone as a BLE peripheral: advertises the ClassLink service and
+/// answers reads of the token characteristic with whatever token the server
+/// issued last. The phone never makes tokens itself; it only relays them.
 class TeacherBroadcaster extends ChangeNotifier {
   final PeripheralManager _manager = PeripheralManager();
 
   BroadcastState _state = BroadcastState.idle;
   BroadcastState get state => _state;
 
-  String? _sessionCode;
-  String? get sessionCode => _sessionCode;
-
-  DateTime? _sessionStartedAt;
-  DateTime? get sessionStartedAt => _sessionStartedAt;
-
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
-  final List<AttendanceRecord> _records = [];
-  List<AttendanceRecord> get records => List.unmodifiable(_records);
-  final Set<String> _seenRollNumbers = {};
+  Uint8List? _token;
 
-  StreamSubscription<GATTCharacteristicWriteRequestedEventArgs>? _writeSub;
+  int _readsServed = 0;
+
+  /// How many times a student phone has read the token this session.
+  int get readsServed => _readsServed;
+
+  StreamSubscription<GATTCharacteristicReadRequestedEventArgs>? _readSub;
   StreamSubscription<BluetoothLowEnergyStateChangedEventArgs>? _stateSub;
 
   TeacherBroadcaster() {
@@ -43,102 +40,96 @@ class TeacherBroadcaster extends ChangeNotifier {
     });
   }
 
-  Future<void> startSession() async {
-    if (_state == BroadcastState.advertising ||
+  /// Replace the token served to students. Call this whenever the server
+  /// rotates it.
+  void updateToken(List<int> token) {
+    _token = Uint8List.fromList(token);
+  }
+
+  Future<void> start() async {
+    if (_state == BroadcastState.broadcasting ||
         _state == BroadcastState.starting) {
       return;
     }
     _state = BroadcastState.starting;
     _errorMessage = null;
+    _readsServed = 0;
     notifyListeners();
     try {
       await waitForPoweredOn(_manager);
       await _manager.removeAllServices();
-
-      final checkInCharacteristic = GATTCharacteristic.mutable(
-        uuid: BleConstants.checkInCharacteristicUuid,
-        properties: [GATTCharacteristicProperty.write],
-        permissions: [GATTCharacteristicPermission.write],
+      final tokenCharacteristic = GATTCharacteristic.mutable(
+        uuid: BleConstants.tokenCharacteristicUuid,
+        properties: [GATTCharacteristicProperty.read],
+        permissions: [GATTCharacteristicPermission.read],
         descriptors: [],
       );
-
-      final service = GATTService(
-        uuid: BleConstants.serviceUuid,
-        isPrimary: true,
-        includedServices: [],
-        characteristics: [checkInCharacteristic],
+      await _manager.addService(
+        GATTService(
+          uuid: BleConstants.serviceUuid,
+          isPrimary: true,
+          includedServices: [],
+          characteristics: [tokenCharacteristic],
+        ),
       );
-
-      await _manager.addService(service);
-
-      _writeSub ??= _manager.characteristicWriteRequested.listen(
-        _onWriteRequested,
+      _readSub ??= _manager.characteristicReadRequested.listen(_onRead);
+      // Service UUID only: it fits a legacy advertisement on both platforms,
+      // and leaving the name out stops the plugin renaming an Android phone.
+      await _manager.startAdvertising(
+        Advertisement(serviceUUIDs: [BleConstants.serviceUuid]),
       );
-
-      _sessionCode = SessionCode.generate();
-      _sessionStartedAt = DateTime.now();
-      _records.clear();
-      _seenRollNumbers.clear();
-
-      // Legacy advertisements are capped at 31 bytes: flags (3) + 128-bit
-      // service UUID (18) + manufacturer data (10) fills it exactly on Android,
-      // so no name there (the plugin would also rename the phone). iOS drops
-      // manufacturer data, so the code travels in the local name instead.
-      final advertisement = Advertisement(
-        serviceUUIDs: [BleConstants.serviceUuid],
-        name: Platform.isIOS ? SessionCode.toAdvertisedName(_sessionCode!) : null,
-        manufacturerSpecificData: Platform.isIOS
-            ? []
-            : [
-                ManufacturerSpecificData(
-                  id: BleConstants.manufacturerId,
-                  data: SessionCode.encode(_sessionCode!),
-                ),
-              ],
-      );
-      await _manager.startAdvertising(advertisement);
-
-      _state = BroadcastState.advertising;
+      _state = BroadcastState.broadcasting;
     } on BluetoothUnavailableException catch (e) {
       _state = BroadcastState.failure;
       _errorMessage = e.message;
     } catch (e) {
       _state = BroadcastState.failure;
-      _errorMessage = 'Could not start broadcasting: $e';
+      _errorMessage = 'Could not start Bluetooth: $e';
     }
     notifyListeners();
   }
 
-  Future<void> _onWriteRequested(
-    GATTCharacteristicWriteRequestedEventArgs event,
-  ) async {
-    final payload = CheckInPayload.decode(event.request.value);
-    await _manager.respondWriteRequest(event.request);
-    if (payload == null) return;
-    if (_seenRollNumbers.contains(payload.rollNumber)) {
-      return; // One attendance record per student per session.
+  Future<void> _onRead(GATTCharacteristicReadRequestedEventArgs event) async {
+    if (event.characteristic.uuid != BleConstants.tokenCharacteristicUuid) {
+      await _manager.respondReadRequestWithError(
+        event.request,
+        error: GATTError.attributeNotFound,
+      );
+      return;
     }
-    _seenRollNumbers.add(payload.rollNumber);
-    _records.add(
-      AttendanceRecord(
-        name: payload.name,
-        rollNumber: payload.rollNumber,
-        medianRssi: payload.medianRssi,
-        checkedInAt: DateTime.now(),
-      ),
+    final token = _token;
+    if (token == null) {
+      await _manager.respondReadRequestWithError(
+        event.request,
+        error: GATTError.readNotPermitted,
+      );
+      return;
+    }
+    final offset = event.request.offset;
+    if (offset > token.length) {
+      await _manager.respondReadRequestWithError(
+        event.request,
+        error: GATTError.invalidOffset,
+      );
+      return;
+    }
+    await _manager.respondReadRequestWithValue(
+      event.request,
+      value: token.sublist(offset),
     );
-    notifyListeners();
+    if (offset == 0) {
+      _readsServed++;
+      notifyListeners();
+    }
   }
 
-  Future<void> endSession() async {
-    if (_state != BroadcastState.advertising) return;
-    _state = BroadcastState.stopping;
-    notifyListeners();
+  Future<void> stop() async {
+    _token = null;
     try {
       await _manager.stopAdvertising();
       await _manager.removeAllServices();
     } catch (_) {
-      // Best-effort cleanup; the session is ending regardless.
+      // Best effort; the session is ending regardless.
     }
     _state = BroadcastState.idle;
     notifyListeners();
@@ -146,7 +137,7 @@ class TeacherBroadcaster extends ChangeNotifier {
 
   @override
   void dispose() {
-    _writeSub?.cancel();
+    _readSub?.cancel();
     _stateSub?.cancel();
     super.dispose();
   }

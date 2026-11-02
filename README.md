@@ -4,15 +4,14 @@
 and Technology**
 
 ClassLink is a BLE-based classroom attendance system. A teacher's phone
-advertises a short-lived Bluetooth Low Energy token for an active session;
-enrolled students' phones scan for that token while physically nearby,
-collect proximity evidence, authenticate locally, and submit a signed
-attendance claim to a server-authoritative backend.
+serves a short-lived session token over Bluetooth Low Energy; enrolled
+students' phones find it while physically nearby, measure signal strength,
+and send a claim signed with a per phone key to a server that makes the
+final decision.
 
-The repository contains a tested **backend** (`backend/`), a runnable
-offline **proof of concept** app (`code/`), and the project documents. Mobile
-integration with the backend is in progress. The SRS (`docs/srs/`) marks every
-requirement as Done, POC, or Planned.
+The repository contains a tested **backend** (`backend/`), the **Flutter app**
+for Android and iOS (`code/`), and the project documents. The SRS
+(`docs/srs/`) marks every requirement as Done, POC, or Planned.
 
 ## Team
 
@@ -43,11 +42,32 @@ classlink/
 ```bash
 cd code
 flutter pub get
-flutter run
+flutter run \
+  --dart-define=API_BASE_URL=https://your-api.example.com \
+  --dart-define=SUPABASE_URL=https://abcd.supabase.co \
+  --dart-define=SUPABASE_ANON_KEY=eyJ...
 ```
 
-Requires two physical Android devices with Bluetooth LE support — BLE
-peripheral/GATT-server mode is unreliable on most emulators.
+Leave out the two Supabase values to get a developer sign in that accepts a
+token from `backend/scripts/dev_token.py`, for the local `docker compose`
+stack. Without `API_BASE_URL` the app uses `http://10.0.2.2:8000`, which is
+the host machine as seen from the Android emulator.
+
+How a check in works on the phones:
+
+1. The teacher starts a session. The teacher phone fetches the current token
+   from the server every few seconds and serves it from a readable Bluetooth
+   characteristic. The token is 17 bytes, too big for a normal advertisement
+   next to a 128 bit service UUID, and iOS will not advertise manufacturer
+   data, so a quick read works the same on Android and iOS.
+2. The student phone finds the strongest teacher phone, reads the token, and
+   sends it to the server, which returns a one time nonce and the signal rules.
+3. The student phone measures signal strength for the session's window, signs
+   the claim with its device key (ECDSA P-256, stored in the Keychain or
+   Keystore backed storage) and sends it. The server checks everything again.
+
+Real check ins need two physical phones with Bluetooth LE. Peripheral mode is
+unreliable on emulators.
 
 ## Backend
 

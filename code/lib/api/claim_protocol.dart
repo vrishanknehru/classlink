@@ -38,3 +38,28 @@ String canonicalClaim({
     seconds.toString(),
   ].join('\n');
 }
+
+/// Size of the rotating session token (backend/app/tokens.py):
+/// version (1) | session alias (4) | epoch (4) | HMAC tag (8).
+const int tokenLength = 17;
+const int tokenVersion = 1;
+
+/// Parse lower or upper case hex into bytes. Throws [FormatException].
+List<int> hexToBytes(String hex) {
+  final clean = hex.trim();
+  if (clean.length.isOdd) throw const FormatException('odd length hex');
+  return [
+    for (var i = 0; i < clean.length; i += 2)
+      int.parse(clean.substring(i, i + 2), radix: 16),
+  ];
+}
+
+/// True when [bytes] has the shape of a session token. Only the server can
+/// tell whether it is genuine and fresh.
+bool looksLikeToken(List<int> bytes) =>
+    bytes.length == tokenLength && bytes.first == tokenVersion;
+
+/// The 8 character room code both phones show: the token's session alias.
+/// Students can compare it with the teacher's screen before checking in.
+String roomCodeOf(List<int> token) =>
+    bytesToHex(token.sublist(1, 5)).toUpperCase();

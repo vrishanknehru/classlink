@@ -1,4 +1,4 @@
-name: ble_attendance_poc
+name: classlink
 description: "ClassLink: BLE based classroom attendance (UCS503P, TIET)."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -31,19 +31,22 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
-  # BLE central + peripheral roles (teacher advertises/GATT-serves, student scans/connects)
+  # BLE: the teacher phone serves the session token over GATT, the student
+  # phone scans for it and samples signal strength.
   bluetooth_low_energy: ^6.2.1
-  # Runtime permission requests (BLE + location on Android)
+  # Runtime permission requests (BLE, plus location on Android 11 and older).
   permission_handler: ^11.3.1
-  # CSV encoding for the attendance export
-  csv: ^6.0.0
-  # Resolve a writable directory for the exported CSV
+  # Talks to the ClassLink API and to Supabase Auth.
+  http: ^1.2.2
+  # Keychain on iOS, Keystore backed storage on Android: sign in tokens and
+  # the device signing key live here.
+  flutter_secure_storage: ^9.2.2
+  # ECDSA P-256 for the device key that signs attendance claims.
+  pointycastle: ">=3.9.1 <5.0.0"
+  # Save and share the CSV export the server produces.
   path_provider: ^2.1.4
-  # Share/export the CSV file after a session ends
   share_plus: ^10.1.2
 
 dev_dependencies:

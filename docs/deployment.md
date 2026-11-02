@@ -11,6 +11,7 @@ the team. Nothing here asks you to put a secret in the repository.
 | Postgres, Auth | Supabase project | You create the project and apply one SQL file |
 | API | Any container host (Render blueprint included) | `render.yaml`, or the image from GitHub Container Registry |
 | Android app | Students' and teachers' phones | The APK from the `android-release` workflow |
+| iOS app | iPhones | Built from `code/` in Xcode with the same `--dart-define` values |
 
 ## 1. Create the Supabase project
 
@@ -77,6 +78,17 @@ the list becomes a student. There is no in app way to grant teacher.
 
 ## 5. Build and distribute the APK
 
+0. In **Settings > Secrets and variables > Actions > Variables**, add
+   `CLASSLINK_API_BASE_URL` (the API's https address), `SUPABASE_URL` and
+   `SUPABASE_ANON_KEY`. The workflow bakes them into the APK. To build by hand:
+   ```bash
+   cd code
+   flutter build apk --release \
+     --dart-define=API_BASE_URL=https://classlink-api.onrender.com \
+     --dart-define=SUPABASE_URL=https://abcd.supabase.co \
+     --dart-define=SUPABASE_ANON_KEY=eyJ...
+   ```
+   For iPhones use `flutter build ipa` with the same flags and your Apple team.
 1. In the GitHub repository settings, add four secrets for release signing:
    `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`,
    and `ANDROID_KEY_PASSWORD`. Create the keystore yourself and keep a backup.
@@ -92,9 +104,9 @@ the list becomes a student. There is no in app way to grant teacher.
    workflow still builds, signed with the debug key. That is fine for a pilot
    and not for the Play Store.
 
-The Android application id still contains `poc`
-(`com.classlink.poc.ble_attendance_poc`). Choose the final id before any Play
-Store upload, because it cannot change afterwards.
+The Android application id and the iOS bundle id are `com.classlink.app`.
+Change them before any store upload if the college wants its own domain,
+because they cannot change afterwards.
 
 ## 6. Pilot checklist
 

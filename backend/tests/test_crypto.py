@@ -85,3 +85,18 @@ GOLDEN_CLAIM = (
     b"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\n0101020304000000f1a1b2c3d4e5f60708\n"
     b"-62\n5\n1792065600"
 )
+
+
+# The Flutter app signs with this key in code/test/device_key_test.dart and
+# must produce exactly this signature (RFC 6979 deterministic ECDSA).
+FLUTTER_PUBLIC_KEY = (
+    "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEYP7UuiVanTHJYet0xjVtaMBJuJI7Yfps5mliLmDyn7Z5"
+    "A/4QCLi8maQa6elWKLxk8vGyDC1+n1F3o8KU1EYimQ=="
+)
+FLUTTER_SIGNATURE = "MEQCIFLk06DXNiG3TkCnqxBsjo4WDRki3A28dlU5042i7/S7AiBJS62XeWOmnuNStq6jt2Rq6YxAXheUcag6ImTpbxRrKg=="
+
+
+def test_signature_from_the_flutter_client_verifies() -> None:
+    assert crypto.is_valid_public_key(FLUTTER_PUBLIC_KEY)
+    assert crypto.verify_signature(FLUTTER_PUBLIC_KEY, GOLDEN_CLAIM, FLUTTER_SIGNATURE)
+    assert not crypto.verify_signature(FLUTTER_PUBLIC_KEY, GOLDEN_CLAIM + b"x", FLUTTER_SIGNATURE)

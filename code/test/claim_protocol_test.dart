@@ -1,4 +1,4 @@
-import 'package:ble_attendance_poc/api/claim_protocol.dart';
+import 'package:classlink/api/claim_protocol.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -37,5 +37,27 @@ void main() {
     final base = DateTime.utc(2026, 10, 15, 12);
     expect(at(base.add(const Duration(milliseconds: 900))), at(base));
     expect(at(base.add(const Duration(seconds: 1))), isNot(at(base)));
+  });
+
+  group('token helpers', () {
+    final token = hexToBytes('0101020304000000f1a1b2c3d4e5f60708');
+
+    test('hex round trips', () {
+      expect(bytesToHex(token), '0101020304000000f1a1b2c3d4e5f60708');
+      expect(hexToBytes('0A0b'), [10, 11]);
+      expect(() => hexToBytes('abc'), throwsFormatException);
+    });
+
+    test('recognises the token shape only', () {
+      expect(looksLikeToken(token), isTrue);
+      expect(looksLikeToken(token.sublist(1)), isFalse);
+      expect(looksLikeToken([2, ...token.sublist(1)]), isFalse);
+    });
+
+    test('room code is the session alias in capitals', () {
+      expect(roomCodeOf(token), '01020304');
+      expect(roomCodeOf(hexToBytes('01deadbeef000000000000000000000000')),
+          'DEADBEEF');
+    });
   });
 }

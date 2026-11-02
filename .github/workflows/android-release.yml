@@ -1,6 +1,11 @@
 name: android-release
 
 # Builds the pilot APK. Push a tag like v0.2.0 or run it by hand.
+# Set these repository variables (Settings > Secrets and variables >
+# Actions > Variables) so the app knows where the server is:
+#   CLASSLINK_API_BASE_URL   e.g. https://classlink-api.onrender.com
+#   SUPABASE_URL             e.g. https://abcd.supabase.co
+#   SUPABASE_ANON_KEY        the public anon key (safe to ship in an app)
 # With the four signing secrets set the APK is signed with your release key.
 # Without them it falls back to the debug key, which is fine for a pilot
 # sideload but not for the Play Store.
@@ -49,7 +54,19 @@ jobs:
       - run: flutter pub get
       - run: flutter analyze
       - run: flutter test
-      - run: flutter build apk --release
+      - name: Build APK
+        env:
+          API_BASE_URL: ${{ vars.CLASSLINK_API_BASE_URL }}
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$API_BASE_URL" ]; then
+            echo "::warning::CLASSLINK_API_BASE_URL is not set; the APK will point at the local dev server."
+          fi
+          flutter build apk --release \
+            --dart-define=API_BASE_URL="$API_BASE_URL" \
+            --dart-define=SUPABASE_URL="$SUPABASE_URL" \
+            --dart-define=SUPABASE_ANON_KEY="$SUPABASE_ANON_KEY"
       - uses: actions/upload-artifact@v4
         with:
           name: classlink-apk
