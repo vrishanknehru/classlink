@@ -1,0 +1,21 @@
+\documentclass[tikz,border=5pt]{standalone}
+\input{figstyle}
+\begin{document}
+\begin{tikzpicture}
+  \tikzset{lay/.style={box, rounded corners=3pt, minimum height=1.5cm, text width=5.4cm, fill=gray!8}}
+  \node[lay, text width=4.6cm] (te) at (0,0) {\textbf{Teacher mode}\\[1pt]\footnotesize start session, show token, roster};
+  \node[lay, text width=4.6cm] (st) at (6.4,0) {\textbf{Student mode}\\[1pt]\footnotesize scan, sample, sign, send claim};
+  \draw[ble] (te) -- (st) node[lbl, midway, above=1pt] {BLE token};
+  \node[font=\small\bfseries] at (3.2,1.45) {Flutter app on Android and iOS phones};
+  \node[lay, text width=11cm] (api) at (3.2,-3.2) {\textbf{REST API (FastAPI)}\\[1pt]\footnotesize authentication, validation, HTTPS and JSON};
+  \node[lay, text width=5.2cm] (bl) at (0.4,-6.4) {\textbf{Business logic}\\[1pt]\footnotesize rotating tokens, claim checks,\\corrections, export};
+  \node[lay, text width=4.6cm] (au) at (6.4,-6.4) {\textbf{Supabase Auth}\\[1pt]\footnotesize sign in, user tokens};
+  \node[lay, text width=11cm] (db) at (3.2,-9.6) {\textbf{Postgres on Supabase}\\[1pt]\footnotesize classrooms, sessions, attendance, audit log, row level security};
+  \draw[flow, <->] (te.south) -- (te.south |- api.north);
+  \draw[flow, <->] (st.south) -- (st.south |- api.north);
+  \draw[flow, <->] (api.south) -- (api.south |- bl.north) ;
+  \draw[flow, <->] ([xshift=1.5cm]api.south) -- ([xshift=1.5cm]api.south |- au.north);
+  \draw[flow, <->] (bl.south) -- (bl.south |- db.north);
+  \draw[flow, <->] (au.south) -- (au.south |- db.north);
+\end{tikzpicture}
+\end{document}

@@ -53,7 +53,6 @@ docs/uml/
     06-deployment-current-poc.puml
     07-state-session-lifecycle.puml
   png/    <matching >.png   (300 DPI)
-  svg/    <matching >.svg   (scalable, for LaTeX/Overleaf)
   latex/
     uml-figures.tex                    ready-to-paste \begin{figure} blocks
   README.md                            this file
@@ -87,8 +86,6 @@ using Graphviz (`dot`) for the layered component/deployment layouts. From
 # PNG at 300 DPI
 java -Dplantuml.dpi=300 -jar plantuml.jar -tpng -o ../png *.puml
 
-# SVG (scalable)
-java -jar plantuml.jar -tsvg -o ../svg *.puml
 ```
 
 Requirements: a JRE (Java 11+) and Graphviz (`dot` on `PATH`) — install with
@@ -138,5 +135,5 @@ java -Dplantuml.dpi=300 -jar plantuml.jar -tpng -o ../png 05-component-current-p
 - [x] Check-in uses name and roll number only (class diagram
       `CheckInPayload`/`StudentProfile`, sequence diagram payload write).
 - [x] The pending cross-platform two-phone test is **not** marked as
-      completed anywhere; see `docs/uml/VALIDATION.md` for what evidence
-      does and does not exist in this repository.
+      completed anywhere. No device test evidence is committed yet; the
+      evaluation plan in the SRS (`docs/srs/`) defines where it will live.

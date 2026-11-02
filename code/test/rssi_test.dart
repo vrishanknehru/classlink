@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ble_attendance_poc/util/rssi_math.dart';
+import 'package:classlink/util/rssi_math.dart';
 
 void main() {
   group('medianRssi', () {
@@ -35,6 +35,43 @@ void main() {
 
     test('false when rssi is weaker (more negative) than threshold', () {
       expect(isWithinThreshold(rssi: -90, thresholdDbm: -75), isFalse);
+    });
+  });
+
+  group('evaluateWindow', () {
+    test('no samples is too few, with no median', () {
+      expect(
+        evaluateWindow([], thresholdDbm: -75, minSamples: 3),
+        (WindowVerdict.tooFewSamples, null),
+      );
+    });
+
+    test('fewer samples than the policy asks for is too few', () {
+      expect(
+        evaluateWindow([-60, -61], thresholdDbm: -75, minSamples: 3).$1,
+        WindowVerdict.tooFewSamples,
+      );
+    });
+
+    test('weak median is too far', () {
+      expect(
+        evaluateWindow([-80, -82, -79], thresholdDbm: -75, minSamples: 3),
+        (WindowVerdict.tooFar, -80),
+      );
+    });
+
+    test('strong enough and enough samples passes', () {
+      expect(
+        evaluateWindow([-70, -62, -75, -66], thresholdDbm: -75, minSamples: 3),
+        (WindowVerdict.ok, -68),
+      );
+    });
+
+    test('a median exactly on the threshold passes, like the server', () {
+      expect(
+        evaluateWindow([-75, -75, -75], thresholdDbm: -75, minSamples: 3).$1,
+        WindowVerdict.ok,
+      );
     });
   });
 }

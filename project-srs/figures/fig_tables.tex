@@ -1,0 +1,20 @@
+\documentclass[tikz,border=5pt]{standalone}
+\input{figstyle}
+\begin{document}
+\begin{tikzpicture}
+  \tbl{Profiles}{0,0}{profiles}{id, role, full\_name, roll\_number, email}
+  \tbl{Classrooms}{4.5,0}{classrooms}{id, teacher\_id, name, join\_code}
+  \tbl{Sessions}{9,0}{sessions}{id, classroom\_id, alias, rssi\_threshold, min\_samples, started\_at, ended\_at}
+  \tbl{Attendance}{13.5,0}{attendance}{id, session\_id, student\_id, challenge\_id, status, source, median\_rssi}
+  \tbl{Devices}{0,-6.2}{devices}{id, student\_id, public\_key, revoked\_at}
+  \tbl{Enrollments}{4.5,-6.2}{enrollments}{classroom\_id, student\_id, joined\_at}
+  \tbl{Challenges}{9,-6.2}{challenges}{id, session\_id, student\_id, token\_hex, expires\_at, used\_at}
+  \draw[curve] (Profiles-1.east) -- (Classrooms-2.west);
+  \draw[curve] (Classrooms-1.east) -- (Sessions-2.west);
+  \draw[curve] (Sessions-1.east) -- (Attendance-2.west);
+  \draw[curve] (Profiles-5.south) -- (Devices.north);
+  \draw[curve] (Classrooms-4.south) -- (Enrollments.north);
+  \draw[curve] (Sessions-7.south) -- (Challenges.north);
+  \draw[curve] (Challenges-1.east) -- ++(0.65,0) |- (Attendance-4.west);
+\end{tikzpicture}
+\end{document}

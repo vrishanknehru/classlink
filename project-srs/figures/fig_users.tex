@@ -1,0 +1,14 @@
+\documentclass[tikz,border=5pt]{standalone}
+\input{figstyle}
+\begin{document}
+\begin{tikzpicture}[node distance=7mm, every node/.append style={text width=3.1cm, align=center}]
+  \node[ent, text width=4cm, font=\small\bfseries] (root) at (6.6,0) {ClassLink users};
+  \node[box, text width=3.1cm] (te) at (0,-2.6) {\textbf{Teacher}\\[2pt]\footnotesize Creates classrooms,\\runs sessions, corrects,\\exports};
+  \node[box, text width=3.1cm] (st) at (4.4,-2.6) {\textbf{Student}\\[2pt]\footnotesize Joins classrooms,\\binds one device,\\checks in};
+  \node[box, text width=3.1cm, dashed] (ad) at (8.8,-2.6) {\textbf{Administrator}\\[2pt]\footnotesize Deploys, holds secrets,\\edits approved teacher list};
+  \node[box, text width=3.1cm, dashed] (ev) at (13.2,-2.6) {\textbf{Evaluator}\\[2pt]\footnotesize Reads exported CSV\\and evaluation data};
+  \foreach \n in {te,st,ad,ev}{\draw[thick, ink] (root.south) -- ++(0,-.45) -| (\n.north);}
+  \node[font=\scriptsize, text width=6cm, align=left, anchor=north west] at (-1.6,-4.3) {Solid: in app roles.};
+  \node[font=\scriptsize, text width=8cm, align=left, anchor=north west] at (3.1,-4.3) {Dashed: work through configuration or files, not the app.};
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,22 @@
+\documentclass[tikz,border=5pt]{standalone}
+\input{figstyle}
+\begin{document}
+\begin{tikzpicture}
+  \tikzset{eb/.style={box, minimum width=2.4cm, minimum height=1.1cm, font=\small\bfseries}}
+  \node[eb] (tea) at (0,0) {Teacher};
+  \node[eb] (cla) at (5.2,0) {Classroom};
+  \node[eb] (ses) at (10.4,0) {Session};
+  \node[eb] (tok) at (15.6,0) {Token};
+  \node[eb] (stu) at (15.6,-3.4) {Student};
+  \node[eb] (clm) at (10.4,-3.4) {Claim};
+  \node[eb] (att) at (5.2,-3.4) {Attendance};
+  \node[eb] (ros) at (0,-3.4) {Roster, CSV};
+  \draw[flow] (tea) -- (cla) node[lbl, midway] {creates};
+  \draw[flow] (cla) -- (ses) node[lbl, midway] {runs};
+  \draw[flow] (ses) -- (tok) node[lbl, midway] {issues};
+  \draw[flow] (tok) -- (stu) node[lbl, midway] {heard by};
+  \draw[flow] (stu) -- (clm) node[lbl, midway] {signs};
+  \draw[flow] (clm) -- (att) node[lbl, midway] {recorded as};
+  \draw[flow] (att) -- (ros) node[lbl, midway] {shown in};
+\end{tikzpicture}
+\end{document}

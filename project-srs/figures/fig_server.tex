@@ -1,0 +1,29 @@
+\documentclass[tikz,border=5pt]{standalone}
+\input{figstyle}
+\begin{document}
+\begin{tikzpicture}[node distance=4mm]
+  \node[start] (s0) {};
+  \node[act, below=of s0, text width=4.2cm] (a0) {Receive the student's\\signed claim};
+  \def\g{2.0}
+  \foreach \i/\q/\r in {
+    1/{Is the challenge\\this student's, unused,\\and recent?}/{challenge unknown, expired, or reused},
+    2/{Does the token match\\the challenge?}/{token mismatch},
+    3/{Does the signature match\\the student's phone?}/{bad signature},
+    4/{Is the claim fresh with\\enough samples?}/{stale claim, too few samples},
+    5/{Is the signal strong enough,\\and no earlier record?}/{signal too weak, duplicate}}{
+    \node[dec, text width=3.8cm] (d\i) at (0,{-1.2-\g*\i}) {\q};
+    \node[rej, text width=4.4cm, anchor=west] (r\i) at (3.7,{-1.2-\g*\i}) {\r};
+    \draw[flow] (d\i.east) -- (r\i.west) node[lbl, pos=.5] {no};}
+  \node[act, below=9mm of d5, text width=5.4cm] (ok) {Record present and audit it,\\return accepted};
+  \node[stop, below=of ok] (s1) {};
+  \node[act, text width=3.1cm, fill=warn] (rej) at (11.4,-6.2) {Audit it and\\return a rejection\\with the reason};
+  \draw[flow] (s0) -- (a0);
+  \draw[flow] (a0) -- (d1.north);
+  \foreach \i/\j in {1/2,2/3,3/4,4/5}{\draw[flow] (d\i) -- (d\j) node[lbl, pos=.4] {yes};}
+  \draw[flow] (d5) -- (ok) node[lbl, pos=.4] {yes};
+  \draw[flow] (ok) -- (s1);
+  \foreach \i in {1,...,5}{\draw[thick, ink] (r\i.east) -- (r\i.east -| 9.3,0);}
+  \draw[thick, ink] (9.3,{-1.2-\g}) -- (9.3,{-1.2-5*\g});
+  \draw[flow] (9.3,-6.2) -- (rej.west);
+\end{tikzpicture}
+\end{document}

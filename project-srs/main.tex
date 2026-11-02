@@ -1,0 +1,83 @@
+% ClassLink Software Requirements Specification.
+% Structure follows the Overleaf "Software Requirements Specification" template:
+% Introduction, Overall Description, System Features, Other Nonfunctional
+% Requirements, Other Requirements. Requirement IDs and a status column are added.
+% The body is generated from docs/srs/index.md by build.py. Edit the Markdown,
+% then run: python3 project-srs/build.py
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage{array,calc,longtable,booktabs}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{etoolbox}
+\usepackage{needspace}
+\usepackage{lastpage}
+\makeatletter\def\fps@figure{!htbp}\makeatother
+\setlength{\textfloatsep}{14pt plus 2pt minus 4pt}
+\setlength{\intextsep}{12pt plus 2pt minus 4pt}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage{chngcntr}
+\counterwithin{figure}{section}
+\counterwithin{table}{section}
+
+\DeclareUnicodeCharacter{2212}{\textminus}
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\newcommand{\pandocbounded}[1]{#1}
+\linespread{1.03}\selectfont
+\widowpenalty=10000 \clubpenalty=10000
+\AtBeginEnvironment{longtable}{\small}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5em}
+\renewcommand{\arraystretch}{1.15}
+\setlength{\LTpre}{0.4em}
+\setlength{\LTpost}{0.8em}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{ClassLink Software Requirements Specification}
+\rhead{UCS503P -- 2026--27 ODD}
+\cfoot{\thepage\ of \pageref{LastPage}}
+\renewcommand{\headrulewidth}{0.6pt}
+\let\oldsection\section
+\renewcommand{\section}{\clearpage\oldsection}
+
+\begin{document}
+
+\begin{titlepage}
+  \thispagestyle{plain}
+  \fontencoding{OT1}\selectfont
+  \hspace*{-0.8in}\rule{7.6in}{4mm}\par
+  \vspace{1.4cm}
+  \noindent\hspace*{-0.67in}\scalebox{1.17}{\begin{minipage}{5.85in}
+  \begin{flushright}
+    \bfseries
+    {\Huge SOFTWARE REQUIREMENTS\\SPECIFICATION}\\[1.8cm]
+    {\huge for}\\[1.8cm]
+    {\Huge CLASSLINK}\\[1.5cm]
+    {\Large Version 1.0}\\[1.8cm]
+    {\Large Prepared by : 1. Vemula Manvi Smaran\\(1024160111)\\
+    2. Vrishank Nehru (1024160109)\\
+    3. Mahi Singh (1024160102)\\
+    4. Khagendra Saini (1024160123)}\\[1.5cm]
+    {\Large Submitted to : Anushka Ma'am}\\[0.2cm]
+    {\large Thapar Institute of Engineering and Technology\\(UCS503P)}\\[1.5cm]
+    {\Large October 16, 2026}
+  \end{flushright}
+  \end{minipage}}
+  \vfill
+\end{titlepage}
+\setcounter{page}{2}
+
+\setcounter{tocdepth}{2}
+\tableofcontents
+\clearpage
+
+\input{body.tex}
+
+\end{document}
