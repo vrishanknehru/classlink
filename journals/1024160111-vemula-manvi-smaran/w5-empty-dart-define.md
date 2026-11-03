@@ -1,4 +1,4 @@
-# Week 7 : Release App Pointed at an Empty Server Address
+# Week 5 : Release App Pointed at an Empty Server Address
 
 # Build Time Settings
 

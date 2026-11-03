@@ -1,4 +1,4 @@
-# Week 3 : A Photographed Code Should Not Work Later
+# Week 2 : A Photographed Code Should Not Work Later
 
 # Rotating Session Tokens
 

@@ -1,4 +1,4 @@
-# Week 4 : One Student Marked Twice
+# Week 3 : One Student Marked Twice
 
 # Atomic Claim Acceptance
 

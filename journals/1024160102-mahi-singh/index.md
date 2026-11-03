@@ -7,3 +7,4 @@ Name: Mahi Singh
 +  [W2 : Wireless Debugging Kept Dropping the iPhone](./w2-wireless-debug.md)
 +  [W3 : Making Sure the Advertisement Fits](./w3-advert-byte-budget.md)
 +  [W4 : Journals Missing From the Docs Site](./w4-journal-nav-missing.md)
++  [W5 : Checking the Token the Student Phone Reads](./w5-checking-the-read-token.md)
