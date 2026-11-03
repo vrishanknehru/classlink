@@ -3,10 +3,10 @@
 **UCS503P — Software Engineering Project, TIET**
 
 ClassLink is a BLE-based classroom attendance system. A teacher's phone
-advertises a short-lived Bluetooth Low Energy token for an active session;
-enrolled students' phones scan for that token while physically nearby,
-collect proximity evidence, authenticate locally, and submit a signed
-attendance claim to a server-authoritative backend.
+shares a short-lived session token over Bluetooth Low Energy; enrolled
+students' phones find it while physically nearby, measure signal strength,
+and send a claim signed with a per phone key to a server that makes the
+final decision.
 
 ClassLink does not claim to prove that the human owner of a phone is
 present. It verifies that a bound, locally authenticated device observed a
@@ -14,18 +14,13 @@ valid classroom beacon under a configured proximity policy.
 
 ## Current status
 
-The repository contains two working pieces and one in progress.
-
-- **Backend (done, tested).** A FastAPI service on Supabase Postgres with
-  row level security, rotating BLE tokens, device signed attendance claims,
-  a live roster, corrections with a mandatory reason, an audit trail, and CSV
-  export. See [`backend/`](https://github.com/vrishanknehru/classlink/tree/main/backend).
-- **Offline proof of concept app (done).** A Flutter app that proves the core
-  BLE mechanism: the teacher advertises, the student scans and checks in by
-  proximity, and results export to CSV on the device.
-- **Mobile integration with the backend (in progress).** Sign in, device key
-  signing, rotating token advertising, and the live roster in the app. The
-  [SRS](srs/index.md) marks each requirement as Done, POC, or Planned.
+| Part | Status |
+|---|---|
+| Backend | Done. FastAPI on Supabase Postgres: rotating tokens, signed claims, 14 rejection reasons, live roster, corrections with a reason, audit log, CSV export. 78 tests. |
+| Flutter app (Android and iOS) | Done and connected to the server: sign in, classrooms, teacher session with live roster, one tap student check in with a signed claim. 47 tests. |
+| SRS | Done. [Read it here](srs/index.md), or the [PDF](https://github.com/vrishanknehru/classlink/blob/main/project-srs/ClassLink-SRS.pdf). |
+| Deployment | Files ready: Docker image, Render blueprint, release workflow. See the [runbook](deployment.md). Server not live yet. |
+| Next | Put the server live, then test check in on real phones in a classroom. |
 
 ## Where to look
 
@@ -35,7 +30,11 @@ The repository contains two working pieces and one in progress.
   threat model, API summary, and test traceability.
 - [UML diagrams](uml/README.md) — use case, class, sequence, activity,
   component, deployment, and state diagrams for the current POC.
-- [`journals/`](journals/) — weekly progress journals, one per team member.
+- Weekly journals, one per team member:
+  [Manvi](journals/1024160111-vemula-manvi-smaran/index.md),
+  [Vrishank](journals/1024160109-vrishank-nehru/index.md),
+  [Mahi](journals/1024160102-mahi-singh/index.md),
+  [Khagendra](journals/1024160123-khagendra-saini/index.md).
 - [`project-proposal/`](https://github.com/vrishanknehru/classlink/tree/main/project-proposal) —
   the project proposal (LaTeX source and PDF).
 - [`project-srs/`](https://github.com/vrishanknehru/classlink/tree/main/project-srs) —
