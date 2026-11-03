@@ -1,8 +1,9 @@
-# Mahi Singh — 1024160102
+# Mahi’s Journal
 
-Weekly progress journal for the ClassLink project (UCS503P).
+Roll No. 1024160102
+Name: Mahi Singh
 
-## Entries
-
-<!-- Add one link per week, e.g.: -->
-<!-- - [Week 1](w1-<slug>.md) -->
++  [W1 : Discovery Worked on Android but Not on iPhone](./w1-ios-silent-failure.md)
++  [W2 : Wireless Debugging Kept Dropping the iPhone](./w2-wireless-debug.md)
++  [W3 : Making Sure the Advertisement Fits](./w3-advert-byte-budget.md)
++  [W4 : Journals Missing From the Docs Site](./w4-journal-nav-missing.md)

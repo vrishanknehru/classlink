@@ -1,8 +1,9 @@
-# Vrishank Nehru — 1024160109
+# Vrishank’s Journal
 
-Weekly progress journal for the ClassLink project (UCS503P).
+Roll No. 1024160109
+Name: Vrishank Nehru
 
-## Entries
-
-<!-- Add one link per week, e.g.: -->
-<!-- - [Week 1](w1-<slug>.md) -->
++  [W1 : One Stray Reading Marked a Student Present](./w1-noisy-rssi.md)
++  [W2 : Check In Blocked on Android 12 and Newer](./w2-android12-location-denied.md)
++  [W3 : Student Phone Lost the Teacher Mid Check In](./w3-advertiser-address-changes.md)
++  [W4 : Cancel Did Nothing During a Long Wait](./w4-stuck-cancel.md)

@@ -1,8 +1,9 @@
-# Khagendra Saini — 1024160123
+# Khagendra’s Journal
 
-Weekly progress journal for the ClassLink project (UCS503P).
+Roll No. 1024160123
+Name: Khagendra Saini
 
-## Entries
-
-<!-- Add one link per week, e.g.: -->
-<!-- - [Week 1](w1-<slug>.md) -->
++  [W1 : Sending the Session Code From an iPhone](./w1-ios-manufacturer-data.md)
++  [W2 : Bluetooth Calls Failed Right After Launch on iPhone](./w2-corebluetooth-not-ready.md)
++  [W3 : Back Button Silently Stopped Attendance](./w3-back-ends-session.md)
++  [W4 : Keyboard Covered the Correction Form](./w4-keyboard-hides-sheet.md)
