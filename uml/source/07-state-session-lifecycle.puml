@@ -1,0 +1,36 @@
+@startuml 07-state-session-lifecycle
+!include _style.puml
+
+title ClassLink Current POC — Teacher Session Lifecycle
+caption Current POC — in-memory session lifecycle, not persisted to a database
+
+state Idle #AED6F1
+state CheckingBluetooth #AED6F1
+state GeneratingCode #AED6F1
+state Advertising #C8E6C9
+state ReceivingCheckIns #C8E6C9
+state Stopping #AED6F1
+state Ended #AED6F1
+state Error #F5B7B1
+
+[*] --> Idle
+
+Idle --> CheckingBluetooth : Teacher selects\nStart Session
+CheckingBluetooth --> GeneratingCode : Bluetooth ready
+CheckingBluetooth --> Error : Bluetooth off / unauthorized /\nunsupported / timeout
+GeneratingCode --> Advertising : Code generated and\ntransport prepared
+Advertising --> ReceivingCheckIns : Service is visible\nto students
+ReceivingCheckIns --> ReceivingCheckIns : Student payload received
+ReceivingCheckIns --> Stopping : Teacher selects\nStop Session
+Advertising --> Stopping : Teacher selects Stop Session\nbefore any check-in
+Stopping --> Ended : Advertising stopped\nsuccessfully
+Error --> Idle : User retries or returns
+Ended --> Idle : Start a new session
+
+note bottom of ReceivingCheckIns
+  The current implementation stores received check-ins
+  only during the active local session. Permanent
+  database storage is future work.
+end note
+
+@enduml

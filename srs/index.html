@@ -1,0 +1,1317 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="BLE-based classroom attendance system — UCS503P Software Engineering Project, TIET">
+      
+      
+      
+        <link rel="canonical" href="https://vrishanknehru.github.io/classlink/srs/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="supplement/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+    
+    
+  <title>UCS503P: Software Engineering Project;
+    ClassLink @TIET</title>
+
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="https://unpkg.com/katex@0/dist/katex.min.css">
+    
+      <link rel="stylesheet" href="../assets/stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#software-requirements-specification" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="ClassLink" class="md-header__button md-logo" aria-label="ClassLink" data-md-component="logo">
+      
+  <img src="../assets/tiet-logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ClassLink
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Software Requirements Specification
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/vrishanknehru/classlink" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    vrishanknehru/classlink
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="ClassLink" class="md-nav__button md-logo" aria-label="ClassLink" data-md-component="logo">
+      
+  <img src="../assets/tiet-logo.svg" alt="logo">
+
+    </a>
+    ClassLink
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/vrishanknehru/classlink" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    vrishanknehru/classlink
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software Requirements Specification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="supplement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SRS Supplement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment and Pilot Runbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evaluation Data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../uml/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UML Diagrams
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../criteria-for-project-selection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Criteria for Project Selection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Journals
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Journals
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../journals/1024160111-vemula-manvi-smaran/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vemula Manvi Smaran
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../journals/1024160109-vrishank-nehru/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vrishank Nehru
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../journals/1024160102-mahi-singh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mahi Singh
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../journals/1024160123-khagendra-saini/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Khagendra Saini
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="software-requirements-specification">Software Requirements Specification<a class="headerlink" href="#software-requirements-specification" title="Permanent link">&para;</a></h1>
+<p><strong>ClassLink: A BLE Based Classroom Attendance System</strong></p>
+<p>Version 1.0, October 2026. UCS503P Software Engineering Project, Thapar Institute of Engineering and Technology.</p>
+<p>Prepared by Vemula Manvi Smaran (1024160111), Vrishank Nehru (1024160109), Mahi Singh (1024160102), and Khagendra Saini (1024160123). Submitted to Anushka Ma'am.</p>
+<p>The glossary, API summary, rejection codes, evaluation plan, test traceability, and two more diagrams live in the <a href="supplement/">supplement</a>.</p>
+<h1 id="1-introduction">1. Introduction<a class="headerlink" href="#1-introduction" title="Permanent link">&para;</a></h1>
+<h2 id="11-purpose">1.1 Purpose<a class="headerlink" href="#11-purpose" title="Permanent link">&para;</a></h2>
+<p>Taking attendance by roll call eats lecture time, and a signed sheet or a shouted "present" is easy to fake and hard to check later. ClassLink is the fix. It is a classroom attendance system where the teacher's phone broadcasts a short lived Bluetooth Low Energy (BLE) token, each student's phone hears it and sends a signed claim, and a server decides who counts as present. The main idea is that the phone never decides for itself, so the record can be trusted.</p>
+<p>This document is the Software Requirements Specification (SRS) of ClassLink Version 1.0. It follows the approved project proposal (UCS503P). Requirements carry an ID such as FR (functional) and a priority from the MoSCoW scheme: Must (needed for the pilot), Should (next iteration), Could (optional). A Status column says what is built today.</p>
+<h2 id="12-intended-audience-and-reading-suggestions">1.2 Intended Audience and Reading Suggestions<a class="headerlink" href="#12-intended-audience-and-reading-suggestions" title="Permanent link">&para;</a></h2>
+<p>This SRS is for developers, testers, pilot teachers, and the course instructor. It gives the internal, external, functional, and nonfunctional details of ClassLink. Every requirement is written so a test can check it.</p>
+<p>Key terms used in this document:</p>
+<ul>
+<li><strong>BLE (Bluetooth Low Energy)</strong>: the short range radio the phones use. It needs no pairing.</li>
+<li><strong>Token</strong>: a 17 byte code the teacher phone broadcasts. It changes every 15 seconds and names no person.</li>
+<li><strong>Challenge (nonce)</strong>: a one time code the server gives a student before a check in, so nobody can reuse an old claim.</li>
+<li><strong>Claim</strong>: the signed message a student phone sends. It holds the one time code, token, signal strength, sample count, and time.</li>
+<li><strong>RSSI</strong>: received signal strength in dBm. A larger number (closer to zero) means a closer phone.</li>
+<li><strong>Session</strong>: one class period in which attendance is open.</li>
+<li><strong>Device key</strong>: the signing key kept on a student's phone. The server stores only its public half.</li>
+<li><strong>Audit log</strong>: the server's permanent record of who did what.</li>
+<li><strong>POC</strong>: the earlier offline proof of concept app.</li>
+</ul>
+<h2 id="13-project-scope">1.3 Project Scope<a class="headerlink" href="#13-project-scope" title="Permanent link">&para;</a></h2>
+<p>ClassLink gives Teachers and Students one place to run attendance, and gives the Administrator control over who may teach. It records presence only. It does not grade, schedule, or track location.</p>
+<p><strong>Objectives.</strong></p>
+<ol>
+<li>Speed: a student checks in within 10 seconds of starting the scan, so roll call stops costing lecture time.</li>
+<li>Trust: the server verifies every claim, so a phone cannot mark itself present.</li>
+<li>Traceability: every claim, rejection, and correction leaves a record.</li>
+<li>Teacher control: a live roster, manual corrections with a reason, and CSV export.</li>
+<li>Privacy: the system keeps only name, roll number, email, a device public key, and attendance. It never collects location.</li>
+<li>Engineering quality: the backend passes Ruff and strict MyPy, and every requirement marked Done has an automated test run in CI.</li>
+</ol>
+<p><strong>In scope.</strong> Teacher and student roles on Android and iOS, built from one Flutter code base. Classrooms with join codes. One registered phone per student. Attendance sessions with a signal strength rule. A live roster, manual corrections, and CSV export. An audit log. Testing on real phones in a real room.</p>
+<p><strong>Optional extensions</strong> (outside this course submission). Links to learning management systems, and a signal threshold that adapts to each room.</p>
+<p><strong>Out of scope.</strong> Proving that the phone's owner is the person holding it. Student to student relaying. Grading and timetables.</p>
+<p><strong>Status terms.</strong> <em>Done</em> means built and covered by an automated test. <em>POC</em> means present only in the offline proof of concept. <em>Planned</em> means specified but not built. Today the server side is built and tested. The mobile apps (Android and iOS) do not call it yet, so anything that needs an app is Planned.</p>
+<p><strong>Stakeholders.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Stakeholder</th>
+<th>Role</th>
+<th>Main interest</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Students</td>
+<td>Join classrooms, register a phone, check in</td>
+<td>A quick check in that counts</td>
+</tr>
+<tr>
+<td>Teachers</td>
+<td>Create classrooms, run sessions, correct records</td>
+<td>Accurate attendance without roll call</td>
+</tr>
+<tr>
+<td>Administrator</td>
+<td>Sets up the server, edits the approved teacher list</td>
+<td>A secure, running system</td>
+</tr>
+<tr>
+<td>Development team</td>
+<td>Design, build, test, deploy</td>
+<td>Clear, testable requirements</td>
+</tr>
+<tr>
+<td>Course instructor</td>
+<td>Reviews and evaluates the project</td>
+<td>Consistency with the approved proposal</td>
+</tr>
+<tr>
+<td>Supabase</td>
+<td>Hosts the database and sign in</td>
+<td>Fair use of its free tier</td>
+</tr>
+</tbody>
+</table>
+<p>Table: Stakeholders of ClassLink.</p>
+<p><img alt="Entire work-flow." src="figures/fig_flow.png" width="100%" /></p>
+<p>Figure 1.1 is the overview of the project. A Teacher creates a Classroom. The Classroom runs a Session. The Session issues rotating Tokens. A Student hears a Token and signs a Claim. The server checks the Claim into an Attendance record, and the Teacher sees it in the Roster and CSV. Every entity feeds the next one, so the whole system works as one chain.</p>
+<h1 id="2-overall-description">2. Overall Description<a class="headerlink" href="#2-overall-description" title="Permanent link">&para;</a></h1>
+<h2 id="21-product-perspective">2.1 Product Perspective<a class="headerlink" href="#21-product-perspective" title="Permanent link">&para;</a></h2>
+<p>ClassLink grew from an offline proof of concept, the Flutter app in <code>code/</code>, that showed a teacher phone can announce a session over BLE and a student phone can check in by proximity. Version 1.0 adds a server so the result no longer depends on trusting the student's phone. It follows a layered client and server design (Figure 2.1).</p>
+<ul>
+<li><strong>Mobile app:</strong> Flutter, for Android and iOS, with a teacher mode and a student mode.</li>
+<li><strong>Backend API:</strong> FastAPI (Python) for sign in checks, validation, sessions, and claims.</li>
+<li><strong>Business logic:</strong> rotating tokens, claim checks, corrections, and export.</li>
+<li><strong>Database:</strong> Supabase Postgres. Supabase Auth signs users in.</li>
+</ul>
+<p><img alt="High-level system architecture." src="figures/fig_arch.png" width="80%" /></p>
+<p>One check in works like this. The teacher app fetches a fresh token from the server every 15 seconds and broadcasts it. A student phone hears the token and asks the server for a one time challenge. The phone measures signal strength for a few seconds, signs the result with its own key, and sends it. The server verifies the claim and records attendance.</p>
+<h2 id="22-user-classes-and-characteristics">2.2 User Classes and Characteristics<a class="headerlink" href="#22-user-classes-and-characteristics" title="Permanent link">&para;</a></h2>
+<p>ClassLink has four user classes (Figure 2.2).</p>
+<ul>
+<li><strong>Teacher.</strong> Runs sessions for classrooms they own. The role comes only from a list of approved teacher emails kept by the administrator.</li>
+<li><strong>Student.</strong> Joins classrooms with a join code and checks in with one registered phone.</li>
+<li><strong>Administrator.</strong> Sets up the server and edits the approved teacher list. This is not an in app role.</li>
+<li><strong>Evaluator.</strong> Reads the exported CSV files. No app access needed.</li>
+</ul>
+<p>Supabase Auth is the one external system. It signs users in and issues their tokens.</p>
+<p>Students and teachers need only basic phone skills. The administrator needs medium technical skill.</p>
+<p><img alt="Type of users." src="figures/fig_users.png" width="100%" /></p>
+<h2 id="23-product-functions">2.3 Product Functions<a class="headerlink" href="#23-product-functions" title="Permanent link">&para;</a></h2>
+<p>ClassLink stores classrooms, sessions, and attendance, and keeps a record of every important action. At a high level it lets users sign in and get a role, create or join a classroom, register a device key, start and end sessions with rotating tokens, check in with a signed claim, watch a live roster, correct mistakes with a reason, and export a CSV. Users must sign in before using any of these functions.</p>
+<p>The main data records are:</p>
+<ul>
+<li><strong>profiles</strong>: user id, role (teacher or student), full name, roll number, email.</li>
+<li><strong>classrooms</strong>: classroom id, teacher id, name, unique join code.</li>
+<li><strong>enrollments</strong>: classroom id and student id, with the join time.</li>
+<li><strong>devices</strong>: student id, public key, label, time it was cancelled. A student has one active device.</li>
+<li><strong>sessions</strong>: classroom id, alias, signal threshold, sample window, minimum samples, start and end time. A classroom has at most one active session.</li>
+<li><strong>challenges</strong>: session id, student id, token, issue and expiry time, used time. Each is single use.</li>
+<li><strong>attendance</strong>: session id, student id, status, source (BLE claim or manual correction), median RSSI, sample count, time of measurement, and correction details. One record per student per session.</li>
+<li><strong>audit_events</strong>: actor, action, subject, details, time.</li>
+</ul>
+<p>Links between the tables keep the data consistent. The level 0 diagram (Figure 2.3) treats ClassLink as one box and shows what crosses its edge. Arrows pointing right mean data going in. Arrows pointing left mean data coming out.</p>
+<p><img alt="Data flow diagram, level 0." src="figures/fig_dfd0.png" width="100%" /></p>
+<p>Level 1 (Figure 2.4) opens the box into six processes. Each process keeps its data in a store, drawn under it.</p>
+<p><img alt="Data flow diagram, level 1." height="20cm" src="figures/fig_dfd1.png" /></p>
+<h2 id="24-operating-environment">2.4 Operating Environment<a class="headerlink" href="#24-operating-environment" title="Permanent link">&para;</a></h2>
+<p>Students and teachers use an Android phone (8.0 or later) or an iPhone, both with Bluetooth LE. The lowest iOS version is still to be confirmed. The teacher phone must support BLE advertising, so we test on real phones of both kinds. The server runs in a Linux container behind HTTPS. The database is Supabase Postgres. Phones need internet during check in, but the Bluetooth exchange itself does not.</p>
+<p><strong>External interfaces.</strong></p>
+<ul>
+<li><strong>User interface:</strong> a Flutter app with a teacher mode (classrooms, session control, live roster, corrections, export) and a student mode (join, register phone, check in, result). Every rejection shows a plain explanation.</li>
+<li><strong>Hardware:</strong> Bluetooth LE radio. The teacher phone needs BLE advertising. No other hardware.</li>
+<li><strong>Software:</strong> FastAPI backend, Supabase Postgres, Supabase Auth, GitHub Actions for CI.</li>
+<li><strong>Communications:</strong> HTTPS with JSON over REST. A Supabase sign in token (JWT) in the Authorization header. A 17 byte token inside the BLE advertisement.</li>
+</ul>
+<p><strong>Design and implementation constraints.</strong></p>
+<ul>
+<li>Stack: Flutter (Android and iOS), FastAPI on Python 3.11 or later, psycopg 3, Supabase Postgres and Auth.</li>
+<li>A phone never creates an attendance record on its own. Only the server decides.</li>
+<li>Secrets stay on the server. Only <code>.env.example</code> files enter the repository.</li>
+<li>The BLE token is 17 bytes and travels in the manufacturer data field of the BLE advertisement, because a service identifier plus the token does not fit in a basic one. We have not yet confirmed this layout on phones. iOS does not allow manufacturer data in an advertisement. The proof of concept handles this by sending its 6 digit session code in the advertised device name on iPhones (CL plus the digits) and in manufacturer data on Android, and the student scanner reads both. Version 1.0 must fit its 17 byte token into the same two routes, and we have not yet confirmed that it fits.</li>
+<li>Apps write only through the API. The database gives apps read only access to their own rows.</li>
+<li>Four person team, one semester, with the work split across backend, app, documentation, and testing.</li>
+</ul>
+<p><strong>Assumptions and dependencies.</strong></p>
+<ul>
+<li>Students use the phone they registered. A student who changes phones registers again.</li>
+<li>Phone and server clocks stay within about a minute.</li>
+<li>Supabase free tier limits are enough for the pilot.</li>
+<li>Signal strength is noisy, so the server uses the median of several samples against a per session threshold. The right threshold is tuned on real phones.</li>
+</ul>
+<h2 id="25-design">2.5 Design<a class="headerlink" href="#25-design" title="Permanent link">&para;</a></h2>
+<p>A check in follows the flow in Figure 2.5. It crosses three places: the teacher app, the server, and the student app.</p>
+<p><img alt="Check in workflow." src="figures/fig_overview.png" width="100%" /></p>
+<p>Student activities have three steps: join a classroom, register the phone once, and check in. Everything ends in the student's profile (Figure 2.6).</p>
+<p><img alt="Student activities." src="figures/fig_student.png" width="100%" /></p>
+<p>Teacher activities (Figure 2.7) cover setting up a classroom, running a session, and keeping the records straight.</p>
+<p><img alt="Teacher activities." src="figures/fig_teacher.png" width="100%" /></p>
+<p>The administrator has one small job. They keep the server running and decide who is a teacher (Figure 2.8).</p>
+<p><img alt="Administrator activities." src="figures/fig_admin.png" width="45%" /></p>
+<p>Figure 2.9 shows every use case and who starts it.</p>
+<p><img alt="Use case diagram (Student, Teacher and Administrator activities)." height="16cm" src="figures/fig_usecase.png" /></p>
+<p><strong>UC-1 Check in to a session.</strong> Actor: student, who must be signed in, enrolled, and have a registered phone. The teacher has a session running. The student taps Check in. The app scans for the token for the sample window and requests a challenge. The server checks the token, session, enrollment, and device, then issues a one time code. The app signs the claim and sends it. The server checks the one time code, signature, time, sample count, and median signal, then records attendance and shows Present. If the signal is weak or samples are too few, the student sees a plain message and may move closer and retry. Any other failure shows its reason code and nothing is recorded.</p>
+<p><strong>UC-2 Correct attendance.</strong> Actor: teacher, who owns the classroom. The teacher opens the roster, picks a student, and marks them present or absent with a reason of at least five characters. The server stores the change with the teacher's name and writes an audit event. A reason that is too short is refused and nothing changes.</p>
+<p>The design rules behind these flows:</p>
+<ul>
+<li><strong>Teacher broadcasts, student listens.</strong> There is no relay between students.</li>
+<li><strong>The server decides.</strong> Every claim is checked on the server.</li>
+<li><strong>Real data only.</strong> Evaluation figures come only from recorded real runs.</li>
+</ul>
+<h1 id="3-system-features">3. System Features<a class="headerlink" href="#3-system-features" title="Permanent link">&para;</a></h1>
+<p>ClassLink is a classroom attendance system. The main part of this product is to accept a signed BLE claim and decide on the server whether it counts.</p>
+<h2 id="31-description-and-priority">3.1 Description and Priority<a class="headerlink" href="#31-description-and-priority" title="Permanent link">&para;</a></h2>
+<p>ClassLink has main features and some sub features. In priority order, from top to bottom:</p>
+<ol>
+<li><strong>Attendance claims</strong> (Must, pilot): challenge, signed claim, server checks. This is the goal feature of the software.</li>
+<li><strong>Sessions and tokens</strong> (Must, pilot): start and end sessions, rotating BLE token.</li>
+<li><strong>Device binding</strong> (Must, pilot): one registered key per student.</li>
+<li><strong>Accounts and classrooms</strong> (Must, pilot): sign in, roles, join codes.</li>
+<li><strong>Roster and corrections</strong> (Must, pilot): live list, fixes with a reason.</li>
+<li><strong>Export and audit</strong> (Should): CSV download and audit log.</li>
+<li><strong>Offline mode</strong> (Could): the original no server demo, labelled as not the official record.</li>
+</ol>
+<p>The first meaningful milestone is a working pilot where a teacher starts a session, a student checks in from a real phone, and the roster shows the result. The server side of this is done. The app side is planned.</p>
+<h2 id="32-functional-requirements">3.2 Functional Requirements<a class="headerlink" href="#32-functional-requirements" title="Permanent link">&para;</a></h2>
+<p>The server is a FastAPI service built and tested against a real Postgres. The app still needs its API client, sign in, key storage, token broadcast, and roster screens. Priority is Must, Should, or Could. The Status column marks what is built.</p>
+<p><strong>Accounts and classrooms</strong></p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Priority</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-ACC-01</td>
+<td>The API shall accept only requests with a valid, unexpired Supabase token and answer all others with HTTP 401.</td>
+<td>Must</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>FR-ACC-02</td>
+<td>A user shall have one profile with the role teacher or student. Only emails on the approved teacher list become teachers. A student profile shall require a roll number.</td>
+<td>Must</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>FR-ACC-03</td>
+<td>Students shall not reach teacher operations, and teachers shall not reach student operations (HTTP 403).</td>
+<td>Must</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>FR-CLS-01</td>
+<td>A teacher shall create a classroom and receive a unique six character join code.</td>
+<td>Must</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>FR-CLS-02</td>
+<td>A student shall join a classroom with its code. An unknown code shall return HTTP 404.</td>
+<td>Must</td>
+<td>Done</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Device binding</strong></p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Priority</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-DEV-01</td>
+<td>A student shall register one device key (ECDSA P-256 public key). The server shall reject any other key type.</td>
+<td>Must</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>FR-DEV-02</td>
+<td>Registering a new key shall cancel the old one and write an audit event.</td>
+<td>Must</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>FR-DEV-03</td>
+<td>The private key shall never leave the phone (kept in the Android Keystore or the iOS Keychain), and the app shall sign only after fingerprint, face, or screen lock authentication.</td>
+<td>Must</td>
+<td>Planned</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Sessions and tokens</strong></p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Priority</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-SES-01</td>
+<td>A teacher shall start a session for their own classroom with a signal threshold (default −75 dBm), a sample window (default 4 s), and a minimum sample count (default 3). A classroom shall have at most one active session.</td>
+<td>Must</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>FR-SES-02</td>
+<td>A teacher shall end a session. After that the server shall reject its tokens, challenges, and claims.</td>
+<td>Must</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>FR-SES-03</td>
+<td>The server shall issue a 17 byte rotating token that changes every 15 seconds and carries no student or teacher identity.</td>
+<td>Must</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>FR-SES-04</td>
+<td>Only the classroom's teacher shall see or change its sessions. Other teachers shall get HTTP 404.</td>
+<td>Must</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>FR-SES-05</td>
+<td>The teacher app shall fetch a fresh token each period and broadcast it.</td>
+<td>Must</td>
+<td>Planned</td>
+</tr>
+<tr>
+<td>FR-SES-06</td>
+<td>On iOS the teacher app shall broadcast the token through a route iOS allows, such as the advertised device name used in the proof of concept. If the 17 byte token cannot fit, the document shall say that an Android phone must act as the teacher device.</td>
+<td>Should</td>
+<td>Planned</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attendance claims</strong></p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Priority</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-ATT-01</td>
+<td>The student app shall scan for the token and collect signal strength samples.</td>
+<td>Must</td>
+<td>Planned</td>
+</tr>
+<tr>
+<td>FR-ATT-02</td>
+<td>On a challenge request the server shall check the token, the active session, enrollment, and the student's registered device, then issue a one time code (nonce) valid for 120 seconds.</td>
+<td>Must</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>FR-ATT-03</td>
+<td>A claim shall hold the one time code, token, median signal strength, sample count, and time of measurement (whole seconds), signed with the device key over a fixed text format.</td>
+<td>Must</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>FR-ATT-04</td>
+<td>The server shall accept a claim only if the one time code is the caller's, unused, and unexpired, the token matches, the signature verifies, the time of measurement is within 60 seconds of server time, the sample count meets the minimum, and the median signal meets the threshold.</td>
+<td>Must</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>FR-ATT-05</td>
+<td>A student shall have at most one attendance record per session. Repeating an accepted claim shall return the same record.</td>
+<td>Must</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>FR-ATT-06</td>
+<td>A weak signal or too few samples shall leave the one time code usable so the student can move closer and retry.</td>
+<td>Should</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>FR-ATT-07</td>
+<td>Every rejection shall carry a reason code (listed in the supplement) with HTTP 409.</td>
+<td>Must</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>FR-ATT-08</td>
+<td>The student app shall show the result and explain each reason in plain words.</td>
+<td>Must</td>
+<td>Planned</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Roster, corrections, export, audit</strong></p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Priority</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-ROS-01</td>
+<td>A teacher shall see every enrolled student of a session with status, source, signal strength, and time.</td>
+<td>Must</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>FR-ROS-02</td>
+<td>The teacher app shall refresh the roster at least every 5 seconds during a session.</td>
+<td>Should</td>
+<td>Planned</td>
+</tr>
+<tr>
+<td>FR-COR-01</td>
+<td>A teacher shall mark a student present or absent with a reason of at least five characters. The server shall audit each correction.</td>
+<td>Must</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>FR-EXP-01</td>
+<td>A teacher shall download a session as CSV with every enrolled student. The export shall make safe any cell that starts with <code>=</code>, <code>+</code>, <code>-</code>, or <code>@</code>.</td>
+<td>Must</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>FR-AUD-01</td>
+<td>The server shall audit classroom creation, device binding, session start and end, accepted and rejected claims, corrections, and exports. Apps shall have no access to the audit log.</td>
+<td>Must</td>
+<td>Done</td>
+</tr>
+<tr>
+<td>FR-POC-01</td>
+<td>The original offline mode shall remain and be labelled as not the official record.</td>
+<td>Could</td>
+<td>POC</td>
+</tr>
+</tbody>
+</table>
+<h1 id="4-other-nonfunctional-requirements">4. Other Nonfunctional Requirements<a class="headerlink" href="#4-other-nonfunctional-requirements" title="Permanent link">&para;</a></h1>
+<h2 id="41-performance-requirements">4.1 Performance Requirements<a class="headerlink" href="#41-performance-requirements" title="Permanent link">&para;</a></h2>
+<p>These are targets. We report only values measured in the pilot.</p>
+<ul>
+<li>Discovery: a student phone shall pick up the token within 5 seconds in the same room.</li>
+<li>Check in: from scan start to server result within 10 seconds.</li>
+<li>API: p95 under 500 ms for challenge and claim calls with 50 students at once.</li>
+<li>Capacity: one classroom of 300 students with up to 150 check ins at once.</li>
+</ul>
+<h2 id="42-security-requirements">4.2 Security Requirements<a class="headerlink" href="#42-security-requirements" title="Permanent link">&para;</a></h2>
+<ul>
+<li>All traffic shall use HTTPS in production.</li>
+<li>Secrets, such as the token key and database credentials, shall exist only on the server. CI shall fail if a <code>.env</code> file or keystore is committed.</li>
+<li>The database shall have row level security on every table, so each user sees only their own rows. Apps read but never write.</li>
+<li>A signed claim shall cover the session, one time code, token, signal strength, sample count, and time, so changing any value breaks the signature.</li>
+<li>The server shall compare token tags with a timing safe method, and check every request's sign in token for its signature, expiry, and intended use.</li>
+<li>The system shall store only name, roll number, email, a device public key, and attendance. It shall not collect location.</li>
+</ul>
+<p>ClassLink stops casual proxy attendance (a friend marking you present). It does not stop a friend who holds the student's unlocked phone, or someone who relays a live token to a faraway phone within its few seconds of life. Short token periods, the signal rule, and the audit log reduce these risks but do not remove them.</p>
+<h2 id="43-software-quality-attributes">4.3 Software Quality Attributes<a class="headerlink" href="#43-software-quality-attributes" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Reliability:</strong> attendance writes happen fully or not at all, so a retry is safe. If two claims for one student arrive together, only one record is made.</li>
+<li><strong>Availability:</strong> the pages <code>/healthz</code> and <code>/readyz</code> report whether the server and database are working.</li>
+<li><strong>Maintainability:</strong> the backend passes Ruff and strict MyPy in CI, and every Done requirement has an automated test.</li>
+<li><strong>Portability:</strong> the server runs from one ready to run package (a container image) and is set up with environment variables.</li>
+<li><strong>Usability:</strong> a student checks in with one tap, and every rejection has a plain explanation.</li>
+</ul>
+<p><strong>Acceptance criteria.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Discovery</td>
+<td>A phone picks up the token within 5 seconds in the same room</td>
+</tr>
+<tr>
+<td>Check in time</td>
+<td>Scan start to server result within 10 seconds</td>
+</tr>
+<tr>
+<td>API speed</td>
+<td>p95 under 500 ms for challenge and claim calls with 50 students at once</td>
+</tr>
+<tr>
+<td>Functional completeness</td>
+<td>All Must requirements demonstrated end to end on real phones</td>
+</tr>
+<tr>
+<td>Test coverage</td>
+<td>Every requirement marked Done has an automated test that passes in CI</td>
+</tr>
+<tr>
+<td>Secret safety</td>
+<td>CI fails if a <code>.env</code> file or keystore is committed</td>
+</tr>
+<tr>
+<td>Honest results</td>
+<td>Pilot figures come only from recorded real runs</td>
+</tr>
+</tbody>
+</table>
+<p>Table: Acceptance criteria.</p>
+<h2 id="44-business-rules">4.4 Business Rules<a class="headerlink" href="#44-business-rules" title="Permanent link">&para;</a></h2>
+<ul>
+<li>A student has at most one attendance record per session.</li>
+<li>Only a classroom's teacher can see or change its attendance.</li>
+<li>A manual correction always has a reason and a named teacher.</li>
+<li>An ended session never restarts. A new session gets new tokens.</li>
+<li>A student has one active phone. Replacing it cancels the old key.</li>
+<li>Only the administrator decides who becomes a teacher.</li>
+</ul>
+<h1 id="5-other-requirements">5. Other Requirements<a class="headerlink" href="#5-other-requirements" title="Permanent link">&para;</a></h1>
+<p>ClassLink needs maintenance after the course, because phones, Android and iOS versions, and BLE behaviour keep changing. Other requirements are:</p>
+<ul>
+<li><strong>Documentation:</strong> the repository holds this SRS in Markdown and LaTeX, the project proposal, UML diagrams, the deployment runbook, and the API reference served at <code>/docs</code>.</li>
+<li><strong>Deployment:</strong> the server is packaged as a container that does not run as an admin user, and it refuses to start in production without its database address and secrets. The administrator runs the database setup file on Supabase before the first start. GitHub Actions runs the app and server checks and rejects committed secrets. The team publishes a signed Android APK and an iOS build for the pilot. How the iOS build reaches testers is still to be decided. See <code>docs/deployment.md</code>.</li>
+<li><strong>Privacy:</strong> pilot participants learn what the app stores before they join a classroom. Deleting a user deletes their profile, enrollments, devices, and attendance. English only in the first version.</li>
+<li><strong>Phasing:</strong> Phase 1 (done): server, database schema, tests, CI, and documents. Phase 2 (planned): Android and iOS apps with sign in, key storage, token broadcast, scan and claim, and roster screens. Phase 3 (planned): pilot on real phones in a real room, with measured results. Extensions follow only after the pilot.</li>
+<li><strong>Open issues to confirm:</strong> whether the 17 byte token fits the BLE advertisement on real Android and iOS phones, and whether the token fits the route iOS allows for an iPhone teacher (the advertised device name); the signal threshold that works in a real room; whether to move the sign in token from a shared secret to public key signing; the Android application id, which still carries the old proof of concept name; and the consent wording for pilot students.</li>
+</ul>
+<p><strong>Risks and mitigations.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>What we do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Some phones cannot advertise BLE, and iOS limits what an advert can hold</td>
+<td>Reuse the proof of concept's two routes (device name on iOS, manufacturer data on Android), test the 17 byte token on real phones early, and fall back to an Android teacher phone if it does not fit</td>
+</tr>
+<tr>
+<td>Signal strength varies by room and phone</td>
+<td>Median of several samples, a per session threshold, and a manual correction path</td>
+</tr>
+<tr>
+<td>A friend relays a live token</td>
+<td>Short token life, one time code, the signal rule, and the audit log</td>
+</tr>
+<tr>
+<td>Server or database downtime</td>
+<td>Health endpoints, a single container image, and managed Postgres</td>
+</tr>
+<tr>
+<td>Leaked secrets</td>
+<td>Secrets only on the server, and a CI check that rejects committed ones</td>
+</tr>
+<tr>
+<td>Scope creep</td>
+<td>Keep extensions out of the pilot, and track status in Section 3.2</td>
+</tr>
+</tbody>
+</table>
+<p><strong>References.</strong> (1) ClassLink Project Proposal, UCS503P, Thapar Institute of Engineering and Technology. (2) IEEE Std 830-1998, Recommended Practice for Software Requirements Specifications. (3) Supabase and FastAPI documentation.</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="November 3, 2026 08:47:13 UTC">November 3, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="November 3, 2026 08:47:13 UTC">November 3, 2026</span>
+  </span>
+
+    
+    
+      
+  
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Contributors">
+      
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 4a4 4 0 0 1 4 4 4 4 0 0 1-4 4 4 4 0 0 1-4-4 4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4"/></svg>
+      
+    </span>
+    <nav>
+      
+        <a href="mailto:manvivemula@gmail.com">manvi-smaran</a>
+    </nav>
+  </span>
+
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Vemula Manvi Smaran, Vrishank Nehru, Mahi Singh, Khagendra Saini
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "content.code.copy", "content.tabs.link"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.c21346df.min.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/katex.min.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/contrib/auto-render.min.js"></script>
+      
+    
+  </body>
+</html>
