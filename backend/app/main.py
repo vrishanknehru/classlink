@@ -10,6 +10,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import accounts, attendance, sessions
+from app.auth_tokens import TokenVerifier
 from app.config import Settings
 from app.db import Database
 
@@ -22,6 +23,7 @@ def create_app(
     settings: Settings | None = None,
     db: Database | None = None,
     clock: Callable[[], datetime] | None = None,
+    token_verifier: TokenVerifier | None = None,
 ) -> FastAPI:
     cfg = settings or Settings()
     database = db or Database(cfg.database_url)
@@ -38,6 +40,7 @@ def create_app(
     app.state.settings = cfg
     app.state.db = database
     app.state.clock = clock or _utc_now
+    app.state.token_verifier = token_verifier or TokenVerifier.from_settings(cfg)
 
     if cfg.cors_origins:
         app.add_middleware(

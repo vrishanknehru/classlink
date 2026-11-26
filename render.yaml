@@ -14,8 +14,10 @@ services:
         value: production
       - key: CLASSLINK_DATABASE_URL
         sync: false   # Supabase Postgres connection string (server side only)
+      - key: CLASSLINK_SUPABASE_URL
+        sync: false   # https://<project-ref>.supabase.co; the API reads the signing keys from it
       - key: CLASSLINK_JWT_SECRET
-        sync: false   # Supabase project JWT secret
+        sync: false   # Only for a legacy HS256 project secret; leave empty otherwise
       - key: CLASSLINK_TOKEN_HMAC_SECRET
         sync: false   # 32+ random bytes; python -c "import secrets; print(secrets.token_hex(32))"
       - key: CLASSLINK_TEACHER_EMAILS

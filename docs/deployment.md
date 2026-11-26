@@ -23,9 +23,11 @@ the team. Nothing here asks you to put a secret in the repository.
    - **Connection string.** Project Settings, Database, then the connection
      string for the `postgres` role. This bypasses row level security, so it
      stays on the server only.
-   - **JWT secret.** Project Settings, API, then JWT Settings. The API verifies
-     user tokens with it. The legacy shared secret is supported. Projects that
-     sign with asymmetric keys need JWKS verification, which is not built yet.
+   - **Signing method.** Project Settings, JWT Keys. New projects sign user
+     tokens with an asymmetric key (ES256 or RS256). The API fetches the public
+     keys from `<project URL>/auth/v1/.well-known/jwks.json` and caches them, so
+     it only needs the project URL. If the page shows a legacy shared secret
+     (HS256), copy it too. The API then accepts both kinds of token.
    - **Anon key and project URL.** The mobile app needs these to sign users in.
      They are safe to ship in the app.
 4. Under Authentication, turn on the sign in method you want for the pilot
@@ -47,16 +49,24 @@ already advertised, which is harmless between sessions.
 
 1. In Render, choose **New, Blueprint** and pick this repository. It reads
    `render.yaml`.
-2. Fill in the four secrets when prompted: `CLASSLINK_DATABASE_URL`,
-   `CLASSLINK_JWT_SECRET`, `CLASSLINK_TOKEN_HMAC_SECRET`, and
-   `CLASSLINK_TEACHER_EMAILS` (a JSON list such as `["name@thapar.edu"]`).
+2. Fill in the values when prompted:
+   - `CLASSLINK_DATABASE_URL`: the connection string.
+   - `CLASSLINK_SUPABASE_URL`: the project URL, such as
+     `https://abcd.supabase.co`. The API reads the signing keys from it.
+   - `CLASSLINK_JWT_SECRET`: only if your project still has a legacy HS256
+     secret. Leave it empty otherwise.
+   - `CLASSLINK_TOKEN_HMAC_SECRET`: the value from step 2.
+   - `CLASSLINK_TEACHER_EMAILS`: a JSON list such as `["name@thapar.edu"]`.
+
+   The API refuses to start unless at least one of `CLASSLINK_SUPABASE_URL` and
+   `CLASSLINK_JWT_SECRET` is set.
 3. After the first deploy, open `https://<your-service>/readyz`. It must answer
    `{"status":"ready"}`. Then open `/docs` for the live API reference.
 
 ### Option B: any container host
 
 The `backend-image` workflow publishes `ghcr.io/vrishanknehru/classlink-backend`
-on every push to `main` and on tags. Run it with the same four environment
+on every push to `main` and on tags. Run it with the same environment
 variables plus `CLASSLINK_ENVIRONMENT=production`, behind HTTPS.
 
 ### Settings you may tune
@@ -69,6 +79,7 @@ All are `CLASSLINK_*` variables. `backend/.env.example` lists the required ones.
 | `TOKEN_GRACE_EPOCHS` | 1 | How many old epochs still validate |
 | `CHALLENGE_TTL_SECONDS` | 120 | How long a nonce lives |
 | `CLAIM_MAX_AGE_SECONDS` | 60 | Allowed gap between the phone's observation time and the server clock |
+| `JWKS_CACHE_SECONDS` | 600 | How long the API keeps Supabase's public keys before fetching them again |
 
 ## 4. Make the first teacher
 

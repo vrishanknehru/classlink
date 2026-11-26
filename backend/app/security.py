@@ -1,21 +1,23 @@
-"""Authentication: Supabase issued JWTs, verified with the project JWT secret (HS256)."""
+"""Authentication: Supabase issued JWTs, checked by the app's TokenVerifier."""
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Annotated
 from uuid import UUID
 
-import jwt
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
+from app.auth_tokens import InvalidToken, SigningKeysUnavailable, TokenVerifier
 from app.config import Settings
 from app.db import Database
 from app.domain import Profile, Role
 
 _bearer = HTTPBearer(auto_error=False)
+_log = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True, slots=True)
@@ -46,22 +48,26 @@ def _unauthorized(detail: str) -> HTTPException:
     )
 
 
+def get_token_verifier(request: Request) -> TokenVerifier:
+    verifier: TokenVerifier = request.app.state.token_verifier
+    return verifier
+
+
 def current_user(
-    settings: Annotated[Settings, Depends(get_settings)],
+    verifier: Annotated[TokenVerifier, Depends(get_token_verifier)],
     credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(_bearer)],
 ) -> AuthUser:
     if credentials is None:
         raise _unauthorized("missing bearer token")
     try:
-        claims = jwt.decode(
-            credentials.credentials,
-            settings.jwt_secret,
-            algorithms=["HS256"],
-            audience=settings.jwt_audience,
-            options={"require": ["exp", "sub"]},
-        )
+        claims = verifier.verify(credentials.credentials)
         user_id = UUID(str(claims["sub"]))
-    except (jwt.PyJWTError, ValueError) as exc:
+    except SigningKeysUnavailable as exc:
+        _log.error("cannot fetch Supabase signing keys: %s", exc)
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE, detail="auth_keys_unavailable"
+        ) from exc
+    except (InvalidToken, ValueError) as exc:
         raise _unauthorized("invalid or expired token") from exc
     email = claims.get("email")
     return AuthUser(id=user_id, email=email.lower() if isinstance(email, str) else None)
