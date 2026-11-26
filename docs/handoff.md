@@ -27,6 +27,19 @@ Every number here comes from a real run on 26 November 2026.
 
 Flutter version used: 3.50.1, stable channel, Dart 3.14.0.
 
+## Second batch: fixes
+
+| Commit | What it does |
+|---|---|
+| `3ecd2b9` | Empty `CLASSLINK_` settings count as unset (issue 2). |
+| `4df948f` | The teacher phone no longer saves the session id (issue 3). |
+| `42a8cf9` | Material widgets come from `package:material_ui` (issue 1). |
+| `d26b6c3` | The macOS app uses `com.classlink.app` (issue 4). |
+
+Checks after these fixes: ruff clean, ruff format clean, mypy clean,
+`pytest` 99 passed with 1 warning, `flutter analyze` no issues,
+`flutter test` 63 passed.
+
 ## Open issues
 
 ### 1. `flutter analyze` failed on the current stable Flutter (fixed)
@@ -87,7 +100,7 @@ Flutter version used: 3.50.1, stable channel, Dart 3.14.0.
 
 ## What is left in the plan
 
-1. **Fix issues 1 to 3** above, then get CI green.
+1. **Confirm CI is green** on GitHub Actions for the latest push.
 2. **Deploy:** create the Supabase project and the Render service, following
    `docs/deployment.md`. Then check `/readyz`, `/docs` and `/v1/me` on the live
    URL.

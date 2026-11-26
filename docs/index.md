@@ -16,8 +16,8 @@ valid classroom beacon under a configured proximity policy.
 
 | Part | Status |
 |---|---|
-| Backend | Done. FastAPI on Supabase Postgres: rotating tokens, signed claims, 14 rejection reasons, live roster, corrections with a reason, audit log, CSV export. 78 tests. |
-| Flutter app (Android and iOS) | Done and connected to the server: sign in, classrooms, teacher session with live roster, one tap student check in with a signed claim. 47 tests. |
+| Backend | Done. FastAPI on Supabase Postgres: rotating tokens, signed claims, 14 rejection reasons, live roster, corrections with a reason, audit log, CSV export. 99 tests. |
+| Flutter app (Android and iOS) | Done and connected to the server: sign in, classrooms, teacher session with live roster, one tap student check in with a signed claim. 63 tests. |
 | SRS | Done. [Read it here](srs/index.md), or the [PDF](https://github.com/vrishanknehru/classlink/blob/main/project-srs/ClassLink-SRS.pdf). |
 | Deployment | Files ready: Docker image, Render blueprint, release workflow. See the [runbook](deployment.md). Server not live yet. |
 | Next | Put the server live, then test check in on real phones in a classroom. |
