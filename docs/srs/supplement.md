@@ -27,6 +27,7 @@ This supplement belongs to the [Software Requirements Specification](index.md). 
 | `POST /v1/classrooms/join` | student | Join with a join code |
 | `PUT /v1/devices/me` | student | Bind a device signing key |
 | `POST /v1/sessions` | teacher | Start a session |
+| `GET /v1/classrooms/{id}/sessions/active` | teacher | The running session, to resume it on another phone |
 | `POST /v1/sessions/{id}/end` | teacher | End a session |
 | `GET /v1/sessions/{id}/token` | teacher | Current rotating token |
 | `GET /v1/sessions/{id}/roster` | teacher | Live roster |

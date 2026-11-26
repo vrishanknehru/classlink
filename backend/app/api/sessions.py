@@ -25,6 +25,7 @@ from app.schemas import (
 from app.security import get_db, get_now, get_settings, require_teacher
 
 router = APIRouter(prefix="/v1/sessions", tags=["sessions"])
+classroom_router = APIRouter(prefix="/v1/classrooms", tags=["sessions"])
 
 Db = Annotated[Database, Depends(get_db)]
 Teacher = Annotated[Profile, Depends(require_teacher)]
@@ -68,6 +69,18 @@ def start_session(body: SessionIn, teacher: Teacher, db: Db) -> SessionOut:
         )
     except ActiveSessionExists:
         raise HTTPException(status.HTTP_409_CONFLICT, detail="active_session_exists") from None
+    return _session_out(session)
+
+
+@classroom_router.get("/{classroom_id}/sessions/active", response_model=SessionOut)
+def active_session(classroom_id: UUID, teacher: Teacher, db: Db) -> SessionOut:
+    """The classroom's running session, so a teacher can resume it on another phone."""
+    classroom = db.get_classroom(classroom_id)
+    if classroom is None or classroom.teacher_id != teacher.id:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="classroom_not_found")
+    session = db.active_session_for_classroom(classroom.id)
+    if session is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="no_active_session")
     return _session_out(session)
 
 

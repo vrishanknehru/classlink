@@ -60,6 +60,7 @@ def create_app(
 
     app.include_router(accounts.router)
     app.include_router(sessions.router)
+    app.include_router(sessions.classroom_router)
     app.include_router(attendance.router)
     return app
 

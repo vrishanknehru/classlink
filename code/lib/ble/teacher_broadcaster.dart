@@ -8,23 +8,41 @@ import 'ble_constants.dart';
 
 enum BroadcastState { idle, starting, broadcasting, failure }
 
+/// What the session screen needs from the radio. Tests use a fake.
+abstract class TokenBroadcaster extends ChangeNotifier {
+  BroadcastState get state;
+  String? get errorMessage;
+
+  /// How many times a student phone has read the token this session.
+  int get readsServed;
+
+  /// Replace the token served to students. Call this whenever the server
+  /// rotates it.
+  void updateToken(List<int> token);
+
+  Future<void> start();
+  Future<void> stop();
+}
+
 /// Teacher phone as a BLE peripheral: advertises the ClassLink service and
 /// answers reads of the token characteristic with whatever token the server
 /// issued last. The phone never makes tokens itself; it only relays them.
-class TeacherBroadcaster extends ChangeNotifier {
+class TeacherBroadcaster extends TokenBroadcaster {
   final PeripheralManager _manager = PeripheralManager();
 
   BroadcastState _state = BroadcastState.idle;
+  @override
   BroadcastState get state => _state;
 
   String? _errorMessage;
+  @override
   String? get errorMessage => _errorMessage;
 
   Uint8List? _token;
 
   int _readsServed = 0;
 
-  /// How many times a student phone has read the token this session.
+  @override
   int get readsServed => _readsServed;
 
   StreamSubscription<GATTCharacteristicReadRequestedEventArgs>? _readSub;
@@ -39,12 +57,12 @@ class TeacherBroadcaster extends ChangeNotifier {
     });
   }
 
-  /// Replace the token served to students. Call this whenever the server
-  /// rotates it.
+  @override
   void updateToken(List<int> token) {
     _token = Uint8List.fromList(token);
   }
 
+  @override
   Future<void> start() async {
     if (_state == BroadcastState.broadcasting ||
         _state == BroadcastState.starting) {
@@ -122,6 +140,7 @@ class TeacherBroadcaster extends ChangeNotifier {
     }
   }
 
+  @override
   Future<void> stop() async {
     _token = null;
     try {

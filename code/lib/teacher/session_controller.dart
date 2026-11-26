@@ -19,13 +19,13 @@ class TeacherSessionController extends ChangeNotifier {
   final ClassLinkApi api;
   final SecureStore store;
   final Classroom classroom;
-  final TeacherBroadcaster broadcaster;
+  final TokenBroadcaster broadcaster;
 
   TeacherSessionController({
     required this.api,
     required this.store,
     required this.classroom,
-    TeacherBroadcaster? broadcaster,
+    TokenBroadcaster? broadcaster,
   }) : broadcaster = broadcaster ?? TeacherBroadcaster() {
     this.broadcaster.addListener(notifyListeners);
   }
@@ -61,7 +61,8 @@ class TeacherSessionController extends ChangeNotifier {
 
   String get _activeKey => 'classlink.active_session.${classroom.id}';
 
-  /// Start a new session, or pick up the one this phone left running.
+  /// Start a new session, or resume the one already running for this
+  /// classroom, whichever phone started it.
   Future<void> begin() async {
     _phase = SessionPhase.starting;
     _error = null;
@@ -74,14 +75,12 @@ class TeacherSessionController extends ChangeNotifier {
         await store.write(_activeKey, created.id);
       } on ApiException catch (e) {
         if (e.code != 'active_session_exists') rethrow;
-        final saved = await store.read(_activeKey);
-        if (saved == null) {
-          throw const _SessionError(
-            'A session for this classroom is already running on another '
-            'phone. End it there first.',
-          );
-        }
-        _sessionId = saved;
+        // The server knows which session is running, even when it was
+        // started on another phone or this phone lost its saved id.
+        final running = await api.activeSession(classroom.id);
+        _session = running;
+        _sessionId = running.id;
+        await store.write(_activeKey, running.id);
       }
       await _refreshToken();
       await broadcaster.start();

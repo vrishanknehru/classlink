@@ -133,4 +133,42 @@ void main() {
       expect(friendlyMessage(r), isNot(contains('Something went wrong')), reason: r);
     }
   });
+  test('activeSession asks for the classroom\'s running session', () async {
+    late http.Request seen;
+    final api = _api((request) async {
+      seen = request;
+      return http.Response(
+        jsonEncode({
+          'id': 's1',
+          'classroom_id': 'c1',
+          'alias': 'a1b2c3d4',
+          'rssi_threshold_dbm': -75,
+          'sample_window_seconds': 4,
+          'min_samples': 3,
+          'started_at': '2026-11-26T09:00:00Z',
+          'ended_at': null,
+        }),
+        200,
+      );
+    });
+    final s = await api.activeSession('c1');
+    expect(seen.method, 'GET');
+    expect(seen.url.path, '/v1/classrooms/c1/sessions/active');
+    expect(s.id, 's1');
+    expect(s.isActive, isTrue);
+  });
+
+  test('no active session has its own message', () async {
+    final api = _api(
+      (_) async => http.Response(jsonEncode({'detail': 'no_active_session'}), 404),
+    );
+    await expectLater(
+      api.activeSession('c1'),
+      throwsA(
+        isA<ApiException>()
+            .having((e) => e.code, 'code', 'no_active_session')
+            .having((e) => e.message, 'message', isNot(contains('went wrong'))),
+      ),
+    );
+  });
 }

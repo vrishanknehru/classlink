@@ -69,6 +69,8 @@ String friendlyMessage(String code) {
       return 'No classroom has that join code.';
     case 'active_session_exists':
       return 'This classroom already has a session running.';
+    case 'no_active_session':
+      return 'This classroom has no session running.';
     case 'session_not_found':
     case 'classroom_not_found':
       return 'Not found, or it belongs to another teacher.';
@@ -138,6 +140,13 @@ class ClassLinkApi {
   Future<SessionInfo> startSession(String classroomId) async =>
       SessionInfo.fromJson(
         await _send('POST', '/v1/sessions', {'classroom_id': classroomId}),
+      );
+
+  /// The classroom's running session, so this phone can resume one that
+  /// another phone started.
+  Future<SessionInfo> activeSession(String classroomId) async =>
+      SessionInfo.fromJson(
+        await _get('/v1/classrooms/$classroomId/sessions/active'),
       );
 
   Future<SessionInfo> endSession(String sessionId) async =>

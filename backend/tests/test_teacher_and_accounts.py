@@ -107,6 +107,32 @@ def test_only_one_active_session_per_classroom(world: World) -> None:
     assert again.status_code == 201
 
 
+def test_teacher_can_fetch_the_active_session_to_resume_it(world: World) -> None:
+    url = f"/v1/classrooms/{world.classroom['id']}/sessions/active"
+    resp = world.client.get(url, headers=world.teacher.headers)
+    assert resp.status_code == 200, resp.text
+    assert resp.json() == world.session
+    world.client.post(f"/v1/sessions/{world.session['id']}/end", headers=world.teacher.headers)
+    gone = world.client.get(url, headers=world.teacher.headers)
+    assert gone.status_code == 404
+    assert gone.json()["detail"] == "no_active_session"
+
+
+def test_active_session_is_private_to_the_classroom_teacher(world: World, new_user) -> None:  # type: ignore[no-untyped-def]
+    url = f"/v1/classrooms/{world.classroom['id']}/sessions/active"
+    other = new_user("teacher@example.edu", "Same Allowlisted Email, different account")
+    resp = world.client.get(url, headers=other.headers)
+    assert resp.status_code == 404
+    assert resp.json()["detail"] == "classroom_not_found"
+    assert world.client.get(url, headers=world.student.headers).status_code == 403
+    assert world.client.get(url).status_code == 401
+    unknown = world.client.get(
+        "/v1/classrooms/00000000-0000-0000-0000-000000000000/sessions/active",
+        headers=world.teacher.headers,
+    )
+    assert unknown.status_code == 404
+
+
 def test_ending_twice_conflicts(world: World) -> None:
     url = f"/v1/sessions/{world.session['id']}/end"
     assert world.client.post(url, headers=world.teacher.headers).status_code == 200

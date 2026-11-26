@@ -295,6 +295,14 @@ class Database:
             ).fetchone()
         return _session(row) if row else None
 
+    def active_session_for_classroom(self, classroom_id: UUID) -> Session | None:
+        with self._conn() as conn:
+            row = conn.execute(
+                "select * from sessions where classroom_id = %s and ended_at is null",
+                (classroom_id,),
+            ).fetchone()
+        return _session(row) if row else None
+
     def end_session(self, session_id: UUID, actor_id: UUID) -> Session | None:
         with self._conn() as conn, conn.transaction():
             row = conn.execute(
