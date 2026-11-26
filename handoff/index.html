@@ -656,6 +656,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#second-batch-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Second batch: fixes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#open-issues" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -668,10 +679,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-flutter-analyze-fails-on-the-current-stable-flutter-blocks-ci" class="md-nav__link">
+  <a href="#1-flutter-analyze-failed-on-the-current-stable-flutter-fixed" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. flutter analyze fails on the current stable Flutter (blocks CI)
+        1. flutter analyze failed on the current stable Flutter (fixed)
       
     </span>
   </a>
@@ -679,10 +690,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-an-empty-classlink_jwt_secret-stops-the-api-from-starting" class="md-nav__link">
+  <a href="#2-an-empty-classlink_jwt_secret-stopped-the-api-from-starting-fixed" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. An empty CLASSLINK_JWT_SECRET stops the API from starting
+        2. An empty CLASSLINK_JWT_SECRET stopped the API from starting (fixed)
       
     </span>
   </a>
@@ -690,10 +701,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-one-new-flutter-test-checks-nothing" class="md-nav__link">
+  <a href="#3-one-new-flutter-test-checked-nothing-fixed" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. One new Flutter test checks nothing
+        3. One new Flutter test checked nothing (fixed)
       
     </span>
   </a>
@@ -701,10 +712,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-macos-still-uses-the-old-bundle-id" class="md-nav__link">
+  <a href="#4-macos-used-the-old-app-id-fixed-not-build-tested" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. macOS still uses the old bundle id
+        4. macOS used the old app id (fixed, not build tested)
       
     </span>
   </a>
@@ -835,75 +846,76 @@ Every number here comes from a real run on 26 November 2026.</p>
 </tr>
 <tr>
 <td><code>flutter analyze</code></td>
-<td><strong>Fails. Exit code 1, 9 issues.</strong> See issue 1.</td>
+<td>Failed with 9 issues at first. Fixed later, see issue 1.</td>
 </tr>
 </tbody>
 </table>
 <p>Flutter version used: 3.50.1, stable channel, Dart 3.14.0.</p>
+<h2 id="second-batch-fixes">Second batch: fixes<a class="headerlink" href="#second-batch-fixes" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Commit</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>3ecd2b9</code></td>
+<td>Empty <code>CLASSLINK_</code> settings count as unset (issue 2).</td>
+</tr>
+<tr>
+<td><code>4df948f</code></td>
+<td>The teacher phone no longer saves the session id (issue 3).</td>
+</tr>
+<tr>
+<td><code>42a8cf9</code></td>
+<td>Material widgets come from <code>package:material_ui</code> (issue 1).</td>
+</tr>
+<tr>
+<td><code>d26b6c3</code></td>
+<td>The macOS app uses <code>com.classlink.app</code> (issue 4).</td>
+</tr>
+</tbody>
+</table>
+<p>Checks after these fixes: ruff clean, ruff format clean, mypy clean,
+<code>pytest</code> 99 passed with 1 warning, <code>flutter analyze</code> no issues,
+<code>flutter test</code> 63 passed.</p>
 <h2 id="open-issues">Open issues<a class="headerlink" href="#open-issues" title="Permanent link">&para;</a></h2>
-<h3 id="1-flutter-analyze-fails-on-the-current-stable-flutter-blocks-ci">1. <code>flutter analyze</code> fails on the current stable Flutter (blocks CI)<a class="headerlink" href="#1-flutter-analyze-fails-on-the-current-stable-flutter-blocks-ci" title="Permanent link">&para;</a></h3>
+<h3 id="1-flutter-analyze-failed-on-the-current-stable-flutter-fixed">1. <code>flutter analyze</code> failed on the current stable Flutter (fixed)<a class="headerlink" href="#1-flutter-analyze-failed-on-the-current-stable-flutter-fixed" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Owner:</strong> Flutter (Vrishank or Khagendra).</li>
-<li><strong>What:</strong> Flutter 3.47 and later mark <code>package:flutter/material.dart</code> as
-  deprecated. The notice says to use <code>package:material_ui/material_ui.dart</code>.
-  <code>flutter analyze</code> treats these info notices as failures.</li>
-<li><strong>Where:</strong> the first line of these 9 files:</li>
-<li><code>code/lib/main.dart</code></li>
-<li><code>code/lib/screens/home_gate.dart</code></li>
-<li><code>code/lib/screens/profile_setup_screen.dart</code></li>
-<li><code>code/lib/screens/sign_in_screen.dart</code></li>
-<li><code>code/lib/screens/student_checkin_screen.dart</code></li>
-<li><code>code/lib/screens/student_home_screen.dart</code></li>
-<li><code>code/lib/screens/teacher_home_screen.dart</code></li>
-<li><code>code/lib/screens/teacher_session_screen.dart</code></li>
-<li><code>code/lib/screens/widgets.dart</code></li>
-<li><strong>Why it matters:</strong> CI (<code>.github/workflows/ci.yml</code>) and the release workflow
-  install the <code>stable</code> channel and run <code>flutter analyze</code>. So CI most likely
-  fails now, even on code from before this push.</li>
-<li><strong>Suggested fix:</strong> add <code>material_ui</code> to <code>code/pubspec.yaml</code> and switch the 9
-  imports. Then run <code>flutter analyze</code> and <code>flutter test</code>. Do not pin CI to an
-  old Flutter just to hide the notice.</li>
-<li><strong>Note:</strong> on the new Flutter, <code>flutter pub get</code> also rewrites
-  <code>code/analysis_options.yaml</code> (it adds an <code>analyzer: exclude:</code> list) and
-  <code>code/pubspec.lock</code>. Commit those changes only on purpose, in the same
-  commit as the upgrade.</li>
+<li><strong>Status:</strong> fixed. Flutter 3.47 deprecated <code>package:flutter/material.dart</code>.
+  The app now depends on the official <code>material_ui</code> package (publisher
+  <code>flutter.dev</code>) and the 9 screen files import
+  <code>package:material_ui/material_ui.dart</code>. <code>code/pubspec.yaml</code> now needs Dart
+  3.13 and Flutter 3.47 or newer. <code>flutter analyze</code>: no issues.</li>
+<li><strong>Note:</strong> the new Flutter added an <code>analyzer: exclude:</code> list to
+  <code>code/analysis_options.yaml</code>. That change is committed with this fix.</li>
 </ul>
-<h3 id="2-an-empty-classlink_jwt_secret-stops-the-api-from-starting">2. An empty <code>CLASSLINK_JWT_SECRET</code> stops the API from starting<a class="headerlink" href="#2-an-empty-classlink_jwt_secret-stops-the-api-from-starting" title="Permanent link">&para;</a></h3>
+<h3 id="2-an-empty-classlink_jwt_secret-stopped-the-api-from-starting-fixed">2. An empty <code>CLASSLINK_JWT_SECRET</code> stopped the API from starting (fixed)<a class="headerlink" href="#2-an-empty-classlink_jwt_secret-stopped-the-api-from-starting-fixed" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Owner:</strong> backend (Manvi).</li>
-<li><strong>What:</strong> <code>backend/app/config.py:18-19</code> sets <code>min_length=16</code> on
-  <code>jwt_secret</code> and a URL pattern on <code>supabase_url</code>. An empty environment value
-  is read as <code>""</code>, not as "unset". So it fails validation and the API does not
-  start. This was reproduced:
-  <code>jwt_secret: String should have at least 16 characters [input_value='']</code>.</li>
-<li><strong>Why it matters:</strong> <code>docs/deployment.md</code> says to "Leave it empty" when the
-  project has no legacy HS256 secret. Following that on Render, or with
-  <code>docker run -e CLASSLINK_JWT_SECRET=</code>, makes the service crash at start.</li>
-<li><strong>Suggested fix:</strong> add <code>env_ignore_empty=True</code> to <code>SettingsConfigDict</code> in
-  <code>backend/app/config.py:10</code>. First add a test in <code>backend/tests/test_config.py</code>
-  that sets <code>CLASSLINK_JWT_SECRET</code> to <code>""</code> and expects settings to load. Change
-  the docs to say "do not set it" instead of "leave it empty".</li>
-<li><strong>Until it is fixed:</strong> on Render, do not add <code>CLASSLINK_JWT_SECRET</code> at all
-  unless you have a real secret.</li>
+<li><strong>Status:</strong> fixed. <code>backend/app/config.py</code> now sets <code>env_ignore_empty=True</code>,
+  so a key set to an empty value counts as unset. The test
+  <code>test_empty_optional_values_count_as_unset</code> in <code>backend/tests/test_config.py</code>
+  covers it. "Leave it empty" in <code>docs/deployment.md</code> is now safe.</li>
 </ul>
-<h3 id="3-one-new-flutter-test-checks-nothing">3. One new Flutter test checks nothing<a class="headerlink" href="#3-one-new-flutter-test-checks-nothing" title="Permanent link">&para;</a></h3>
+<h3 id="3-one-new-flutter-test-checked-nothing-fixed">3. One new Flutter test checked nothing (fixed)<a class="headerlink" href="#3-one-new-flutter-test-checked-nothing-fixed" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Owner:</strong> Flutter.</li>
-<li><strong>What:</strong> <code>TeacherSessionController</code> writes the running session id to secure
-  storage (<code>code/lib/teacher/session_controller.dart:75</code>, <code>:83</code>, <code>:191</code>), but
-  nothing in <code>code/lib</code> reads it back. Resume now asks the server instead. The
-  test "a stale saved id is replaced by the session the server reports" in
-  <code>code/test/session_controller_test.dart</code> passes whatever the code does.</li>
-<li><strong>Suggested fix:</strong> remove the unused <code>_activeKey</code> writes and that one test.
-  The other resume tests already cover the real path. Or give the saved id a
-  real use and test that.</li>
+<li><strong>Status:</strong> fixed. <code>TeacherSessionController</code> no longer saves the running
+  session id, because nothing read it back. Resume asks the server instead.
+  The empty test is gone, and the controller no longer takes a <code>store</code>.
+  <code>flutter test</code>: 63 passed.</li>
 </ul>
-<h3 id="4-macos-still-uses-the-old-bundle-id">4. macOS still uses the old bundle id<a class="headerlink" href="#4-macos-still-uses-the-old-bundle-id" title="Permanent link">&para;</a></h3>
+<h3 id="4-macos-used-the-old-app-id-fixed-not-build-tested">4. macOS used the old app id (fixed, not build tested)<a class="headerlink" href="#4-macos-used-the-old-app-id-fixed-not-build-tested" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Owner:</strong> iOS and macOS (Khagendra), low priority.</li>
-<li><strong>What:</strong> <code>code/macos/Runner/Configs/AppInfo.xcconfig:11</code> still says
-  <code>com.classlink.poc.bleAttendancePoc</code>. Android is now <code>com.classlink.app</code>.
-  This only matters if macOS becomes a target.</li>
+<li><strong>Status:</strong> fixed. The macOS bundle id is now <code>com.classlink.app</code> and the
+  product name is <code>classlink</code>, like iOS and Android. The changed files are
+  <code>code/macos/Runner/Configs/AppInfo.xcconfig</code>, the Xcode project and the
+  scheme. <code>GeneratedPluginRegistrant.swift</code> now also registers
+  <code>flutter_secure_storage</code>, which <code>flutter pub get</code> added.</li>
+<li><strong>Not verified:</strong> the machine used had no full Xcode, so the macOS app was
+  not built. If macOS matters, run <code>flutter build macos</code> once on a Mac with
+  Xcode.</li>
 </ul>
 <h3 id="5-one-commit-holds-a-file-move-that-belongs-to-the-next-one">5. One commit holds a file move that belongs to the next one<a class="headerlink" href="#5-one-commit-holds-a-file-move-that-belongs-to-the-next-one" title="Permanent link">&para;</a></h3>
 <ul>
@@ -928,7 +940,7 @@ Every number here comes from a real run on 26 November 2026.</p>
 </ul>
 <h2 id="what-is-left-in-the-plan">What is left in the plan<a class="headerlink" href="#what-is-left-in-the-plan" title="Permanent link">&para;</a></h2>
 <ol>
-<li><strong>Fix issues 1 to 3</strong> above, then get CI green.</li>
+<li><strong>Confirm CI is green</strong> on GitHub Actions for the latest push.</li>
 <li><strong>Deploy:</strong> create the Supabase project and the Render service, following
    <code>docs/deployment.md</code>. Then check <code>/readyz</code>, <code>/docs</code> and <code>/v1/me</code> on the live
    URL.</li>
@@ -968,7 +980,7 @@ Every number here comes from a real run on 26 November 2026.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="November 26, 2026 11:16:24 UTC">November 26, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="November 26, 2026 12:27:20 UTC">November 26, 2026</span>
   </span>
 
     
