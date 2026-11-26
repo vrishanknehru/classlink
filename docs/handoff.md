@@ -23,38 +23,21 @@ Every number here comes from a real run on 26 November 2026.
 | `python -m mypy app` | Clean |
 | `python -m pytest -q` | 98 passed, 1 warning (the old Starlette and httpx notice) |
 | `flutter test` | 64 passed |
-| `flutter analyze` | **Fails. Exit code 1, 9 issues.** See issue 1. |
+| `flutter analyze` | Failed with 9 issues at first. Fixed later, see issue 1. |
 
 Flutter version used: 3.50.1, stable channel, Dart 3.14.0.
 
 ## Open issues
 
-### 1. `flutter analyze` fails on the current stable Flutter (blocks CI)
+### 1. `flutter analyze` failed on the current stable Flutter (fixed)
 
-- **Owner:** Flutter (Vrishank or Khagendra).
-- **What:** Flutter 3.47 and later mark `package:flutter/material.dart` as
-  deprecated. The notice says to use `package:material_ui/material_ui.dart`.
-  `flutter analyze` treats these info notices as failures.
-- **Where:** the first line of these 9 files:
-  - `code/lib/main.dart`
-  - `code/lib/screens/home_gate.dart`
-  - `code/lib/screens/profile_setup_screen.dart`
-  - `code/lib/screens/sign_in_screen.dart`
-  - `code/lib/screens/student_checkin_screen.dart`
-  - `code/lib/screens/student_home_screen.dart`
-  - `code/lib/screens/teacher_home_screen.dart`
-  - `code/lib/screens/teacher_session_screen.dart`
-  - `code/lib/screens/widgets.dart`
-- **Why it matters:** CI (`.github/workflows/ci.yml`) and the release workflow
-  install the `stable` channel and run `flutter analyze`. So CI most likely
-  fails now, even on code from before this push.
-- **Suggested fix:** add `material_ui` to `code/pubspec.yaml` and switch the 9
-  imports. Then run `flutter analyze` and `flutter test`. Do not pin CI to an
-  old Flutter just to hide the notice.
-- **Note:** on the new Flutter, `flutter pub get` also rewrites
-  `code/analysis_options.yaml` (it adds an `analyzer: exclude:` list) and
-  `code/pubspec.lock`. Commit those changes only on purpose, in the same
-  commit as the upgrade.
+- **Status:** fixed. Flutter 3.47 deprecated `package:flutter/material.dart`.
+  The app now depends on the official `material_ui` package (publisher
+  `flutter.dev`) and the 9 screen files import
+  `package:material_ui/material_ui.dart`. `code/pubspec.yaml` now needs Dart
+  3.13 and Flutter 3.47 or newer. `flutter analyze`: no issues.
+- **Note:** the new Flutter added an `analyzer: exclude:` list to
+  `code/analysis_options.yaml`. That change is committed with this fix.
 
 ### 2. An empty `CLASSLINK_JWT_SECRET` stopped the API from starting (fixed)
 
