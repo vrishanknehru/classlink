@@ -53,12 +53,16 @@ Flutter version used: 3.50.1, stable channel, Dart 3.14.0.
   The empty test is gone, and the controller no longer takes a `store`.
   `flutter test`: 63 passed.
 
-### 4. macOS still uses the old bundle id
+### 4. macOS used the old app id (fixed, not build tested)
 
-- **Owner:** iOS and macOS (Khagendra), low priority.
-- **What:** `code/macos/Runner/Configs/AppInfo.xcconfig:11` still says
-  `com.classlink.poc.bleAttendancePoc`. Android is now `com.classlink.app`.
-  This only matters if macOS becomes a target.
+- **Status:** fixed. The macOS bundle id is now `com.classlink.app` and the
+  product name is `classlink`, like iOS and Android. The changed files are
+  `code/macos/Runner/Configs/AppInfo.xcconfig`, the Xcode project and the
+  scheme. `GeneratedPluginRegistrant.swift` now also registers
+  `flutter_secure_storage`, which `flutter pub get` added.
+- **Not verified:** the machine used had no full Xcode, so the macOS app was
+  not built. If macOS matters, run `flutter build macos` once on a Mac with
+  Xcode.
 
 ### 5. One commit holds a file move that belongs to the next one
 
