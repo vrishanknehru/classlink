@@ -1,0 +1,1068 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="BLE-based classroom attendance system — UCS503P Software Engineering Project, TIET">
+      
+      
+      
+        <link rel="canonical" href="https://vrishanknehru.github.io/classlink/handoff/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
+    
+    
+  <title>UCS503P: Software Engineering Project;
+    ClassLink @TIET</title>
+
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="https://unpkg.com/katex@0/dist/katex.min.css">
+    
+      <link rel="stylesheet" href="../assets/stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#handoff-open-issues-and-next-steps" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="ClassLink" class="md-header__button md-logo" aria-label="ClassLink" data-md-component="logo">
+      
+  <img src="../assets/tiet-logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ClassLink
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Handoff: open issues and next steps
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/vrishanknehru/classlink" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    vrishanknehru/classlink
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="ClassLink" class="md-nav__button md-logo" aria-label="ClassLink" data-md-component="logo">
+      
+  <img src="../assets/tiet-logo.svg" alt="logo">
+
+    </a>
+    ClassLink
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/vrishanknehru/classlink" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    vrishanknehru/classlink
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../srs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software Requirements Specification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../srs/supplement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SRS Supplement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment and Pilot Runbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evaluation Data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../uml/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UML Diagrams
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../criteria-for-project-selection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Criteria for Project Selection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Journals
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Journals
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../journals/1024160111-vemula-manvi-smaran/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vemula Manvi Smaran
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../journals/1024160109-vrishank-nehru/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vrishank Nehru
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../journals/1024160102-mahi-singh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mahi Singh
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../journals/1024160123-khagendra-saini/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Khagendra Saini
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-was-pushed-in-this-batch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What was pushed in this batch
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#check-results-before-this-push" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Check results before this push
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#open-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Open issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Open issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-flutter-analyze-fails-on-the-current-stable-flutter-blocks-ci" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. flutter analyze fails on the current stable Flutter (blocks CI)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-an-empty-classlink_jwt_secret-stops-the-api-from-starting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. An empty CLASSLINK_JWT_SECRET stops the API from starting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-one-new-flutter-test-checks-nothing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. One new Flutter test checks nothing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-macos-still-uses-the-old-bundle-id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. macOS still uses the old bundle id
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-one-commit-holds-a-file-move-that-belongs-to-the-next-one" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. One commit holds a file move that belongs to the next one
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rules-for-this-repo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rules for this repo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-left-in-the-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is left in the plan
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="handoff-open-issues-and-next-steps">Handoff: open issues and next steps<a class="headerlink" href="#handoff-open-issues-and-next-steps" title="Permanent link">&para;</a></h1>
+<p>Written on 26 November 2026 by Manvi. This page is for the teammate who picks
+up the work next. It lists what is done, what is broken, and what is left.
+Every number here comes from a real run on 26 November 2026.</p>
+<h2 id="what-was-pushed-in-this-batch">What was pushed in this batch<a class="headerlink" href="#what-was-pushed-in-this-batch" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Commit</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>a8aab73</code></td>
+<td>The API checks Supabase tokens with the project JWKS (ES256 and RS256). HS256 stays as a fallback.</td>
+</tr>
+<tr>
+<td><code>9a4dac2</code></td>
+<td><code>render.yaml</code> uses Render's free plan. The runbook explains the session pooler.</td>
+</tr>
+<tr>
+<td><code>5db60b5</code></td>
+<td>New route <code>GET /v1/classrooms/{id}/sessions/active</code>. The app uses it to resume a running session from any teacher phone.</td>
+</tr>
+<tr>
+<td><code>32146ee</code></td>
+<td>New Flutter tests for the teacher session controller and the API models.</td>
+</tr>
+<tr>
+<td><code>b990fcc</code></td>
+<td>The Android package is now <code>com.classlink.app</code>.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="check-results-before-this-push">Check results before this push<a class="headerlink" href="#check-results-before-this-push" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ruff check .</code></td>
+<td>Clean</td>
+</tr>
+<tr>
+<td><code>ruff format --check .</code></td>
+<td>Clean</td>
+</tr>
+<tr>
+<td><code>python -m mypy app</code></td>
+<td>Clean</td>
+</tr>
+<tr>
+<td><code>python -m pytest -q</code></td>
+<td>98 passed, 1 warning (the old Starlette and httpx notice)</td>
+</tr>
+<tr>
+<td><code>flutter test</code></td>
+<td>64 passed</td>
+</tr>
+<tr>
+<td><code>flutter analyze</code></td>
+<td><strong>Fails. Exit code 1, 9 issues.</strong> See issue 1.</td>
+</tr>
+</tbody>
+</table>
+<p>Flutter version used: 3.50.1, stable channel, Dart 3.14.0.</p>
+<h2 id="open-issues">Open issues<a class="headerlink" href="#open-issues" title="Permanent link">&para;</a></h2>
+<h3 id="1-flutter-analyze-fails-on-the-current-stable-flutter-blocks-ci">1. <code>flutter analyze</code> fails on the current stable Flutter (blocks CI)<a class="headerlink" href="#1-flutter-analyze-fails-on-the-current-stable-flutter-blocks-ci" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Owner:</strong> Flutter (Vrishank or Khagendra).</li>
+<li><strong>What:</strong> Flutter 3.47 and later mark <code>package:flutter/material.dart</code> as
+  deprecated. The notice says to use <code>package:material_ui/material_ui.dart</code>.
+  <code>flutter analyze</code> treats these info notices as failures.</li>
+<li><strong>Where:</strong> the first line of these 9 files:</li>
+<li><code>code/lib/main.dart</code></li>
+<li><code>code/lib/screens/home_gate.dart</code></li>
+<li><code>code/lib/screens/profile_setup_screen.dart</code></li>
+<li><code>code/lib/screens/sign_in_screen.dart</code></li>
+<li><code>code/lib/screens/student_checkin_screen.dart</code></li>
+<li><code>code/lib/screens/student_home_screen.dart</code></li>
+<li><code>code/lib/screens/teacher_home_screen.dart</code></li>
+<li><code>code/lib/screens/teacher_session_screen.dart</code></li>
+<li><code>code/lib/screens/widgets.dart</code></li>
+<li><strong>Why it matters:</strong> CI (<code>.github/workflows/ci.yml</code>) and the release workflow
+  install the <code>stable</code> channel and run <code>flutter analyze</code>. So CI most likely
+  fails now, even on code from before this push.</li>
+<li><strong>Suggested fix:</strong> add <code>material_ui</code> to <code>code/pubspec.yaml</code> and switch the 9
+  imports. Then run <code>flutter analyze</code> and <code>flutter test</code>. Do not pin CI to an
+  old Flutter just to hide the notice.</li>
+<li><strong>Note:</strong> on the new Flutter, <code>flutter pub get</code> also rewrites
+  <code>code/analysis_options.yaml</code> (it adds an <code>analyzer: exclude:</code> list) and
+  <code>code/pubspec.lock</code>. Commit those changes only on purpose, in the same
+  commit as the upgrade.</li>
+</ul>
+<h3 id="2-an-empty-classlink_jwt_secret-stops-the-api-from-starting">2. An empty <code>CLASSLINK_JWT_SECRET</code> stops the API from starting<a class="headerlink" href="#2-an-empty-classlink_jwt_secret-stops-the-api-from-starting" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Owner:</strong> backend (Manvi).</li>
+<li><strong>What:</strong> <code>backend/app/config.py:18-19</code> sets <code>min_length=16</code> on
+  <code>jwt_secret</code> and a URL pattern on <code>supabase_url</code>. An empty environment value
+  is read as <code>""</code>, not as "unset". So it fails validation and the API does not
+  start. This was reproduced:
+  <code>jwt_secret: String should have at least 16 characters [input_value='']</code>.</li>
+<li><strong>Why it matters:</strong> <code>docs/deployment.md</code> says to "Leave it empty" when the
+  project has no legacy HS256 secret. Following that on Render, or with
+  <code>docker run -e CLASSLINK_JWT_SECRET=</code>, makes the service crash at start.</li>
+<li><strong>Suggested fix:</strong> add <code>env_ignore_empty=True</code> to <code>SettingsConfigDict</code> in
+  <code>backend/app/config.py:10</code>. First add a test in <code>backend/tests/test_config.py</code>
+  that sets <code>CLASSLINK_JWT_SECRET</code> to <code>""</code> and expects settings to load. Change
+  the docs to say "do not set it" instead of "leave it empty".</li>
+<li><strong>Until it is fixed:</strong> on Render, do not add <code>CLASSLINK_JWT_SECRET</code> at all
+  unless you have a real secret.</li>
+</ul>
+<h3 id="3-one-new-flutter-test-checks-nothing">3. One new Flutter test checks nothing<a class="headerlink" href="#3-one-new-flutter-test-checks-nothing" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Owner:</strong> Flutter.</li>
+<li><strong>What:</strong> <code>TeacherSessionController</code> writes the running session id to secure
+  storage (<code>code/lib/teacher/session_controller.dart:75</code>, <code>:83</code>, <code>:191</code>), but
+  nothing in <code>code/lib</code> reads it back. Resume now asks the server instead. The
+  test "a stale saved id is replaced by the session the server reports" in
+  <code>code/test/session_controller_test.dart</code> passes whatever the code does.</li>
+<li><strong>Suggested fix:</strong> remove the unused <code>_activeKey</code> writes and that one test.
+  The other resume tests already cover the real path. Or give the saved id a
+  real use and test that.</li>
+</ul>
+<h3 id="4-macos-still-uses-the-old-bundle-id">4. macOS still uses the old bundle id<a class="headerlink" href="#4-macos-still-uses-the-old-bundle-id" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Owner:</strong> iOS and macOS (Khagendra), low priority.</li>
+<li><strong>What:</strong> <code>code/macos/Runner/Configs/AppInfo.xcconfig:11</code> still says
+  <code>com.classlink.poc.bleAttendancePoc</code>. Android is now <code>com.classlink.app</code>.
+  This only matters if macOS becomes a target.</li>
+</ul>
+<h3 id="5-one-commit-holds-a-file-move-that-belongs-to-the-next-one">5. One commit holds a file move that belongs to the next one<a class="headerlink" href="#5-one-commit-holds-a-file-move-that-belongs-to-the-next-one" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>What:</strong> the move of <code>MainActivity.kt</code> to <code>com/classlink/app/</code> landed in
+  <code>5db60b5</code>. Its package line changed in <code>b990fcc</code>. Both build. We do not
+  rewrite history, so this stays as it is. No action needed.</li>
+</ul>
+<h2 id="rules-for-this-repo">Rules for this repo<a class="headerlink" href="#rules-for-this-repo" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Do not change the claim protocol without telling the whole team. The golden
+  vectors in <code>code/test/device_key_test.dart</code> and <code>backend/tests/test_crypto.py</code>
+  must keep passing.</li>
+<li>Run all checks before every push:</li>
+<li><code>cd backend &amp;&amp; ruff check . &amp;&amp; ruff format --check . &amp;&amp; python -m mypy app &amp;&amp; python -m pytest -q</code></li>
+<li><code>cd code &amp;&amp; flutter analyze &amp;&amp; flutter test</code></li>
+<li>Then confirm the GitHub Actions run passes.</li>
+<li>Never invent data. Evaluation CSVs, test counts and report numbers must come
+  from real runs.</li>
+<li>Never commit secrets. Real values go in Render's dashboard or GitHub secrets.</li>
+<li>Small, focused commits. Update docs in the same commit as the change.</li>
+<li>Docs use plain, short sentences in active voice.</li>
+</ul>
+<h2 id="what-is-left-in-the-plan">What is left in the plan<a class="headerlink" href="#what-is-left-in-the-plan" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Fix issues 1 to 3</strong> above, then get CI green.</li>
+<li><strong>Deploy:</strong> create the Supabase project and the Render service, following
+   <code>docs/deployment.md</code>. Then check <code>/readyz</code>, <code>/docs</code> and <code>/v1/me</code> on the live
+   URL.</li>
+<li><strong>Android release:</strong> add the signing secrets in GitHub, tag <code>v1.0.0</code>, and
+   check that the release has <code>app-release.apk</code>.</li>
+<li><strong>iOS:</strong> write the Xcode signing steps into <code>docs/deployment.md</code>.</li>
+<li><strong>Evaluation:</strong> write <code>docs/evaluation/PROTOCOL.md</code>. Later, add real CSVs
+   from classroom runs, a summary script, and a suggested RSSI threshold.</li>
+<li><strong>Reports:</strong> copy the prototype report into <code>project-report-prototype-stage/</code>
+   and remove the TODO files. Ask Manvi for the professor's exact name before
+   editing the proposal. Update the SRS and rebuild its PDF, keeping the OT1
+   cover. Update the UML diagrams, the README and the status table in
+   <code>docs/index.md</code>. Write the final report in LaTeX. Add one journal entry per
+   member.</li>
+<li><strong>Finish:</strong> all checks green, GitHub Pages turned on by Vrishank (repo
+   owner), all 4 PDFs present, and a demo script with a fallback plan.</li>
+</ol>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="November 26, 2026 11:16:24 UTC">November 26, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="November 26, 2026 11:16:24 UTC">November 26, 2026</span>
+  </span>
+
+    
+    
+      
+  
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Contributors">
+      
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 4a4 4 0 0 1 4 4 4 4 0 0 1-4 4 4 4 0 0 1-4-4 4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4"/></svg>
+      
+    </span>
+    <nav>
+      
+        <a href="mailto:manvivemula@gmail.com">manvi-smaran</a>
+    </nav>
+  </span>
+
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Vemula Manvi Smaran, Vrishank Nehru, Mahi Singh, Khagendra Saini
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "content.code.copy", "content.tabs.link"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/katex.min.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/contrib/auto-render.min.js"></script>
+      
+    
+  </body>
+</html>

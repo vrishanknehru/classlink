@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../assets/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
   <title>UCS503P: Software Engineering Project;
@@ -1023,17 +1023,34 @@ the team. Nothing here asks you to put a secret in the repository.</p>
    It creates the tables, the row level security policies, and the helper
    functions. It does not seed any data.</li>
 <li>Collect three values:</li>
-<li><strong>Connection string.</strong> Project Settings, Database, then the connection
-     string for the <code>postgres</code> role. This bypasses row level security, so it
-     stays on the server only.</li>
-<li><strong>JWT secret.</strong> Project Settings, API, then JWT Settings. The API verifies
-     user tokens with it. The legacy shared secret is supported. Projects that
-     sign with asymmetric keys need JWKS verification, which is not built yet.</li>
-<li><strong>Anon key and project URL.</strong> The mobile app needs these to sign users in.
-     They are safe to ship in the app.</li>
-<li>Under Authentication, turn on the sign in method you want for the pilot
+<li>
+<p><strong>Connection string.</strong> Click <strong>Connect</strong> at the top of the project page
+     and copy the <strong>Session pooler</strong> string. It looks like
+     <code>postgresql://postgres.&lt;project-ref&gt;:&lt;password&gt;@aws-0-&lt;region&gt;.pooler.supabase.com:5432/postgres</code>.
+     Do not use the other two choices:</p>
+<ul>
+<li>The <strong>direct connection</strong> (<code>db.&lt;project-ref&gt;.supabase.co</code>) is IPv6 only
+   on the free plan. Render cannot reach IPv6 addresses, so the API would
+   fail to connect.</li>
+<li>The <strong>transaction pooler</strong> (port 6543) hands each query to a different
+   server connection. psycopg's prepared statements can then fail with
+   "prepared statement does not exist".</li>
+</ul>
+<p>The session pooler uses IPv4 and port 5432, and keeps one server
+ connection per client connection, so neither problem happens. The string
+ logs in as the <code>postgres</code> role, which bypasses row level security, so it
+ stays on the server only.
+   - <strong>Signing method.</strong> Project Settings, JWT Keys. New projects sign user
+ tokens with an asymmetric key (ES256 or RS256). The API fetches the public
+ keys from <code>&lt;project URL&gt;/auth/v1/.well-known/jwks.json</code> and caches them, so
+ it only needs the project URL. If the page shows a legacy shared secret
+ (HS256), copy it too. The API then accepts both kinds of token.
+   - <strong>Anon key and project URL.</strong> The mobile app needs these to sign users in.
+ They are safe to ship in the app.
+4. Under Authentication, turn on the sign in method you want for the pilot
    (email with password is the simplest). Consider restricting sign up to your
-   college email domain.</li>
+   college email domain.</p>
+</li>
 </ol>
 <h2 id="2-generate-the-token-secret">2. Generate the token secret<a class="headerlink" href="#2-generate-the-token-secret" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">"import secrets; print(secrets.token_hex(32))"</span>
@@ -1045,15 +1062,26 @@ already advertised, which is harmless between sessions.</p>
 <ol>
 <li>In Render, choose <strong>New, Blueprint</strong> and pick this repository. It reads
    <code>render.yaml</code>.</li>
-<li>Fill in the four secrets when prompted: <code>CLASSLINK_DATABASE_URL</code>,
-   <code>CLASSLINK_JWT_SECRET</code>, <code>CLASSLINK_TOKEN_HMAC_SECRET</code>, and
-   <code>CLASSLINK_TEACHER_EMAILS</code> (a JSON list such as <code>["name@thapar.edu"]</code>).</li>
-<li>After the first deploy, open <code>https://&lt;your-service&gt;/readyz</code>. It must answer
-   <code>{"status":"ready"}</code>. Then open <code>/docs</code> for the live API reference.</li>
+<li>Fill in the values when prompted:</li>
+<li><code>CLASSLINK_DATABASE_URL</code>: the connection string.</li>
+<li><code>CLASSLINK_SUPABASE_URL</code>: the project URL, such as
+     <code>https://abcd.supabase.co</code>. The API reads the signing keys from it.</li>
+<li><code>CLASSLINK_JWT_SECRET</code>: only if your project still has a legacy HS256
+     secret. Leave it empty otherwise.</li>
+<li><code>CLASSLINK_TOKEN_HMAC_SECRET</code>: the value from step 2.</li>
+<li><code>CLASSLINK_TEACHER_EMAILS</code>: a JSON list such as <code>["name@thapar.edu"]</code>.</li>
 </ol>
+<p>The API refuses to start unless at least one of <code>CLASSLINK_SUPABASE_URL</code> and
+   <code>CLASSLINK_JWT_SECRET</code> is set.
+   The blueprint uses Render's <strong>free</strong> plan. A free service sleeps after 15
+   minutes without traffic. The next request wakes it, which takes about a
+   minute. Open <code>/healthz</code> a minute or two before a class or a demo so the
+   first check in does not wait. A paid plan does not sleep.
+3. After the first deploy, open <code>https://&lt;your-service&gt;/readyz</code>. It must answer
+   <code>{"status":"ready"}</code>. Then open <code>/docs</code> for the live API reference.</p>
 <h3 id="option-b-any-container-host">Option B: any container host<a class="headerlink" href="#option-b-any-container-host" title="Permanent link">&para;</a></h3>
 <p>The <code>backend-image</code> workflow publishes <code>ghcr.io/vrishanknehru/classlink-backend</code>
-on every push to <code>main</code> and on tags. Run it with the same four environment
+on every push to <code>main</code> and on tags. Run it with the same environment
 variables plus <code>CLASSLINK_ENVIRONMENT=production</code>, behind HTTPS.</p>
 <h3 id="settings-you-may-tune">Settings you may tune<a class="headerlink" href="#settings-you-may-tune" title="Permanent link">&para;</a></h3>
 <p>All are <code>CLASSLINK_*</code> variables. <code>backend/.env.example</code> lists the required ones.</p>
@@ -1085,6 +1113,11 @@ variables plus <code>CLASSLINK_ENVIRONMENT=production</code>, behind HTTPS.</p>
 <td><code>CLAIM_MAX_AGE_SECONDS</code></td>
 <td>60</td>
 <td>Allowed gap between the phone's observation time and the server clock</td>
+</tr>
+<tr>
+<td><code>JWKS_CACHE_SECONDS</code></td>
+<td>600</td>
+<td>How long the API keeps Supabase's public keys before fetching them again</td>
 </tr>
 </tbody>
 </table>
@@ -1175,7 +1208,7 @@ stack uses throwaway credentials and is not a deployment target.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="November 2, 2026 20:16:21 UTC">November 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="November 26, 2026 10:17:46 UTC">November 26, 2026</span>
   </span>
 
     
@@ -1264,7 +1297,7 @@ stack uses throwaway credentials and is not a deployment target.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "content.code.copy", "content.tabs.link"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.c21346df.min.js"></script>
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
         <script src="https://unpkg.com/katex@0/dist/katex.min.js"></script>
       
