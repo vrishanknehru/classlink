@@ -17,7 +17,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.classlink.poc.ble_attendance_poc"
+    namespace = "com.classlink.app"
     compileSdk = flutter.compileSdkVersion
 
     compileOptions {

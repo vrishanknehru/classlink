@@ -1,4 +1,4 @@
-package com.classlink.poc.ble_attendance_poc
+package com.classlink.app
 
 import io.flutter.embedding.android.FlutterActivity
 
