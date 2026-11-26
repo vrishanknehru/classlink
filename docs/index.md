@@ -24,6 +24,7 @@ valid classroom beacon under a configured proximity policy.
 
 ## Where to look
 
+- [Handoff](handoff.md): open issues and next steps, as of 26 November 2026.
 - [`code/`](https://github.com/vrishanknehru/classlink/tree/main/code) —
   the Flutter application source.
 - [Software Requirements Specification](srs/index.md) — requirements,
