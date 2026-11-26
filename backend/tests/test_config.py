@@ -58,3 +58,20 @@ def test_token_period_is_bounded() -> None:
         Settings(**GOOD, token_period_seconds=1)
     with pytest.raises(ValidationError):
         Settings(**GOOD, token_period_seconds=600)
+
+
+def test_empty_optional_values_count_as_unset(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Render and docker can pass a key with an empty value. That must mean "not
+    # set", not a 0-character secret that stops the API from starting.
+    monkeypatch.setenv("CLASSLINK_DATABASE_URL", "postgresql://u:p@localhost/db")
+    monkeypatch.setenv("CLASSLINK_TOKEN_HMAC_SECRET", "x" * 32)
+    monkeypatch.setenv("CLASSLINK_SUPABASE_URL", "https://abcd.supabase.co")
+    monkeypatch.setenv("CLASSLINK_JWT_SECRET", "")
+    s = Settings(_env_file=None)  # type: ignore[call-arg]
+    assert s.jwt_secret is None
+    assert s.jwks_url == "https://abcd.supabase.co/auth/v1/.well-known/jwks.json"
+
+    monkeypatch.setenv("CLASSLINK_SUPABASE_URL", "")
+    monkeypatch.setenv("CLASSLINK_JWT_SECRET", "s" * 32)
+    s = Settings(_env_file=None)  # type: ignore[call-arg]
+    assert s.supabase_url is None

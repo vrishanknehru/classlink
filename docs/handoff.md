@@ -56,23 +56,12 @@ Flutter version used: 3.50.1, stable channel, Dart 3.14.0.
   `code/pubspec.lock`. Commit those changes only on purpose, in the same
   commit as the upgrade.
 
-### 2. An empty `CLASSLINK_JWT_SECRET` stops the API from starting
+### 2. An empty `CLASSLINK_JWT_SECRET` stopped the API from starting (fixed)
 
-- **Owner:** backend (Manvi).
-- **What:** `backend/app/config.py:18-19` sets `min_length=16` on
-  `jwt_secret` and a URL pattern on `supabase_url`. An empty environment value
-  is read as `""`, not as "unset". So it fails validation and the API does not
-  start. This was reproduced:
-  `jwt_secret: String should have at least 16 characters [input_value='']`.
-- **Why it matters:** `docs/deployment.md` says to "Leave it empty" when the
-  project has no legacy HS256 secret. Following that on Render, or with
-  `docker run -e CLASSLINK_JWT_SECRET=`, makes the service crash at start.
-- **Suggested fix:** add `env_ignore_empty=True` to `SettingsConfigDict` in
-  `backend/app/config.py:10`. First add a test in `backend/tests/test_config.py`
-  that sets `CLASSLINK_JWT_SECRET` to `""` and expects settings to load. Change
-  the docs to say "do not set it" instead of "leave it empty".
-- **Until it is fixed:** on Render, do not add `CLASSLINK_JWT_SECRET` at all
-  unless you have a real secret.
+- **Status:** fixed. `backend/app/config.py` now sets `env_ignore_empty=True`,
+  so a key set to an empty value counts as unset. The test
+  `test_empty_optional_values_count_as_unset` in `backend/tests/test_config.py`
+  covers it. "Leave it empty" in `docs/deployment.md` is now safe.
 
 ### 3. One new Flutter test checks nothing
 

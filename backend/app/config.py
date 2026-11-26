@@ -7,7 +7,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="CLASSLINK_", env_file=".env", extra="ignore")
+    # env_ignore_empty: a key set to "" counts as unset, so an empty optional
+    # secret falls back to its default instead of failing validation.
+    model_config = SettingsConfigDict(
+        env_prefix="CLASSLINK_", env_file=".env", extra="ignore", env_ignore_empty=True
+    )
 
     environment: str = "development"
     database_url: str = Field(min_length=1)
