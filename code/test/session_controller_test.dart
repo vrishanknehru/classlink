@@ -4,13 +4,11 @@ import 'package:classlink/api/api_client.dart';
 import 'package:classlink/api/models.dart';
 import 'package:classlink/ble/teacher_broadcaster.dart';
 import 'package:classlink/teacher/session_controller.dart';
-import 'package:classlink/util/secure_store.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
 const _classroom = Classroom(id: 'room-1', name: 'UCS503P', joinCode: 'ABC123');
-const _activeKey = 'classlink.active_session.room-1';
 
 Map<String, Object?> _session(String id, {String? endedAt}) => {
   'id': id,
@@ -110,18 +108,15 @@ Map<String, http.Response Function()> _liveRoutes(
 };
 
 void main() {
-  late MemoryStore store;
   late FakeBroadcaster radio;
 
   setUp(() {
-    store = MemoryStore();
     radio = FakeBroadcaster();
   });
 
   TeacherSessionController controllerFor(FakeServer server) {
     final c = TeacherSessionController(
       api: server.api,
-      store: store,
       classroom: _classroom,
       broadcaster: radio,
     );
@@ -129,13 +124,12 @@ void main() {
     return c;
   }
 
-  test('begin starts a session, saves its id and goes live', () async {
+  test('begin starts a session and goes live', () async {
     final server = FakeServer(_liveRoutes('s-1'));
     final c = controllerFor(server);
     await c.begin();
     expect(c.phase, SessionPhase.live);
     expect(c.session?.id, 's-1');
-    expect(store.values[_activeKey], 's-1');
     expect(radio.state, BroadcastState.broadcasting);
     expect(radio.lastToken, hasLength(17));
     expect(c.roomCode, isNotNull);
@@ -179,23 +173,7 @@ void main() {
     await c.begin();
     expect(c.phase, SessionPhase.live);
     expect(c.session?.id, 's-other');
-    expect(store.values[_activeKey], 's-other');
     expect(server.calls, contains('GET /v1/sessions/s-other/token'));
-  });
-
-  test('a stale saved id is replaced by the session the server reports',
-      () async {
-    store.values[_activeKey] = 's-stale';
-    final server = FakeServer({
-      ..._liveRoutes('s-live'),
-      'POST /v1/sessions': () => _error('active_session_exists', 409),
-      'GET /v1/classrooms/room-1/sessions/active': () =>
-          _json(_session('s-live')),
-    });
-    final c = controllerFor(server);
-    await c.begin();
-    expect(c.session?.id, 's-live');
-    expect(store.values[_activeKey], 's-live');
   });
 
   test('resume fails with a clear message if the session ended meanwhile',
@@ -219,7 +197,7 @@ void main() {
     expect(c.error, 'Bluetooth is off.');
   });
 
-  test('end stops the radio, forgets the session and keeps the roster',
+  test('end stops the radio and keeps the roster',
       () async {
     final server = FakeServer({
       ..._liveRoutes('s-1', roster: [_row('Mahi', '1024160102', 'present')]),
@@ -233,7 +211,6 @@ void main() {
     expect(c.session?.isActive, isFalse);
     expect(radio.stops, greaterThan(0));
     expect(radio.state, BroadcastState.idle);
-    expect(store.values.containsKey(_activeKey), isFalse);
     expect(c.roster.single.fullName, 'Mahi');
   });
 
@@ -246,7 +223,6 @@ void main() {
     await c.begin();
     await c.end();
     expect(c.phase, SessionPhase.ended);
-    expect(store.values.containsKey(_activeKey), isFalse);
   });
 
   test('a failed end keeps the session live and shows a warning', () async {
@@ -259,7 +235,6 @@ void main() {
     await c.end();
     expect(c.phase, SessionPhase.live);
     expect(c.warning, startsWith('Could not end the session'));
-    expect(store.values[_activeKey], 's-1');
     expect(radio.state, BroadcastState.broadcasting);
   });
 }

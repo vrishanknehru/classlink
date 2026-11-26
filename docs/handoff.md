@@ -63,17 +63,12 @@ Flutter version used: 3.50.1, stable channel, Dart 3.14.0.
   `test_empty_optional_values_count_as_unset` in `backend/tests/test_config.py`
   covers it. "Leave it empty" in `docs/deployment.md` is now safe.
 
-### 3. One new Flutter test checks nothing
+### 3. One new Flutter test checked nothing (fixed)
 
-- **Owner:** Flutter.
-- **What:** `TeacherSessionController` writes the running session id to secure
-  storage (`code/lib/teacher/session_controller.dart:75`, `:83`, `:191`), but
-  nothing in `code/lib` reads it back. Resume now asks the server instead. The
-  test "a stale saved id is replaced by the session the server reports" in
-  `code/test/session_controller_test.dart` passes whatever the code does.
-- **Suggested fix:** remove the unused `_activeKey` writes and that one test.
-  The other resume tests already cover the real path. Or give the saved id a
-  real use and test that.
+- **Status:** fixed. `TeacherSessionController` no longer saves the running
+  session id, because nothing read it back. Resume asks the server instead.
+  The empty test is gone, and the controller no longer takes a `store`.
+  `flutter test`: 63 passed.
 
 ### 4. macOS still uses the old bundle id
 

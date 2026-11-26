@@ -9,7 +9,6 @@ import '../api/api_client.dart';
 import '../api/claim_protocol.dart';
 import '../api/models.dart';
 import '../ble/teacher_broadcaster.dart';
-import '../util/secure_store.dart';
 
 enum SessionPhase { starting, live, ending, ended, failed }
 
@@ -17,13 +16,11 @@ enum SessionPhase { starting, live, ending, ended, failed }
 /// keeps the BLE token fresh, polls the roster and ends it.
 class TeacherSessionController extends ChangeNotifier {
   final ClassLinkApi api;
-  final SecureStore store;
   final Classroom classroom;
   final TokenBroadcaster broadcaster;
 
   TeacherSessionController({
     required this.api,
-    required this.store,
     required this.classroom,
     TokenBroadcaster? broadcaster,
   }) : broadcaster = broadcaster ?? TeacherBroadcaster() {
@@ -59,8 +56,6 @@ class TeacherSessionController extends ChangeNotifier {
   Timer? _rosterTimer;
   bool _disposed = false;
 
-  String get _activeKey => 'classlink.active_session.${classroom.id}';
-
   /// Start a new session, or resume the one already running for this
   /// classroom, whichever phone started it.
   Future<void> begin() async {
@@ -72,15 +67,13 @@ class TeacherSessionController extends ChangeNotifier {
         final created = await api.startSession(classroom.id);
         _session = created;
         _sessionId = created.id;
-        await store.write(_activeKey, created.id);
       } on ApiException catch (e) {
         if (e.code != 'active_session_exists') rethrow;
         // The server knows which session is running, even when it was
-        // started on another phone or this phone lost its saved id.
+        // started on another phone.
         final running = await api.activeSession(classroom.id);
         _session = running;
         _sessionId = running.id;
-        await store.write(_activeKey, running.id);
       }
       await _refreshToken();
       await broadcaster.start();
@@ -188,7 +181,6 @@ class TeacherSessionController extends ChangeNotifier {
     _tokenTimer?.cancel();
     _rosterTimer?.cancel();
     await broadcaster.stop();
-    await store.delete(_activeKey);
     _phase = SessionPhase.ended;
     _notify();
   }

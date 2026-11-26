@@ -28,7 +28,6 @@ class _TeacherSessionScreenState extends State<TeacherSessionScreen> {
       final services = AppScope.of(context);
       _controller = TeacherSessionController(
         api: services.api,
-        store: services.store,
         classroom: widget.classroom,
       );
       _start();
