@@ -20,8 +20,20 @@ the team. Nothing here asks you to put a secret in the repository.
    It creates the tables, the row level security policies, and the helper
    functions. It does not seed any data.
 3. Collect three values:
-   - **Connection string.** Project Settings, Database, then the connection
-     string for the `postgres` role. This bypasses row level security, so it
+   - **Connection string.** Click **Connect** at the top of the project page
+     and copy the **Session pooler** string. It looks like
+     `postgresql://postgres.<project-ref>:<password>@aws-0-<region>.pooler.supabase.com:5432/postgres`.
+     Do not use the other two choices:
+     - The **direct connection** (`db.<project-ref>.supabase.co`) is IPv6 only
+       on the free plan. Render cannot reach IPv6 addresses, so the API would
+       fail to connect.
+     - The **transaction pooler** (port 6543) hands each query to a different
+       server connection. psycopg's prepared statements can then fail with
+       "prepared statement does not exist".
+
+     The session pooler uses IPv4 and port 5432, and keeps one server
+     connection per client connection, so neither problem happens. The string
+     logs in as the `postgres` role, which bypasses row level security, so it
      stays on the server only.
    - **Signing method.** Project Settings, JWT Keys. New projects sign user
      tokens with an asymmetric key (ES256 or RS256). The API fetches the public
@@ -60,6 +72,10 @@ already advertised, which is harmless between sessions.
 
    The API refuses to start unless at least one of `CLASSLINK_SUPABASE_URL` and
    `CLASSLINK_JWT_SECRET` is set.
+   The blueprint uses Render's **free** plan. A free service sleeps after 15
+   minutes without traffic. The next request wakes it, which takes about a
+   minute. Open `/healthz` a minute or two before a class or a demo so the
+   first check in does not wait. A paid plan does not sleep.
 3. After the first deploy, open `https://<your-service>/readyz`. It must answer
    `{"status":"ready"}`. Then open `/docs` for the live API reference.
 

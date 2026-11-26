@@ -6,7 +6,7 @@ services:
     runtime: docker
     dockerContext: ./backend
     dockerfilePath: ./backend/Dockerfile
-    plan: starter
+    plan: free      # sleeps after 15 minutes idle; the first request then takes about a minute
     healthCheckPath: /healthz
     autoDeploy: true
     envVars:
